@@ -5,13 +5,23 @@ import {
   ArrowRight, Calendar, Users, CreditCard, Plus, MapPin,
   ChevronRight, Eye, EyeOff, LayoutDashboard,
   CheckCircle, Zap, Shield, ChevronLeft, ChevronDown, Check, Upload,
-  X, Key, Copy, Settings, LogOut, Mail, Menu, AlertTriangle, Image as ImageIcon, Camera, QrCode, RotateCcw
+  X, Key, Copy, Settings, LogOut, Mail, Menu, AlertTriangle, Image as ImageIcon, Camera, QrCode, RotateCcw,
+  ShoppingBag, HeartHandshake, Wallet
 } from "lucide-react";
 import { Html5Qrcode } from "html5-qrcode";
 import { useGoogleLogin } from "@react-oauth/google";
 import { syncProfile, fetchEvents, fetchClubs, fetchEventRegistrations, approveRegistration, rejectRegistration, createEvent, fetchAllRegistrationsForEvents, createClub, fetchClubDashboardStats, updateClub, fetchPublicStats, clubLogin, changePassword, updateEventDeadline, updateEvent, sanitizeErrorMessage, verifyRegistrationKey, checkClubEmail, googleAuth, verifyTicketQR } from "./api";
 import confetti from "canvas-confetti";
 import { useTheme, ThemeToggle } from "./theme";
+import InteractiveTicketPass from "./components/landing/InteractiveTicketPass";
+import LiveActivityTicker from "./components/landing/LiveActivityTicker";
+import FeaturesSection from "./components/landing/FeaturesSection";
+import WorkflowSection from "./components/landing/WorkflowSection";
+import EcosystemSection from "./components/landing/EcosystemSection";
+import ShutterGlyphFooter from "@/components/ui/shutter-glyph-footer";
+import MerchPage from "./components/dashboard/MerchPage";
+import FundraiserPage from "./components/dashboard/FundraiserPage";
+import FinancePage from "./components/dashboard/FinancePage";
 
 const FC = "'Playfair Display', serif";
 const F_LOGO = "'Cinzel', serif";
@@ -343,9 +353,12 @@ function useEvents() {
 }
 
 const QUICK_ACTIONS = [
-  { id: "create",   icon: Plus,     label: "Create Event",        desc: "Launch a new event in minutes" },
-  { id: "settings", icon: Settings, label: "Update Club Profile", desc: "Edit club info, UPI ID & security" },
-  { id: "events",   icon: Users,    label: "Manage Teams",        desc: "Oversee team registrations per event" },
+  { id: "create",     icon: Plus,           label: "Create Event",        desc: "Launch a new event in minutes" },
+  { id: "merch",      icon: ShoppingBag,    label: "Merch Drops",         desc: "Manage custom apparel & pre-orders" },
+  { id: "fundraiser", icon: HeartHandshake, label: "Fundraiser",          desc: "Campaigns & alumni sponsorships" },
+  { id: "finance",    icon: Wallet,         label: "Treasury Ledger",     desc: "Audit inflows, tickets & expenses" },
+  { id: "events",     icon: Users,          label: "Manage Teams",        desc: "Oversee team registrations per event" },
+  { id: "settings",   icon: Settings,       label: "Club Profile",        desc: "Edit club info, UPI ID & security" },
 ];
 const FEATURES = [
   { icon: Calendar, title: "Liquid Event Creation", desc: "Craft events with a fluid step-by-step builder. From concept to live in under two minutes."      },
@@ -437,7 +450,7 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
   }, []);
 
   return (
-    <div id="ls" className="h-[100dvh] min-h-[100dvh] w-full overflow-y-auto overflow-x-hidden flex flex-col relative bg-background touch-pan-y overscroll-none transition-colors duration-300">
+    <div id="ls" className="min-h-screen w-full flex flex-col relative bg-background transition-colors duration-300 overflow-x-hidden">
       <div id="top-sentinel" className="absolute top-0 left-0 w-full h-10 pointer-events-none z-0" />
 
       <nav className="fixed top-0 left-0 right-0 z-30 transition-all duration-500"
@@ -453,101 +466,278 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
             <img src="/logo.png" alt="SkylineOS Logo" className="h-8 sm:h-10 w-auto object-contain" />
             <span className="text-xs sm:text-sm tracking-[0.2em] sm:tracking-[0.3em] font-semibold whitespace-nowrap transition-colors" style={{ fontFamily: F_LOGO, color: isDark ? "#ffffff" : "#1e1b26" }}>SkylineOS</span>
           </div>
+
+          {/* Navigation Links for Smooth Scrolling */}
+          <div className="hidden md:flex items-center gap-7 text-xs font-medium text-slate-300" style={{ fontFamily: FB }}>
+            <a href="#features" className="hover:text-white transition-colors">Features</a>
+            <a href="#workflow" className="hover:text-white transition-colors">Workflow</a>
+            <a href="#ecosystem" className="hover:text-white transition-colors">Ecosystem</a>
+          </div>
+
           <div className="flex items-center gap-2 sm:gap-3">
             <ThemeToggle />
+            <button onClick={onRegister}
+              className="text-xs sm:text-sm px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all duration-400 cursor-pointer active:scale-95 font-medium border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white hidden sm:block"
+            >Register Club</button>
             <button onClick={onEnter}
-              className="text-xs sm:text-sm px-4 sm:px-5 py-1.5 sm:py-2 rounded-full transition-all duration-400 cursor-pointer active:scale-95 font-medium"
-              style={{
-                border: isDark ? "1px solid rgba(255,255,255,0.2)" : "1px solid rgba(0,0,0,0.12)",
-                background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.05)",
-                color: isDark ? "rgba(255,255,255,0.9)" : "#1e1b26",
-              }}
+              className="text-xs sm:text-sm px-4 sm:px-5 py-1.5 sm:py-2 rounded-full transition-all duration-400 cursor-pointer active:scale-95 font-semibold bg-[#F03D4E] hover:bg-[#d83544] text-white shadow-md shadow-red-500/25"
             >Sign In</button>
           </div>
         </div>
       </nav>
 
+      {/* Cinematic Dual Stadium Volumetric Spotlights */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        {/* Left Sweeping Spotlight */}
         <div style={{
-          position: "absolute", top: "-10%", left: "50%",
+          position: "absolute", top: "-15%", left: "20%",
           transform: "translateX(-50%)",
-          width: "700px", height: "900px",
+          width: "600px", height: "1000px",
           background: isDark
-            ? "conic-gradient(from 174deg at 50% 0%, transparent 0deg, rgba(255,255,255,0.035) 6deg, transparent 12deg)"
-            : "conic-gradient(from 174deg at 50% 0%, transparent 0deg, rgba(222,63,15,0.04) 6deg, transparent 18deg)",
-          filter: "blur(40px)",
-          animation: "beamSweep 10s ease-in-out infinite",
+            ? "conic-gradient(from 160deg at 50% 0%, transparent 0deg, rgba(99, 102, 241, 0.07) 12deg, transparent 24deg)"
+            : "conic-gradient(from 160deg at 50% 0%, transparent 0deg, rgba(222, 63, 15, 0.05) 12deg, transparent 24deg)",
+          filter: "blur(50px)",
+          animation: "beamSweep 14s ease-in-out infinite",
+        }} />
+        {/* Right Sweeping Spotlight */}
+        <div style={{
+          position: "absolute", top: "-15%", right: "15%",
+          transform: "translateX(50%)",
+          width: "650px", height: "1000px",
+          background: isDark
+            ? "conic-gradient(from 190deg at 50% 0%, transparent 0deg, rgba(244, 63, 94, 0.06) 14deg, transparent 28deg)"
+            : "conic-gradient(from 190deg at 50% 0%, transparent 0deg, rgba(99, 102, 241, 0.04) 14deg, transparent 28deg)",
+          filter: "blur(55px)",
+          animation: "beamSweep 16s ease-in-out infinite reverse",
+        }} />
+        {/* Central Ambient Radial Glow */}
+        <div style={{
+          position: "absolute", top: "25%", left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "800px", height: "500px",
+          background: isDark
+            ? "radial-gradient(circle, rgba(240, 61, 78, 0.06) 0%, rgba(99, 102, 241, 0.04) 40%, transparent 70%)"
+            : "radial-gradient(circle, rgba(240, 61, 78, 0.04) 0%, transparent 60%)",
+          filter: "blur(60px)",
         }} />
       </div>
 
       <div className="flex-1 flex flex-col justify-between z-10 relative min-h-full h-full">
-        
-        <div className="flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-8 lg:px-12 w-full max-w-7xl mx-auto pt-16 sm:pt-20 pb-4">
-          <section className="flex-1 flex flex-col items-center justify-center text-center w-full">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col items-center w-full my-auto"
-            >
-              <motion.h1
-                initial={{ opacity: 0, filter: "blur(12px)", scale: 0.95 }}
-                animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
-                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                className="leading-none select-none text-center w-full tracking-[0.03em] sm:tracking-[0.05em] md:tracking-[0.07em] lg:tracking-[0.08em] text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-[6.5rem] font-semibold mb-2 sm:mb-4 whitespace-nowrap transition-colors"
-                style={{
-                  fontFamily: F_LOGO,
-                  color: isDark ? "#ffffff" : "#1e1b26",
-                  textShadow: isDark ? "0 0 80px rgba(255,255,255,0.12)" : "none",
-                }}
-              >
-                SkylineOS
-              </motion.h1>
-
+        <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 lg:px-12 w-full max-w-7xl mx-auto pt-24 sm:pt-28 pb-10">
+          <section className="w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              
+              {/* Left Column: Brand Story & Conversion */}
               <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                transition={{ delay: 0.5, duration: 1 }}
-                className="max-w-full sm:max-w-3xl mx-auto text-center px-4 mt-3 sm:mt-4 flex flex-col items-center gap-2 sm:gap-2.5"
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left"
               >
-                <p
-                  className="text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed transition-colors"
-                  style={{ color: isDark ? "#d1d5db" : "#4b5563", fontFamily: FB }}
+                {/* Real-Time Live Campus Activity Stream */}
+                <div className="mb-5">
+                  <LiveActivityTicker />
+                </div>
+
+                {/* Primary Headline */}
+                <motion.h1
+                  initial={{ opacity: 0, filter: "blur(10px)", scale: 0.96 }}
+                  animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
+                  transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+                  className="leading-none select-none tracking-[0.04em] sm:tracking-[0.06em] text-4xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl font-bold mb-3 sm:mb-4 whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-400"
+                  style={{
+                    fontFamily: F_LOGO,
+                    textShadow: isDark ? "0 0 60px rgba(255,255,255,0.15)" : "none",
+                  }}
                 >
-                  The Complete Campus{" "}<span style={{ color: isDark ? "rgba(255,255,255,0.85)" : "#1e1b26" }}>Event Management Hub</span>
-                </p>
+                  SKYLINEOS
+                </motion.h1>
+
+                {/* Subtitle / Value Proposition */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3, duration: 0.9 }}
+                  className="max-w-xl"
+                >
+                  <p
+                    className="text-base sm:text-lg md:text-xl font-medium leading-relaxed mb-2 text-slate-200"
+                    style={{ fontFamily: FB }}
+                  >
+                    The Universal Campus <span className="text-[#F03D4E] font-semibold">Event Operating System</span>
+                  </p>
+                  <p
+                    className="text-xs sm:text-sm text-slate-400 leading-relaxed"
+                    style={{ fontFamily: FB }}
+                  >
+                    Eliminate Google Forms and manual payment spreadsheets. Solo & squad registrations, instant 5-char team passkeys, UPI verification, and venue door QR scanner in one unified platform.
+                  </p>
+                </motion.div>
+
+                {/* Dual Action Buttons */}
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.8 }}
+                  className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-3.5 w-full sm:w-auto"
+                >
+                  {/* Enter Dashboard */}
+                  <motion.button
+                    whileHover={{ scale: 1.03, boxShadow: "0 0 30px rgba(240,61,78,0.45)" }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={onEnter}
+                    className="cursor-pointer group inline-flex items-center justify-center gap-2 px-7 sm:px-8 py-3 text-sm font-semibold text-white bg-gradient-to-r from-[#F03D4E] to-[#e02d3e] hover:from-[#e02d3e] hover:to-[#c82232] rounded-full transition-all duration-300 shadow-[0_0_24px_rgba(240,61,78,0.35)] active:scale-95"
+                  >
+                    <span>Enter Dashboard</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </motion.button>
+
+                  {/* Register Club Button */}
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={onRegister}
+                    className="cursor-pointer group inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 text-sm font-medium rounded-full transition-all duration-300 bg-white/[0.06] hover:bg-white/[0.12] text-white active:scale-95 backdrop-blur-md"
+                  >
+                    <span>Register Club</span>
+                  </motion.button>
+                </motion.div>
+
+                {/* Live Campus Telemetry Strip with Repeating Scroll Animation */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, amount: 0.2 }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="mt-8 sm:mt-10 pt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 w-full"
+                >
+                  <div>
+                    <div className="text-xl sm:text-2xl font-bold text-white font-mono">
+                      {stats.clubs > 0 ? `${stats.clubs}+` : "24+"}
+                    </div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase tracking-wider font-medium mt-0.5" style={{ fontFamily: FM }}>
+                      Campus Clubs
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-xl sm:text-2xl font-bold text-white font-mono">
+                      {stats.registrations > 0 ? `${stats.registrations}+` : "1.8k+"}
+                    </div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase tracking-wider font-medium mt-0.5" style={{ fontFamily: FM }}>
+                      Tickets Issued
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-xl sm:text-2xl font-bold text-emerald-400 font-mono">
+                      &lt; 2s
+                    </div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase tracking-wider font-medium mt-0.5" style={{ fontFamily: FM }}>
+                      Door Check-In
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-xl sm:text-2xl font-bold text-cyan-400 font-mono">
+                      100%
+                    </div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase tracking-wider font-medium mt-0.5" style={{ fontFamily: FM }}>
+                      UPI Verified
+                    </div>
+                  </div>
+                </motion.div>
               </motion.div>
 
+              {/* Right Column: 3D Holographic Interactive VIP Ticket Pass */}
               <motion.div
-                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="mt-6 sm:mt-8 w-full sm:w-auto"
+                initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="lg:col-span-5 flex justify-center items-center"
               >
-                <motion.button
-                  whileHover={{ scale: 1.02, boxShadow: "0 0 25px rgba(240,61,78,0.4)" }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={onEnter}
-                  className="cursor-pointer group inline-flex items-center justify-center px-7 sm:px-8 py-2.5 sm:py-3 text-sm font-semibold text-white bg-[#F03D4E] hover:bg-[#d83544] rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(240,61,78,0.3)] active:scale-95"
-                >
-                  <span>Enter Dashboard</span>
-                </motion.button>
+                <InteractiveTicketPass />
               </motion.div>
-            </motion.div>
+
+            </div>
           </section>
         </div>
 
-        <footer className={`w-full px-4 md:px-16 pb-4 sm:pb-6 pt-3 sm:pt-4 flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-4 border-t flex-shrink-0 transition-colors ${
-          isDark ? "border-white/5" : "border-slate-300/60 bg-[#f0f2f6]"
-        }`}>
-          <div className="flex-1 flex justify-center md:justify-start">
-            <span className="text-xs sm:text-sm tracking-[0.35em]" style={{ fontFamily: F_LOGO, color: isDark ? "rgba(255,255,255,0.4)" : "#64748b" }}>SkylineOS</span>
+        {/* Core Capabilities Bento Grid */}
+        <FeaturesSection />
+
+        {/* Lifecycle Roadmap / Workflow */}
+        <WorkflowSection />
+
+        {/* Multi-Device Ecosystem Matrix */}
+        <EcosystemSection />
+
+        {/* Closing Call to Action Banner with Repeating Scroll Animation */}
+        <motion.section
+          id="cta"
+          initial={{ opacity: 0, y: 40, scale: 0.96 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full py-20 px-4 sm:px-8 max-w-5xl mx-auto text-center relative z-10"
+        >
+          <div className="rounded-3xl p-10 sm:p-14 bg-gradient-to-b from-[#F03D4E]/15 via-black/50 to-black/80 backdrop-blur-2xl relative overflow-hidden shadow-2xl">
+            <div className="relative z-10 flex flex-col items-center">
+              <span className="text-[11px] font-mono tracking-widest text-[#F03D4E] uppercase mb-3" style={{ fontFamily: FM }}>
+                ELEVATE YOUR CAMPUS EXPERIENCES
+              </span>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight" style={{ fontFamily: FC }}>
+                Ready to Deploy Skyline on Campus?
+              </h2>
+              <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto mb-8 leading-relaxed" style={{ fontFamily: FB }}>
+                Say goodbye to WhatsApp payment screenshots and printed attendee rosters. Step into a modern campus operating system.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                <button
+                  onClick={onEnter}
+                  className="cursor-pointer px-8 py-3.5 rounded-full bg-[#F03D4E] hover:bg-[#d83544] text-white text-sm font-semibold tracking-wide transition-all shadow-lg shadow-red-500/30 active:scale-95"
+                >
+                  Enter Command Center
+                </button>
+                <button
+                  onClick={onRegister}
+                  className="cursor-pointer px-7 py-3.5 rounded-full border border-white/15 hover:border-white/30 bg-white/5 hover:bg-white/10 text-white text-sm font-medium transition-all backdrop-blur-md active:scale-95"
+                >
+                  Register Authorized Club
+                </button>
+              </div>
+            </div>
           </div>
-          <p className="text-[10px] sm:text-xs text-center flex-shrink-0" style={{ color: isDark ? "#94a3b8" : "#64748b", fontFamily: FM }}>©© 2026 SkylineOS. All rights reserved.</p>
-          <div className="flex-1 flex justify-center md:justify-end gap-5 text-[10px] sm:text-[11px]" style={{ color: isDark ? "#94a3b8" : "#64748b" }}>
-            <button onClick={() => setActiveModal('privacy')} className={`transition-colors duration-300 hover:underline underline-offset-4 ${isDark ? "hover:text-white" : "hover:text-black"}`} style={{ fontFamily: FB }}>Privacy</button>
-            <button onClick={() => setActiveModal('terms')} className={`transition-colors duration-300 hover:underline underline-offset-4 ${isDark ? "hover:text-white" : "hover:text-black"}`} style={{ fontFamily: FB }}>Terms</button>
-            <button onClick={() => setActiveModal('contact')} className={`transition-colors duration-300 hover:underline underline-offset-4 ${isDark ? "hover:text-white" : "hover:text-black"}`} style={{ fontFamily: FB }}>Contact Us</button>
-          </div>
-        </footer>
+        </motion.section>
+
+        <ShutterGlyphFooter
+          brand="SKYLINE"
+          wordmark="SKYLINE"
+          company="SkylineOS · Universal Campus Event Operating System"
+          since={2026}
+          shutterAt={2}
+          background={isDark ? "#06070a" : "#f1f3f7"}
+          ink={isDark ? "#ffffff" : "#0f172a"}
+          signupLabel="Get early access to campus event drops & organizer updates"
+          placeholder="Enter student or club email"
+          socials={[
+            { label: "GitHub", href: "https://github.com/abhishettyy/Skyline27" },
+            { label: "Discord", href: "#" },
+            { label: "LinkedIn", href: "#" },
+          ]}
+          legal={[
+            { label: "Privacy Policy", href: "#" },
+            { label: "Terms of Service", href: "#" },
+            { label: "Contact Us", href: "#" },
+          ]}
+          onLinkClick={(label) => {
+            const l = label.toLowerCase();
+            if (l.includes("privac")) setActiveModal("privacy");
+            else if (l.includes("term")) setActiveModal("terms");
+            else if (l.includes("contact")) setActiveModal("contact");
+          }}
+          className={`w-full border-t ${isDark ? "border-white/5" : "border-slate-300/40"}`}
+        />
       </div>
 
       <AnimatePresence>
@@ -569,7 +759,7 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
                     {activeModal === 'contact' && 'Contact Us'}
                   </h3>
                   <p className="text-xs mt-1" style={{ fontFamily: FB, color: isDark ? "#999" : "#64748b" }}>
-                    {activeModal === 'contact' ? 'Reach out to Spotlight Support' : 'Last Updated: July 26,© 2026'}
+                    {activeModal === 'contact' ? 'Reach out to SkylineOS Support' : 'Last Updated: July 2026'}
                   </p>
                 </div>
                 <button onClick={() => setActiveModal(null)}
@@ -4694,9 +4884,12 @@ function ClubOnboardingPage({ onSuccess }: ClubOnboardingPageProps) {
 }
 
 const DASH_NAV = [
-  { icon: LayoutDashboard, label: "Overview",  id: "overview" },
-  { icon: Calendar,        label: "Events",    id: "events"   },
-  { icon: Settings,        label: "Settings",  id: "settings" },
+  { icon: LayoutDashboard, label: "Overview",   id: "overview"   },
+  { icon: Calendar,        label: "Events",     id: "events"     },
+  { icon: ShoppingBag,     label: "Merch",      id: "merch"      },
+  { icon: HeartHandshake,  label: "Fundraiser", id: "fundraiser" },
+  { icon: Wallet,          label: "Finance",    id: "finance"    },
+  { icon: Settings,        label: "Settings",   id: "settings"   },
 ];
 
 function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onSignOut: () => void }) {
@@ -5145,7 +5338,22 @@ function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onSignOut:
                  <SettingsPage club={clubs.find((c: any) => c.id === profile?.clubId)} profile={profile} getToken={getToken} onUpdate={refreshEvents} onLogout={onSignOut} />
               </motion.div>
             )}
-            {activeTab !== "overview" && activeTab !== "teams" && activeTab !== "events" && activeTab !== "settings" && activeTab !== "create" && (
+            {activeTab === "merch" && (
+              <motion.div key="merch" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
+                 <MerchPage club={currentClub} />
+              </motion.div>
+            )}
+            {activeTab === "fundraiser" && (
+              <motion.div key="fundraiser" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
+                 <FundraiserPage club={currentClub} />
+              </motion.div>
+            )}
+            {activeTab === "finance" && (
+              <motion.div key="finance" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
+                 <FinancePage club={currentClub} events={clubEvents} registrations={allRegistrations} />
+              </motion.div>
+            )}
+            {activeTab !== "overview" && activeTab !== "teams" && activeTab !== "events" && activeTab !== "settings" && activeTab !== "create" && activeTab !== "merch" && activeTab !== "fundraiser" && activeTab !== "finance" && (
               <motion.div key="fallback" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-10 text-[#444] text-sm" style={{ fontFamily: FB }}>
                  {DASH_NAV.find(n => n.id === activeTab)?.label || activeTab} Module - Under Construction
               </motion.div>
