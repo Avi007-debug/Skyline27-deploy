@@ -1,3 +1,10 @@
+
+# Skyline Project
+SKYLINE_PROJECT_CONTEXT.md
+
+# Zone Identifiers (Windows ADS metadata on downloaded files)
+*:Zone.Identifier
+
 # Logs
 logs
 *.log
