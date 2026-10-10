@@ -387,7 +387,6 @@ async function main() {
     amountPaise: 100000, // ₹1,000.00
     refType: 'FUNDRAISER_DONATION',
     refId: 'fund_corp_sponsor_01',
-    clubId: gdgClub.id,
     actorId: gdgLead.id,
     memo: 'Industry Seed Grant - Alumni DevTech Fund',
   });

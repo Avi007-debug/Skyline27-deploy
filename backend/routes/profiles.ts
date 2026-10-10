@@ -84,25 +84,68 @@ router.get('/:id/stats', async (req: Request, res: Response): Promise<any> => {
   try {
     const userId = req.params.id as string;
 
-    const eventsCount = await prisma.registration.count({
-      where: { userId: userId },
+    const profile = await prisma.profile.findUnique({
+      where: { id: userId },
+      select: { role: true, clubId: true },
     });
 
-    const registrations = await prisma.registration.findMany({
-      where: { userId: userId },
-      include: { event: { select: { clubId: true } } },
-    });
+    if (!profile) {
+      return res.status(404).json({ error: 'Profile not found.' });
+    }
 
-    const uniqueClubIds = new Set(
-      registrations
-        .map(r => r.event?.clubId)
-        .filter((id): id is string => id != null)
-    );
+    const isClubHead = !!profile.clubId;
 
-    return res.status(200).json({
-      eventsCount,
-      clubsCount: uniqueClubIds.size,
-    });
+    if (isClubHead && profile.clubId) {
+      // Club Head: return events they manage
+      const eventsCount = await prisma.event.count({
+        where: { clubId: profile.clubId, isArchived: false },
+      });
+      const upcomingCount = await prisma.event.count({
+        where: {
+          clubId: profile.clubId,
+          isArchived: false,
+          eventDate: { gte: new Date() },
+        },
+      });
+      const registrationsCount = await prisma.registration.count({
+        where: { event: { clubId: profile.clubId! } },
+      });
+
+      return res.status(200).json({
+        eventsCount,
+        upcomingEventsCount: upcomingCount,
+        registrationsCount,
+        clubsCount: 1,
+        role: 'CLUB_HEAD',
+      });
+    } else {
+      // Student: return their own registration activity
+      const registrationCount = await prisma.registration.count({
+        where: { userId },
+      });
+
+      const confirmedCount = await prisma.registration.count({
+        where: { userId, status: 'CONFIRMED' },
+      });
+
+      const registrations = await prisma.registration.findMany({
+        where: { userId },
+        include: { event: { select: { clubId: true } } },
+      });
+
+      const uniqueClubIds = new Set(
+        registrations
+          .map(r => r.event?.clubId)
+          .filter((id): id is string => id != null)
+      );
+
+      return res.status(200).json({
+        eventsCount: registrationCount,        // Number of events registered for
+        confirmedCount,                         // Confirmed registrations
+        clubsCount: uniqueClubIds.size,        // Unique clubs participated in
+        role: 'STUDENT',
+      });
+    }
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }

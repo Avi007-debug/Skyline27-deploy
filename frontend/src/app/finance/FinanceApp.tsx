@@ -31,7 +31,7 @@ const FB = "'Manrope', sans-serif";
 
 interface FinanceAppProps {
   clubId?: string;
-  getToken?: () => string | null;
+  getToken?: () => Promise<string | null> | string | null;
 }
 
 export function formatINR(paise: number = 0): string {
@@ -76,7 +76,8 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
   const [reportDateRange, setReportDateRange] = useState({ from: '', to: '' });
 
   const getHeaders = useCallback(() => {
-    const token = getToken ? getToken() : localStorage.getItem('spotlight_token');
+    const raw = getToken ? (getToken() as any) : null;
+    const token = (typeof raw === 'string' ? raw : null) || localStorage.getItem('spotlight_token') || '';
     const secret = localStorage.getItem('spotlight_admin_secret') || 'skyline_admin_secret_key_2026';
     return {
       'Content-Type': 'application/json',

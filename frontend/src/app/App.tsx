@@ -9,9 +9,10 @@ import {
   Wallet
 } from "lucide-react";
 import FinanceApp from "./finance/FinanceApp";
+import SuperAdminDashboard from "./admin/SuperAdminDashboard";
 import { Html5Qrcode } from "html5-qrcode";
 import { useGoogleLogin } from "@react-oauth/google";
-import { syncProfile, fetchEvents, fetchClubs, fetchEventRegistrations, approveRegistration, rejectRegistration, createEvent, fetchAllRegistrationsForEvents, createClub, fetchClubDashboardStats, updateClub, fetchPublicStats, clubLogin, changePassword, updateEventDeadline, updateEvent, sanitizeErrorMessage, verifyRegistrationKey, checkClubEmail, googleAuth, verifyTicketQR } from "./api";
+import { syncProfile, fetchEvents, fetchClubs, fetchEventRegistrations, approveRegistration, rejectRegistration, createEvent, fetchAllRegistrationsForEvents, createClub, fetchClubDashboardStats, updateClub, fetchPublicStats, clubLogin, changePassword, updateEventDeadline, updateEvent, sanitizeErrorMessage, verifyRegistrationKey, checkClubEmail, googleAuth, verifyTicketQR, forgotPassword } from "./api";
 import confetti from "canvas-confetti";
 import { useTheme, ThemeToggle } from "./theme";
 
@@ -20,7 +21,7 @@ const F_LOGO = "'Cinzel', serif";
 const FM = "'JetBrains Mono', monospace";
 const FB = "'Manrope', sans-serif";
 
-type View = "landing" | "auth" | "dashboard";
+type View = "landing" | "auth" | "dashboard" | "superadmin";
 type AuthTab = "login" | "register";
 
 function parseLocalDate(dateStr?: string | null): Date | null {
@@ -703,8 +704,30 @@ function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError }: {
     if (initialError) setError(initialError);
   }, [initialError]);
   const [loading, setLoading] = useState(false);
-
   const [showPassword, setShowPassword] = useState(false);
+
+  // Forgot password state
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotDone, setForgotDone] = useState(false);
+  const [forgotError, setForgotError] = useState<string | null>(null);
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmail.trim()) { setForgotError("Enter your email address."); return; }
+    setForgotLoading(true);
+    setForgotError(null);
+    try {
+      await forgotPassword(forgotEmail.trim());
+      setForgotDone(true);
+    } catch {
+      // Always show success to prevent enumeration
+      setForgotDone(true);
+    } finally {
+      setForgotLoading(false);
+    }
+  };
 
   const handleVerifyKey = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -910,8 +933,9 @@ function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError }: {
 
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
+    <>
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
       className="fixed inset-0 z-20 flex items-center justify-center p-6"
       style={{ background: isDark ? "rgba(5,5,5,0.97)" : "#f0f2f6", backdropFilter: "blur(10px)" }}
     >
@@ -1031,6 +1055,19 @@ function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError }: {
                   </div>
                 </div>
 
+                {tab === "login" && (
+                  <div className="flex justify-end mt-1.5">
+                    <button
+                      type="button"
+                      onClick={() => { setShowForgotModal(true); setForgotEmail(email); setForgotDone(false); setForgotError(null); }}
+                      className="text-[11px] text-white/40 hover:text-[#F03D4E] transition-colors cursor-pointer underline-offset-2"
+                      style={{ fontFamily: FB }}
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+                )}
+
                 {error && (
                   <p className="text-xs text-[#F03D4E] text-center font-medium" style={{ fontFamily: FB }}>{error}</p>
                 )}
@@ -1102,8 +1139,97 @@ function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError }: {
         </div>
       </div>
     </motion.div>
+
+      {/* ─── Forgot Password Modal ──────────────────────────────────── */}
+      <AnimatePresence>
+        {showForgotModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-6"
+            style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(10px)" }}
+            onClick={(e) => { if (e.target === e.currentTarget) { setShowForgotModal(false); setForgotDone(false); } }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 24 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: "spring", stiffness: 380, damping: 28 }}
+              className="w-full max-w-sm p-8 rounded-3xl relative"
+              style={{ background: "#0c0c12", border: "1px solid rgba(255,255,255,0.09)" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => { setShowForgotModal(false); setForgotDone(false); }}
+                className="absolute top-4 right-4 text-white/30 hover:text-white transition-colors cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+
+              {forgotDone ? (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-4">
+                  <div className="w-14 h-14 rounded-full bg-green-500/15 border border-green-500/25 flex items-center justify-center mx-auto mb-5">
+                    <CheckCircle size={28} className="text-green-400" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2" style={{ fontFamily: FC }}>Check your inbox</h3>
+                  <p className="text-sm text-white/50 leading-relaxed" style={{ fontFamily: FB }}>
+                    If an account exists for that email, a reset link has been sent. It expires in 1 hour.
+                  </p>
+                  <button
+                    onClick={() => { setShowForgotModal(false); setForgotDone(false); }}
+                    className="mt-6 w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm text-white/70 hover:text-white transition-all cursor-pointer"
+                    style={{ fontFamily: FB }}
+                  >Done</button>
+                </motion.div>
+              ) : (
+                <>
+                  <div className="mb-6">
+                    <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-4">
+                      <Mail size={22} className="text-[#F03D4E]" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-1" style={{ fontFamily: FC }}>Reset password</h3>
+                    <p className="text-xs text-white/40" style={{ fontFamily: FB }}>Enter your email address to receive a secure reset link.</p>
+                  </div>
+                  <form onSubmit={handleForgotPassword} className="space-y-4">
+                    <div>
+                      <label className="text-[10px] uppercase tracking-widest text-white/40 block mb-1.5" style={{ fontFamily: FM }}>Email address</label>
+                      <input
+                        type="email"
+                        value={forgotEmail}
+                        onChange={(e) => setForgotEmail(e.target.value)}
+                        placeholder="club@example.com"
+                        autoFocus
+                        className="w-full px-4 py-2.5 rounded-xl text-sm text-white outline-none transition-all"
+                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }}
+                        onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(240,61,78,0.5)")}
+                        onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
+                      />
+                    </div>
+                    {forgotError && <p className="text-xs text-red-400" style={{ fontFamily: FB }}>{forgotError}</p>}
+                    <motion.button
+                      type="submit"
+                      disabled={forgotLoading}
+                      whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                      className="w-full py-3 rounded-xl bg-[#F03D4E] hover:bg-[#d63545] text-white text-sm font-semibold transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                      style={{ fontFamily: FB }}
+                    >
+                      {forgotLoading
+                        ? <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                        : <><Mail size={14} /> Send Reset Link</>
+                      }
+                    </motion.button>
+                  </form>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
+
 
 const checkScanStatus = (eventDateStr?: string | null, eventEndDateStr?: string | null) => {
   if (!eventDateStr) {
@@ -5723,16 +5849,26 @@ export default function App() {
             localStorage.setItem("spotlight_token", token);
             localStorage.setItem("spotlight_profile", JSON.stringify(profile));
             setLocalToken(token);
+            // Route SUPER_ADMIN to admin dashboard immediately
+            if (profile?.role === 'SUPER_ADMIN') {
+              updateNavigation("superadmin");
+            }
           }}
           initialError={authError}
         />
       )}
-      {(view === "dashboard" || (isSignedIn && view !== "auth" && view !== "landing")) && (
+      {(view === "dashboard" || (isSignedIn && view !== "auth" && view !== "landing" && view !== "superadmin")) && (
       <motion.div key="dash" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} className="dashboard-root"
         >
           <DashboardPage userEmail={userEmail} onSignOut={doSignOut} />
         </motion.div>
+      )}
+      {view === "superadmin" && isSignedIn && (
+        <SuperAdminDashboard
+          token={localToken!}
+          onLogout={doSignOut}
+        />
       )}
 
       <style>{`

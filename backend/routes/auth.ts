@@ -4,6 +4,43 @@ import crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 import { prisma } from '../config/db';
 import { signToken, requireAuth } from '../middlewares/auth';
+import { generateSecureToken, hashToken } from '../utils/crypto';
+
+// Supabase Auth forgot/recovery option + console fallback
+async function sendPasswordResetEmail(email: string, resetUrl: string): Promise<void> {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (supabaseUrl && supabaseServiceKey) {
+    try {
+      // Trigger Supabase Auth recovery email via Supabase Auth API
+      const res = await fetch(`${supabaseUrl}/auth/v1/recover`, {
+        method: 'POST',
+        headers: {
+          'apikey': supabaseServiceKey,
+          'Authorization': `Bearer ${supabaseServiceKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          redirect_to: resetUrl,
+        }),
+      });
+      if (res.ok) {
+        console.log(`[Supabase Auth] Recovery email triggered successfully for: ${email}`);
+      } else {
+        const text = await res.text();
+        console.warn(`[Supabase Auth] Recovery email trigger status ${res.status}:`, text);
+      }
+    } catch (err) {
+      console.error('[Supabase Auth] Recover fetch failed:', err);
+    }
+  }
+
+  // Development logging: token reset link
+  console.log(`[Password Reset] Secure Reset URL for ${email}: ${resetUrl}`);
+}
+
 
 const router = Router();
 const SALT_ROUNDS = 10;
@@ -560,4 +597,134 @@ router.post('/sync', requireAuth, async (req: Request, res: Response): Promise<a
   }
 });
 
+// ─── Forgot Password ──────────────────────────────────────────────────────────
+
+router.post('/forgot-password', async (req: Request, res: Response): Promise<any> => {
+  const { email } = req.body;
+  if (!email || typeof email !== 'string') {
+    return res.status(400).json({ error: 'Email address is required.' });
+  }
+
+  // Always return the same message to prevent account enumeration
+  const GENERIC_MESSAGE = 'If an account with that email exists, a password reset link has been sent.';
+
+  try {
+    const profile = await prisma.profile.findFirst({
+      where: { email: email.toLowerCase().trim(), clubId: null },
+      select: { id: true, email: true, password: true },
+    });
+
+    if (!profile || !profile.password) {
+      // Don't reveal whether the account exists
+      return res.status(200).json({ message: GENERIC_MESSAGE });
+    }
+
+    // Generate secure token (plaintext returned to user, hashed stored in DB)
+    const rawToken = generateSecureToken(32);
+    const hashedToken = hashToken(rawToken);
+    const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    await prisma.profile.update({
+      where: { id: profile.id },
+      data: {
+        passwordResetToken: hashedToken,
+        passwordResetExpiry: expiry,
+      } as any,
+    });
+
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const resetUrl = `${frontendUrl}/reset-password?token=${rawToken}&email=${encodeURIComponent(profile.email)}`;
+
+    await sendPasswordResetEmail(profile.email, resetUrl);
+
+    return res.status(200).json({ message: GENERIC_MESSAGE });
+  } catch (error: any) {
+    console.error('Forgot password error:', error);
+    // Still return generic message on error to prevent enumeration
+    return res.status(200).json({ message: GENERIC_MESSAGE });
+  }
+});
+
+// ─── Reset Password ───────────────────────────────────────────────────────────
+
+router.post('/reset-password', async (req: Request, res: Response): Promise<any> => {
+  const { token, email, newPassword } = req.body;
+
+  if (!token || !email || !newPassword) {
+    return res.status(400).json({ error: 'Token, email, and new password are required.' });
+  }
+
+  if (newPassword.length < 8) {
+    return res.status(400).json({ error: 'Password must be at least 8 characters long.' });
+  }
+
+  try {
+    const hashedToken = hashToken(String(token));
+    const now = new Date();
+
+    const profile = await prisma.profile.findFirst({
+      where: {
+        email: String(email).toLowerCase().trim(),
+        clubId: null,
+        passwordResetToken: hashedToken,
+        passwordResetExpiry: { gte: now },
+      } as any,
+    });
+
+    if (!profile) {
+      return res.status(400).json({ error: 'Invalid or expired password reset link. Please request a new one.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
+    await prisma.profile.update({
+      where: { id: profile.id },
+      data: {
+        password: hashedPassword,
+        passwordResetToken: null,
+        passwordResetExpiry: null,
+      } as any,
+    });
+
+    console.log(`[Auth] Password reset successful for: ${profile.email}`);
+    return res.status(200).json({ message: 'Password updated successfully. You can now log in with your new password.' });
+  } catch (error: any) {
+    console.error('Reset password error:', error);
+    return res.status(500).json({ error: 'Failed to reset password. Please try again.' });
+  }
+});
+
+// ─── Validate Reset Token ─────────────────────────────────────────────────────
+
+router.post('/validate-reset-token', async (req: Request, res: Response): Promise<any> => {
+  const { token, email } = req.body;
+  if (!token || !email) {
+    return res.status(400).json({ valid: false, error: 'Token and email are required.' });
+  }
+
+  try {
+    const hashedToken = hashToken(String(token));
+    const now = new Date();
+
+    const profile = await prisma.profile.findFirst({
+      where: {
+        email: String(email).toLowerCase().trim(),
+        clubId: null,
+        passwordResetToken: hashedToken,
+        passwordResetExpiry: { gte: now },
+      } as any,
+      select: { id: true },
+    });
+
+    if (!profile) {
+      return res.status(200).json({ valid: false, error: 'Invalid or expired link.' });
+    }
+
+    return res.status(200).json({ valid: true });
+  } catch (error: any) {
+    return res.status(500).json({ valid: false, error: 'Validation failed.' });
+  }
+});
+
 export default router;
+

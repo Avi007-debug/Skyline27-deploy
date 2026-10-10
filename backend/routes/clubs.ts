@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import { prisma } from '../config/db';
 import { requireAuth, requireOptionalAuth, signToken } from '../middlewares/auth';
 import { uploadBase64Image, deleteImage } from '../utils/storage';
+import { generateRegistrationKey } from '../utils/crypto';
 
 const router = Router();
 const SALT_ROUNDS = 10;
@@ -39,9 +40,7 @@ async function ensureActiveRegistrationKey(): Promise<string> {
     });
     if (active) return active.code;
 
-    const part1 = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const part2 = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const newCode = `SKYLINE-${part1}-${part2}`;
+    const newCode = generateRegistrationKey('SKYLINE');
 
     const created = await prisma.registrationKey.create({
       data: { code: newCode },
@@ -165,9 +164,7 @@ router.post('/registration-keys/generate', async (req: Request, res: Response): 
         return res.status(400).json({ error: 'This registration code already exists.' });
       }
     } else {
-      const part1 = Math.random().toString(36).substring(2, 6).toUpperCase();
-      const part2 = Math.random().toString(36).substring(2, 6).toUpperCase();
-      codeToUse = `SPOTLIGHT-${part1}-${part2}`;
+      codeToUse = generateRegistrationKey('SKYLINE');
     }
 
     const key = await prisma.registrationKey.create({
@@ -312,11 +309,13 @@ router.post('/', requireOptionalAuth, async (req: Request, res: Response): Promi
 router.put('/:id', requireAuth, async (req: Request, res: Response): Promise<any> => {
   try {
     const id = req.params.id as string;
-    const { name, email, logoUrl, upiId, qrUrl, password } = req.body;
+    const { name, email, logoUrl, upiId, qrUrl } = req.body;
 
     const userId = req.auth!.userId;
     const profile = await prisma.profile.findUnique({ where: { id: userId } });
-    if (!profile || profile.clubId !== id) {
+    const isSuperAdmin = profile?.role === 'SUPER_ADMIN';
+
+    if (!isSuperAdmin && (!profile || profile.clubId !== id)) {
       return res.status(403).json({ error: 'Forbidden: You do not have permission to update this club.' });
     }
 
@@ -324,18 +323,6 @@ router.put('/:id', requireAuth, async (req: Request, res: Response): Promise<any
     if (!existingClub) {
       return res.status(404).json({ error: 'Club not found.' });
     }
-
-    const clubPassword = existingClub.password || profile.password;
-    if (!password) {
-      return res.status(400).json({ error: 'Password is required to save changes.' });
-    }
-    if (clubPassword) {
-      const isMatch = await bcrypt.compare(password, clubPassword);
-      if (!isMatch) {
-        return res.status(401).json({ error: 'Incorrect password. Please try again later.' });
-      }
-    }
-
     let finalLogoUrl = existingClub.logoUrl;
     if (logoUrl !== undefined) {
       if (logoUrl) {

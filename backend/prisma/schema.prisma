@@ -8,22 +8,24 @@ datasource db {
 }
 
 model Profile {
-  id            String         @id
-  fullName      String         @map("full_name")
-  email         String         @unique(map: "profile_email_key")
-  password      String?
-  usn           String?        @unique(map: "profile_usn_key")
-  branch        String?
-  phone         String?
-  year          Int?
-  sem           Int?
-  clubId        String?        @map("club_id")
-  role          Role           @default(MEMBER)
-  club          Club?          @relation(fields: [clubId], references: [id], map: "fk_profile_club")
-  registrations Registration[]
-  expenses      ExpenseClaim[] @relation("ClaimantExpenses")
-  approvedClaims ExpenseClaim[] @relation("ApproverExpenses")
-  auditLogs     AuditLog[]
+  id                   String         @id
+  fullName             String         @map("full_name")
+  email                String         @unique(map: "profile_email_key")
+  password             String?
+  usn                  String?        @unique(map: "profile_usn_key")
+  branch               String?
+  phone                String?
+  year                 Int?
+  sem                  Int?
+  clubId               String?        @map("club_id")
+  role                 Role           @default(STUDENT)
+  passwordResetToken   String?        @map("password_reset_token")
+  passwordResetExpiry  DateTime?      @map("password_reset_expiry")
+  club                 Club?          @relation(fields: [clubId], references: [id], map: "fk_profile_club")
+  registrations        Registration[]
+  expenses             ExpenseClaim[] @relation("ClaimantExpenses")
+  approvedClaims       ExpenseClaim[] @relation("ApproverExpenses")
+  auditLogs            AuditLog[]
 
   @@index([clubId], map: "idx_profile_club")
 }
@@ -42,28 +44,33 @@ model Club {
 }
 
 model Event {
-  id                   String         @id @default(uuid())
-  clubId               String         @map("club_id")
-  name                 String
-  description          String         @db.Text
-  eventType            String         @map("event_type")
-  fee                  Float          @default(0)
-  registrationLimit    Int            @map("registration_limit")
-  registrationDeadline DateTime       @map("registration_deadline")
-  eventDate            DateTime       @map("event_date")
-  qrUrl                String?        @map("qr_url") @db.Text
-  bannerUrl            String?        @map("banner_url") @db.Text
-  venue                String?
-  teamSizeLimit        Int?           @map("team_size_limit")
-  minTeamSize          Int?           @map("min_team_size")
-  eventEndDate         DateTime?      @map("event_end_date")
-  upiId                String?        @map("upi_id")
-  club                 Club           @relation(fields: [clubId], references: [id], onDelete: Cascade, map: "fk_event_club")
-  notifications        Notification[]
-  registrations        Registration[]
-  teams                Team[]
+  id                          String         @id @default(uuid())
+  clubId                      String         @map("club_id")
+  name                        String
+  description                 String         @db.Text
+  eventType                   String         @map("event_type")
+  fee                         Float          @default(0)
+  registrationLimit           Int            @map("registration_limit")
+  registrationDeadline        DateTime?      @map("registration_deadline")
+  eventDate                   DateTime       @map("event_date")
+  qrUrl                       String?        @map("qr_url") @db.Text
+  bannerUrl                   String?        @map("banner_url") @db.Text
+  venue                       String?
+  teamSizeLimit               Int?           @map("team_size_limit")
+  minTeamSize                 Int?           @map("min_team_size")
+  eventEndDate                DateTime?      @map("event_end_date")
+  upiId                       String?        @map("upi_id")
+  isPublished                 Boolean        @default(true) @map("is_published")
+  registrationClosedManually  Boolean        @default(false) @map("registration_closed_manually")
+  isArchived                  Boolean        @default(false) @map("is_archived")
+  club                        Club           @relation(fields: [clubId], references: [id], onDelete: Cascade, map: "fk_event_club")
+  notifications               Notification[]
+  registrations               Registration[]
+  teams                       Team[]
 
   @@index([clubId], map: "idx_event_club")
+  @@index([isPublished], map: "idx_event_published")
+  @@index([isArchived], map: "idx_event_archived")
 }
 
 model Team {
@@ -131,10 +138,13 @@ enum RegistrationStatus {
 }
 
 enum Role {
+  STUDENT
   MEMBER
   VOLUNTEER
   TREASURER
+  CLUB_HEAD
   ADMIN
+  SUPER_ADMIN
 }
 
 enum LedgerType {

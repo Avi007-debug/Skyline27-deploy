@@ -315,3 +315,95 @@ export async function verifyTicketQR(ticketId: string, eventId: string, token?: 
     body: JSON.stringify({ ticketId, eventId }),
   }, token);
 }
+
+// ─── Auth: Forgot / Reset Password ───────────────────────────────────────────
+
+export async function forgotPassword(email: string) {
+  return request('/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+}
+
+export async function resetPassword(token: string, email: string, newPassword: string) {
+  return request('/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify({ token, email, newPassword }),
+  });
+}
+
+export async function validateResetToken(token: string, email: string) {
+  return request('/auth/validate-reset-token', {
+    method: 'POST',
+    body: JSON.stringify({ token, email }),
+  });
+}
+
+// ─── Event management helpers ─────────────────────────────────────────────────
+
+export async function deleteEvent(eventId: string, token?: string, force = false) {
+  return request(`/events/${eventId}${force ? '?force=true' : ''}`, {
+    method: 'DELETE',
+  }, token);
+}
+
+export async function closeEventRegistration(eventId: string, token?: string) {
+  return request(`/events/${eventId}/close-registration`, {
+    method: 'POST',
+  }, token);
+}
+
+export async function reopenEventRegistration(eventId: string, token?: string) {
+  return request(`/events/${eventId}/reopen-registration`, {
+    method: 'POST',
+  }, token);
+}
+
+// ─── Admin API ────────────────────────────────────────────────────────────────
+
+export async function adminGetStats(token: string) {
+  return request('/admin/stats', {}, token);
+}
+
+export async function adminGetUsers(token: string, params?: { page?: number; pageSize?: number; search?: string }) {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.pageSize) q.set('pageSize', String(params.pageSize));
+  if (params?.search) q.set('search', params.search);
+  return request(`/admin/users?${q}`, {}, token);
+}
+
+export async function adminDeleteUser(userId: string, token: string) {
+  return request(`/admin/users/${userId}`, { method: 'DELETE' }, token);
+}
+
+export async function adminUpdateUserRole(userId: string, role: string, token: string) {
+  return request(`/admin/users/${userId}/role`, {
+    method: 'PUT',
+    body: JSON.stringify({ role }),
+  }, token);
+}
+
+export async function adminGetRegistrationKeys(token: string, params?: { page?: number; isUsed?: boolean }) {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.isUsed !== undefined) q.set('isUsed', String(params.isUsed));
+  return request(`/admin/registration-keys?${q}`, {}, token);
+}
+
+export async function adminGenerateKey(token: string, customCode?: string) {
+  return request('/admin/registration-keys/generate', {
+    method: 'POST',
+    body: JSON.stringify({ customCode }),
+  }, token);
+}
+
+export async function adminDeleteKey(keyId: string, token: string) {
+  return request(`/admin/registration-keys/${keyId}`, { method: 'DELETE' }, token);
+}
+
+export async function adminGetAuditLogs(token: string, params?: { page?: number }) {
+  const q = new URLSearchParams();
+  if (params?.page) q.set('page', String(params.page));
+  return request(`/admin/audit-logs?${q}`, {}, token);
+}

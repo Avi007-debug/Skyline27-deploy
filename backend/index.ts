@@ -12,12 +12,18 @@ import registrationsRouter from './routes/registrations';
 import notificationsRouter from './routes/notifications';
 import expensesRouter from './routes/expenses';
 import financeRouter from './routes/finance';
+import adminRouter from './routes/admin';
 
 declare global {
   namespace Express {
     interface Request {
       auth?: {
         userId: string;
+      };
+      userProfile?: {
+        id: string;
+        role: string;
+        clubId: string | null;
       };
     }
   }
@@ -53,6 +59,7 @@ const mountRoutes = (basePath: string) => {
   app.use(`${prefix}/notifications`, notificationsRouter);
   app.use(`${prefix}/expenses`, expensesRouter);
   app.use(`${prefix}/finance`, financeRouter);
+  app.use(`${prefix}/admin`, adminRouter);
   app.use(prefix || '/', registrationsRouter);
 };
 
