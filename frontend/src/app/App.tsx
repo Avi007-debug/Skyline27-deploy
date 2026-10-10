@@ -569,7 +569,7 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
                     {activeModal === 'contact' && 'Contact Us'}
                   </h3>
                   <p className="text-xs mt-1" style={{ fontFamily: FB, color: isDark ? "#999" : "#64748b" }}>
-                    {activeModal === 'contact' ? 'Reach out to Spotlight Support' : 'Last Updated: July 26,© 2026'}
+                    {activeModal === 'contact' ? 'Reach out to SkylineOS Support' : 'Last Updated: July 26,© 2026'}
                   </p>
                 </div>
                 <button onClick={() => setActiveModal(null)}
@@ -611,8 +611,8 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
                 {activeModal === 'terms' && (
                   <>
                     <div>
-                      <h4 className="text-[#1e1b26] dark:text-white font-semibold text-sm mb-1.5">About the Spotlight Club Dashboard</h4>
-                      <p className="text-xs text-slate-600 dark:text-[#bbbbbb] leading-relaxed">The Spotlight Club Dashboard allows authorized clubs to create, publish, and manage events. Once published, these events are visible to users of the Spotlight mobile application. Clubs can review, manage, approve, or deny participant registrations, including verifying payment proofs.</p>
+                      <h4 className="text-[#1e1b26] dark:text-white font-semibold text-sm mb-1.5">About the SkylineOS Club Dashboard</h4>
+                      <p className="text-xs text-slate-600 dark:text-[#bbbbbb] leading-relaxed">The SkylineOS Club Dashboard allows authorized clubs to create, publish, and manage events. Once published, these events are visible to users of the SkylineOS mobile application. Clubs can review, manage, approve, or deny participant registrations, including verifying payment proofs.</p>
                     </div>
 
                     <div>
@@ -4430,8 +4430,8 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
 
                 <div className="flex-1 overflow-y-auto pr-2 space-y-6 text-sm text-slate-700 dark:text-[#ccc] leading-relaxed border-t border-b border-slate-200 dark:border-white/5 py-6" style={{ fontFamily: FB }}>
                   <div>
-                    <h4 className="text-[#1e1b26] dark:text-white font-medium text-sm mb-2">About the Spotlight Club Dashboard</h4>
-                    <p className="text-xs text-slate-600 dark:text-[#bbbbbb]">The Spotlight Club Dashboard allows authorized clubs to create, publish, and manage events. Once published, these events are visible to users of the Spotlight mobile application. Clubs can review, manage, approve, or deny participant registrations, including verifying payment proofs.</p>
+                    <h4 className="text-[#1e1b26] dark:text-white font-medium text-sm mb-2">About the SkylineOS Club Dashboard</h4>
+                    <p className="text-xs text-slate-600 dark:text-[#bbbbbb]">The SkylineOS Club Dashboard allows authorized clubs to create, publish, and manage events. Once published, these events are visible to users of the SkylineOS mobile application. Clubs can review, manage, approve, or deny participant registrations, including verifying payment proofs.</p>
                   </div>
 
                   <div>
