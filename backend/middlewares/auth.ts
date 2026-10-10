@@ -86,3 +86,51 @@ export const requireOptionalAuth = async (req: Request, res: Response, next: Nex
     return next();
   }
 };
+
+export const requireRole = (allowedRoles: string[]) => {
+  return async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    const runCheck = async () => {
+      const userId = req.auth?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized: Authentication required.' });
+      }
+
+      // Platform admin secret bypass
+      const adminSecret = req.headers['x-admin-secret'];
+      if (adminSecret && adminSecret === (process.env.ADMIN_SECRET || 'skyline_admin_secret_key_2026')) {
+        return next();
+      }
+
+      const { prisma } = await import('../config/db');
+      const profile = await prisma.profile.findUnique({
+        where: { id: userId },
+      });
+
+      if (!profile) {
+        return res.status(403).json({ error: 'Forbidden: Profile not found.' });
+      }
+
+      const isClubAdmin = Boolean(profile.clubId);
+      const userRole = (profile as any).role || 'MEMBER';
+
+      if (
+        allowedRoles.includes(userRole) ||
+        (isClubAdmin && (allowedRoles.includes('ADMIN') || allowedRoles.includes('TREASURER')))
+      ) {
+        (req as any).userProfile = profile;
+        return next();
+      }
+
+      return res.status(403).json({
+        error: `Forbidden: Requires one of [${allowedRoles.join(', ')}] role. Current role: ${userRole}.`,
+      });
+    };
+
+    if (req.auth?.userId) {
+      return runCheck();
+    }
+
+    return requireAuth(req, res, () => runCheck());
+  };
+};
+

@@ -1,41 +1,40 @@
-import { PrismaClient, RegistrationStatus } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import { RegistrationStatus, Role, ExpenseStatus } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
+import prisma from '../config/db';
+import { postLedger, verifyChain, GENESIS_HASH } from '../services/ledger';
 
 dotenv.config();
 
-const dbMode = (process.env.DB_MODE || process.env.DB_ENV || '').toLowerCase().trim();
-let connectionString = process.env.DATABASE_URL || '';
-if (dbMode === 'local' && process.env.LOCAL_DATABASE_URL) {
-  connectionString = process.env.LOCAL_DATABASE_URL;
-} else if ((dbMode === 'supabase' || !dbMode) && process.env.SUPABASE_DATABASE_URL) {
-  connectionString = process.env.SUPABASE_DATABASE_URL;
-}
-
-const isCloudPostgres =
-  connectionString.includes('supabase.co') ||
-  connectionString.includes('pooler.supabase.com') ||
-  connectionString.includes('sslmode=require');
-
-const sanitizedConnectionString = isCloudPostgres
-  ? connectionString.replace(/[?&]sslmode=[^&]+/g, '')
-  : connectionString;
-
-const pool = new Pool({
-  connectionString: sanitizedConnectionString,
-  ssl: isCloudPostgres ? { rejectUnauthorized: false } : undefined,
-});
-
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
-
 async function main() {
-  console.log(`\n🌱 Seeding database [Target: ${connectionString.includes('localhost') ? 'Local PostgreSQL' : 'Supabase PostgreSQL'}]...`);
+  console.log(`\n🌱 Seeding database with SkylineOS Person D Financial System...`);
 
-  // 1. Clean existing records in correct order
-  console.log('🧹 Cleaning existing test data...');
+  // 1. Clean existing records in correct dependency order
+  console.log('🧹 Cleaning existing test records...');
+
+  // Disable ledger immutable trigger temporarily during cleanup
+  await prisma.$executeRawUnsafe(`
+    DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_ledger_immutable') THEN
+        ALTER TABLE "LedgerEntry" DISABLE TRIGGER trg_ledger_immutable;
+      END IF;
+    END $$;
+  `).catch(() => {});
+
+  await prisma.auditLog.deleteMany();
+  await prisma.expenseClaim.deleteMany();
+  await prisma.ledgerEntry.deleteMany();
+  await prisma.ledgerHead.deleteMany();
+
+  // Re-enable trigger
+  await prisma.$executeRawUnsafe(`
+    DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_ledger_immutable') THEN
+        ALTER TABLE "LedgerEntry" ENABLE TRIGGER trg_ledger_immutable;
+      END IF;
+    END $$;
+  `).catch(() => {});
+
   await prisma.notification.deleteMany();
   await prisma.registration.deleteMany();
   await prisma.team.deleteMany();
@@ -44,9 +43,18 @@ async function main() {
   await prisma.profile.deleteMany();
   await prisma.club.deleteMany();
 
+  // 2. Initialize LedgerHead with 64-zero Genesis Hash
+  console.log('⛓️ Initializing cryptographic LedgerHead...');
+  await prisma.ledgerHead.create({
+    data: {
+      id: 1,
+      lastHash: GENESIS_HASH,
+    },
+  });
+
   const hashedPassword = await bcrypt.hash('Password@123', 10);
 
-  // 2. Create Clubs (including GDG)
+  // 3. Create Clubs (GDG, Rotaract, IEEE)
   console.log('🏛️ Creating clubs...');
   const gdgClub = await prisma.club.create({
     data: {
@@ -81,8 +89,8 @@ async function main() {
     },
   });
 
-  // 3. Create Profiles (Admins & Students)
-  console.log('👤 Creating user profiles...');
+  // 4. Create User Profiles with explicit Roles
+  console.log('👤 Creating role-based profiles (ADMIN, TREASURER, VOLUNTEER, MEMBER)...');
   const gdgLead = await prisma.profile.create({
     data: {
       id: 'usr_gdg_lead_01',
@@ -95,6 +103,39 @@ async function main() {
       year: 3,
       sem: 6,
       clubId: gdgClub.id,
+      role: Role.ADMIN,
+    },
+  });
+
+  const gdgTreasurer = await prisma.profile.create({
+    data: {
+      id: 'usr_gdg_treasurer_01',
+      fullName: 'Ananya Rao (GDG Treasurer)',
+      email: 'ananya.treasurer@college.edu',
+      password: hashedPassword,
+      usn: '1MS22CS015',
+      branch: 'Computer Science and Engineering',
+      phone: '+91 9876543220',
+      year: 3,
+      sem: 6,
+      clubId: gdgClub.id,
+      role: Role.TREASURER,
+    },
+  });
+
+  const gdgVolunteer = await prisma.profile.create({
+    data: {
+      id: 'usr_gdg_volunteer_01',
+      fullName: 'Karthik Verma (GDG Volunteer)',
+      email: 'karthik.volunteer@college.edu',
+      password: hashedPassword,
+      usn: '1MS23CS088',
+      branch: 'Computer Science and Engineering',
+      phone: '+91 9876543230',
+      year: 2,
+      sem: 4,
+      clubId: gdgClub.id,
+      role: Role.VOLUNTEER,
     },
   });
 
@@ -109,6 +150,7 @@ async function main() {
       phone: '+91 9876543211',
       year: 2,
       sem: 4,
+      role: Role.MEMBER,
     },
   });
 
@@ -123,10 +165,11 @@ async function main() {
       phone: '+91 9876543212',
       year: 2,
       sem: 4,
+      role: Role.MEMBER,
     },
   });
 
-  // 4. Create Events
+  // 5. Create Events
   console.log('📅 Creating events...');
   const gdgEvent = await prisma.event.create({
     data: {
@@ -186,7 +229,7 @@ async function main() {
     },
   });
 
-  // 5. Create Teams & Registrations
+  // 6. Create Teams & Registrations
   console.log('🤝 Creating teams and registrations...');
   const devFestTeam = await prisma.team.create({
     data: {
@@ -219,7 +262,150 @@ async function main() {
     },
   });
 
-  // 6. Create Registration Keys
+  // 7. Seed Expense Claims in all four lifecyle states
+  console.log('🧾 Creating multi-state expense claims...');
+  const reimbursedClaim = await prisma.expenseClaim.create({
+    data: {
+      id: 'claim_seed_reimbursed_01',
+      clubId: gdgClub.id,
+      claimantId: gdgVolunteer.id,
+      title: 'DevFest Stage Banners & Standees',
+      vendor: 'PrintHub Digital Solutions',
+      amountPaise: 12500, // ₹125.00
+      scannedAmount: 12500,
+      mismatchFlag: false,
+      category: 'EXPENSE',
+      eventId: gdgEvent.id,
+      receiptUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&h=800&fit=crop',
+      status: ExpenseStatus.REIMBURSED,
+      approverId: gdgTreasurer.id,
+      decisionNote: 'Verified original invoice and reimbursed via IMPS.',
+      reimbursedAt: new Date(),
+    },
+  });
+
+  const approvedClaim = await prisma.expenseClaim.create({
+    data: {
+      id: 'claim_seed_approved_01',
+      clubId: gdgClub.id,
+      claimantId: gdgVolunteer.id,
+      title: 'HDMI to Type-C Adapters (x2) for Workshop',
+      vendor: 'Croma Electronics',
+      amountPaise: 40000, // ₹400.00
+      scannedAmount: 40000,
+      mismatchFlag: false,
+      category: 'EXPENSE',
+      eventId: gdgEvent.id,
+      receiptUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&h=800&fit=crop',
+      status: ExpenseStatus.APPROVED,
+      approverId: gdgTreasurer.id,
+      decisionNote: 'Approved. Disbursing in next weekly reimbursement batch.',
+    },
+  });
+
+  const submittedClaim = await prisma.expenseClaim.create({
+    data: {
+      id: 'claim_seed_submitted_01',
+      clubId: gdgClub.id,
+      claimantId: gdgVolunteer.id,
+      title: 'Volunteer Lanyards & Name Badges',
+      vendor: 'Campus Print Corner',
+      amountPaise: 25000, // ₹250.00
+      scannedAmount: 28000, // OCR scanned mismatch!
+      mismatchFlag: true,
+      category: 'EXPENSE',
+      eventId: gdgEvent.id,
+      receiptUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&h=800&fit=crop',
+      status: ExpenseStatus.SUBMITTED,
+    },
+  });
+
+  const rejectedClaim = await prisma.expenseClaim.create({
+    data: {
+      id: 'claim_seed_rejected_01',
+      clubId: gdgClub.id,
+      claimantId: gdgVolunteer.id,
+      title: 'Late Night Cab from Home to Campus',
+      vendor: 'Uber India Technologies',
+      amountPaise: 60000, // ₹600.00
+      scannedAmount: 60000,
+      mismatchFlag: false,
+      category: 'EXPENSE',
+      eventId: gdgEvent.id,
+      receiptUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&h=800&fit=crop',
+      status: ExpenseStatus.REJECTED,
+      approverId: gdgTreasurer.id,
+      decisionNote: 'Personal transportation expenses cannot be reimbursed per college finance policy.',
+    },
+  });
+
+  // 8. Seed Immutable Cryptographic Ledger Entries via postLedger
+  console.log('💎 Seeding audited ledger entries into SHA-256 hash chain...');
+
+  // 8.1 Membership Dues (IN)
+  await postLedger({
+    clubId: gdgClub.id,
+    type: 'IN',
+    category: 'DUES',
+    amountPaise: 50000, // ₹500.00
+    refType: 'MEMBERSHIP_DUES',
+    refId: `dues_${student1.id}`,
+    actorId: student1.id,
+    memo: 'Annual GDG Campus Membership Dues - Priya Nair',
+  });
+
+  // 8.2 Ticket Sale for DevFest (IN)
+  await postLedger({
+    clubId: gdgClub.id,
+    type: 'IN',
+    category: 'TICKET',
+    amountPaise: 15000, // ₹150.00
+    refType: 'TICKET_SALE',
+    refId: `ticket_${gdgEvent.id}_${student1.id}`,
+    eventId: gdgEvent.id,
+    actorId: student1.id,
+    memo: 'Cloud DevFest 2026 Ticket - Priya Nair (ByteForce)',
+  });
+
+  // 8.3 Merch Sale (IN)
+  await postLedger({
+    clubId: gdgClub.id,
+    type: 'IN',
+    category: 'MERCH',
+    amountPaise: 45000, // ₹450.00
+    refType: 'MERCH_SALE',
+    refId: 'merch_ord_9901',
+    actorId: student2.id,
+    memo: 'Skyline GDG Developer Hoodie (Navy Blue, M)',
+  });
+
+  // 8.4 Fundraiser / Sponsorship (IN)
+  await postLedger({
+    clubId: gdgClub.id,
+    type: 'IN',
+    category: 'FUNDRAISER',
+    amountPaise: 100000, // ₹1,000.00
+    refType: 'FUNDRAISER_DONATION',
+    refId: 'fund_corp_sponsor_01',
+    clubId: gdgClub.id,
+    actorId: gdgLead.id,
+    memo: 'Industry Seed Grant - Alumni DevTech Fund',
+  });
+
+  // 8.5 Reimbursed Expense (OUT) - linking to reimbursedClaim
+  await postLedger({
+    clubId: gdgClub.id,
+    type: 'OUT',
+    category: 'EXPENSE',
+    amountPaise: reimbursedClaim.amountPaise, // 12500 paise (₹125.00)
+    refType: 'EXPENSE_REIMBURSEMENT',
+    refId: reimbursedClaim.id,
+    eventId: gdgEvent.id,
+    actorId: gdgTreasurer.id,
+    memo: `Reimbursement for Claim #${reimbursedClaim.id}: ${reimbursedClaim.title}`,
+  });
+
+  // 9. Create Registration Keys
   console.log('🔑 Creating registration keys...');
   await prisma.registrationKey.createMany({
     data: [
@@ -252,7 +438,7 @@ async function main() {
     ],
   });
 
-  // 7. Create Notifications
+  // 10. Create Notifications
   console.log('🔔 Creating notifications...');
   await prisma.notification.createMany({
     data: [
@@ -262,6 +448,13 @@ async function main() {
         type: 'REGISTRATION_CONFIRMED',
         title: 'Registration Confirmed for Cloud & GenAI DevFest 2026',
         body: 'Your registration for Cloud & GenAI DevFest 2026 with team ByteForce has been approved by GDG!',
+        isRead: false,
+      },
+      {
+        userId: gdgVolunteer.id,
+        type: 'CLAIM_STATUS_UPDATED',
+        title: 'Expense Claim Reimbursed',
+        body: 'Your claim for "DevFest Stage Banners" of ₹125.00 has been reimbursed by the Treasurer.',
         isRead: false,
       },
       {
@@ -275,7 +468,15 @@ async function main() {
     ],
   });
 
-  console.log('\n✨ Database seeding completed successfully!');
+  // 11. Verify Cryptographic Integrity
+  console.log('🔒 Verifying ledger chain integrity...');
+  const chainAudit = await verifyChain();
+  if (!chainAudit.valid) {
+    throw new Error(`Ledger integrity check failed during seed! Reason: ${chainAudit.reason}`);
+  }
+
+  console.log(`✅ Ledger Chain Intact: ${chainAudit.entryCount} entries verified with Head: ${chainAudit.headHash.slice(0, 16)}...`);
+  console.log('\n✨ Database seeding completed successfully with full Person D financial architecture!');
 }
 
 main()
@@ -285,5 +486,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-    await pool.end();
   });

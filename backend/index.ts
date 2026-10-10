@@ -10,6 +10,8 @@ import eventsRouter from './routes/events';
 import clubsRouter from './routes/clubs';
 import registrationsRouter from './routes/registrations';
 import notificationsRouter from './routes/notifications';
+import expensesRouter from './routes/expenses';
+import financeRouter from './routes/finance';
 
 declare global {
   namespace Express {
@@ -49,6 +51,8 @@ const mountRoutes = (basePath: string) => {
   app.use(`${prefix}/events`, eventsRouter);
   app.use(`${prefix}/clubs`, clubsRouter);
   app.use(`${prefix}/notifications`, notificationsRouter);
+  app.use(`${prefix}/expenses`, expensesRouter);
+  app.use(`${prefix}/finance`, financeRouter);
   app.use(prefix || '/', registrationsRouter);
 };
 

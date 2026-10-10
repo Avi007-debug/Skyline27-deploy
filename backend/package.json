@@ -8,6 +8,10 @@
     "build": "prisma generate && tsc",
     "postinstall": "prisma generate",
     "start": "node dist/index.js",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:constraints": "tsx scripts/apply_database_constraints.ts",
+    "db:reset-demo": "tsx scripts/apply_database_constraints.ts && tsx prisma/seed.ts",
+    "test:finance": "tsx tests/ledger.test.ts && tsx tests/expenses_finance.test.ts && tsx tests/reports_audit.test.ts",
     "test:e2e": "tsx tests/e2e_full_suite.ts"
   },
   "keywords": [],

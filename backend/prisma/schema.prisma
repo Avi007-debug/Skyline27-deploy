@@ -18,8 +18,12 @@ model Profile {
   year          Int?
   sem           Int?
   clubId        String?        @map("club_id")
+  role          Role           @default(MEMBER)
   club          Club?          @relation(fields: [clubId], references: [id], map: "fk_profile_club")
   registrations Registration[]
+  expenses      ExpenseClaim[] @relation("ClaimantExpenses")
+  approvedClaims ExpenseClaim[] @relation("ApproverExpenses")
+  auditLogs     AuditLog[]
 
   @@index([clubId], map: "idx_profile_club")
 }
@@ -125,3 +129,94 @@ enum RegistrationStatus {
   CONFIRMED
   REJECTED
 }
+
+enum Role {
+  MEMBER
+  VOLUNTEER
+  TREASURER
+  ADMIN
+}
+
+enum LedgerType {
+  IN
+  OUT
+}
+
+model LedgerEntry {
+  id          Int        @id @default(autoincrement())
+  clubId      String?    @map("club_id")
+  type        LedgerType
+  category    String
+  amountPaise Int        @map("amount_paise")
+  refType     String     @map("ref_type")
+  refId       String     @map("ref_id")
+  eventId     String?    @map("event_id")
+  projectId   String?    @map("project_id")
+  memo        String?
+  actorId     String?    @map("actor_id")
+  reversesId  Int?       @map("reverses_id")
+  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  prevHash    String     @map("prev_hash") @db.Char(64)
+  hash        String     @unique @db.Char(64)
+
+  @@unique([refType, refId, type], map: "unique_ledger_ref")
+  @@index([category], map: "idx_ledger_category")
+  @@index([eventId], map: "idx_ledger_event")
+  @@index([clubId], map: "idx_ledger_club")
+}
+
+model LedgerHead {
+  id       Int    @id
+  lastHash String @map("last_hash") @db.Char(64)
+}
+
+enum ExpenseStatus {
+  SUBMITTED
+  APPROVED
+  REJECTED
+  REIMBURSED
+}
+
+model ExpenseClaim {
+  id            String        @id @default(uuid())
+  clubId        String?       @map("club_id")
+  claimantId    String        @map("claimant_id")
+  title         String
+  vendor        String?
+  amountPaise   Int           @map("amount_paise")
+  category      String        @default("EXPENSE")
+  eventId       String?       @map("event_id")
+  projectId     String?       @map("project_id")
+  dateSpent     DateTime      @default(now()) @map("date_spent")
+  receiptUrl    String        @map("receipt_url") @db.Text
+  scannedAmount Int?          @map("scanned_amount")
+  mismatchFlag  Boolean       @default(false) @map("mismatch_flag")
+  status        ExpenseStatus @default(SUBMITTED)
+  approverId    String?       @map("approver_id")
+  decisionNote  String?       @map("decision_note") @db.Text
+  reimbursedAt  DateTime?     @map("reimbursed_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+
+  claimant Profile  @relation("ClaimantExpenses", fields: [claimantId], references: [id], onDelete: Cascade)
+  approver Profile? @relation("ApproverExpenses", fields: [approverId], references: [id])
+
+  @@index([claimantId], map: "idx_expense_claimant")
+  @@index([status], map: "idx_expense_status")
+  @@index([clubId], map: "idx_expense_club")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?  @map("actor_id")
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  details    String?  @db.Text
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  actor Profile? @relation(fields: [actorId], references: [id])
+
+  @@index([entityType, entityId], map: "idx_audit_entity")
+  @@index([actorId], map: "idx_audit_actor")
+}
+
