@@ -1,4 +1,4 @@
-// cPanel CloudLinux Passenger Startup File for Spotlight Backend
+// cPanel CloudLinux Passenger Startup File for SkylineOS Backend
 // This file serves as the entry point when running under GoDaddy cPanel "Setup Node.js App".
 
 const fs = require('fs');
@@ -18,7 +18,7 @@ if (process.env.PORT) {
   const port = process.env.PORT;
   if (!app.listening) {
     app.listen(port, () => {
-      console.log(`[Spotlight] Server listening on port ${port}`);
+      console.log(`[SkylineOS] Server listening on port ${port}`);
     });
   }
 }

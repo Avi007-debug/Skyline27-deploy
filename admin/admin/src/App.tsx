@@ -186,9 +186,9 @@ export default function App() {
         <div className="w-full max-w-md p-6 sm:p-10 rounded-3xl" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(16px)" }}>
           <div className="flex flex-col items-center mb-6 sm:mb-8">
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-3 sm:mb-4 overflow-hidden p-1.5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)" }}>
-              <img src="/logo.png" alt="Spotlight Logo" className="w-full h-full object-contain rounded-xl" />
+              <img src="/logo.png" alt="SkylineOS Logo" className="w-full h-full object-contain rounded-xl" />
             </div>
-            <span className="text-[10px] sm:text-xs tracking-[0.4em] uppercase text-white/50 mb-1" style={{ fontFamily: F_LOGO }}>SPOTLIGHT</span>
+            <span className="text-[10px] sm:text-xs tracking-[0.4em] uppercase text-white/50 mb-1" style={{ fontFamily: F_LOGO }}>SKYLINEOS</span>
             <h1 className="text-xl sm:text-2xl font-bold text-white text-center" style={{ fontFamily: FC }}>Admin Portal</h1>
             <p className="text-xs text-[#888] mt-1 text-center" style={{ fontFamily: FB }}>Developer Key Management Console</p>
           </div>
@@ -243,11 +243,11 @@ export default function App() {
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 sm:pb-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center overflow-hidden p-1.5 flex-shrink-0" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)" }}>
-            <img src="/logo.png" alt="Spotlight Logo" className="w-full h-full object-contain rounded-xl" />
+            <img src="/logo.png" alt="SkylineOS Logo" className="w-full h-full object-contain rounded-xl" />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs tracking-[0.28em] text-white/60 font-semibold" style={{ fontFamily: F_LOGO }}>SPOTLIGHT</span>
+              <span className="text-xs tracking-[0.28em] text-white/60 font-semibold" style={{ fontFamily: F_LOGO }}>SKYLINEOS</span>
               <span className="text-[10px] bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded font-bold" style={{ fontFamily: FM }}>ADMIN PORTAL</span>
             </div>
             <h1 className="text-lg sm:text-2xl font-bold text-white mt-0.5" style={{ fontFamily: FC }}>Club Registration Keys</h1>
@@ -322,7 +322,7 @@ export default function App() {
           </div>
 
           <h2 className="text-base sm:text-lg font-bold text-white" style={{ fontFamily: FB }}>Current Active Authorization Key</h2>
-          <p className="text-xs text-white/60 mt-1" style={{ fontFamily: FB }}>Share this key with the next college club looking to register on Spotlight.</p>
+          <p className="text-xs text-white/60 mt-1" style={{ fontFamily: FB }}>Share this key with the next college club looking to register on SkylineOS.</p>
 
           <div className="my-4 sm:my-6 p-3.5 sm:p-4 rounded-2xl bg-black/60 border border-white/10 flex items-center justify-between gap-3">
             <span className="text-sm sm:text-xl md:text-2xl font-bold tracking-wider sm:tracking-widest text-white select-all font-mono break-all">

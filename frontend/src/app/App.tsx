@@ -4594,7 +4594,7 @@ function ClubOnboardingPage({ onSuccess }: ClubOnboardingPageProps) {
         <div className="text-center mb-8">
           <p className="text-[11px] tracking-[0.5em] uppercase mb-2 text-slate-700 dark:text-[#f3f4f6] font-semibold" style={{ fontFamily: FM }}>Step 1 · Onboarding</p>
           <h2 className="text-2xl md:text-3xl font-semibold text-[#1e1b26] dark:text-white mb-2" style={{ fontFamily: FC }}>Set Up Your Club</h2>
-          <p className="text-xs text-slate-600 dark:text-[#d1d5db]" style={{ fontFamily: FB }}>Welcome to Spotlight! Provide your club details and authorization key to activate the dashboard.</p>
+          <p className="text-xs text-slate-600 dark:text-[#d1d5db]" style={{ fontFamily: FB }}>Welcome to SkylineOS! Provide your club details and authorization key to activate the dashboard.</p>
         </div>
 
         <form noValidate onSubmit={handleSubmit} className="space-y-6">
@@ -4957,7 +4957,7 @@ function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onSignOut:
             </div>
           )}
           <span className="text-[13px] tracking-[0.16em] font-bold truncate max-w-[150px]" title={name} style={{ fontFamily: FB, color: isDark ? "rgba(255,255,255,0.9)" : "#1e1b26" }}>
-            {name || 'SPOTLIGHT'}
+            {name || 'SkylineOS'}
           </span>
         </div>
         <div className="px-4 mb-5 flex-shrink-0">
@@ -5037,7 +5037,7 @@ function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onSignOut:
               </div>
             )}
             <span className="text-xs sm:text-[13px] tracking-[0.14em] font-bold truncate max-w-[180px]" title={name} style={{ fontFamily: FB, color: isDark ? "rgba(255,255,255,0.9)" : "#1e1b26" }}>
-              {name || 'SPOTLIGHT'}
+              {name || 'SkylineOS'}
             </span>
           </div>
           <ThemeToggle />
@@ -5203,7 +5203,7 @@ function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onSignOut:
                     </div>
                   )}
                   <span className="text-xs tracking-[0.14em] font-bold truncate max-w-[150px]" title={name} style={{ fontFamily: FB, color: isDark ? "rgba(255,255,255,0.9)" : "#1e1b26" }}>
-                    {name || 'SPOTLIGHT'}
+                    {name || 'SkylineOS'}
                   </span>
                 </div>
                 <button onClick={() => setIsMobileMenuOpen(false)} className={`p-1.5 rounded-lg active:bg-black/5 ${isDark ? "text-white/60 hover:text-white" : "text-slate-600 hover:text-black"}`}>
@@ -5261,7 +5261,7 @@ function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onSignOut:
             className="w-full max-w-md p-8 rounded-3xl relative border border-slate-200 dark:border-white/10 shadow-2xl"
             style={{ background: isDark ? "rgba(15,15,15,0.98)" : "#f0f2f6" }}
           >
-            <h2 className="text-xl font-bold text-[#1e1b26] dark:text-white mb-2" style={{ fontFamily: FC }}>Welcome to Spotlight! 🚀</h2>
+            <h2 className="text-xl font-bold text-[#1e1b26] dark:text-white mb-2" style={{ fontFamily: FC }}>Welcome to SkylineOS! 🚀</h2>
             <p className="text-xs text-slate-600 dark:text-[#d1d5db] mb-6 leading-relaxed" style={{ fontFamily: FB }}>
               Your club has been successfully created, but a few settings are yet to be completed. Please configure the pending fields below:
             </p>

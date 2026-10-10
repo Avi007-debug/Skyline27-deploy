@@ -1,6 +1,6 @@
-# Spotlight - Event Management Through Motion
+# SkylineOS - Event Management Through Motion
 
-Spotlight is a premium, modern web application designed for university clubs and organizations to discover, register for, and manage live events. Built with a high-fidelity glassmorphism aesthetic and buttery-smooth animations, Spotlight makes event ticketing and payment verification a seamless experience.
+SkylineOS is a premium, modern web application designed for university clubs and organizations to discover, register for, and manage live events. Built with a high-fidelity glassmorphism aesthetic and buttery-smooth animations, SkylineOS makes event ticketing and payment verification a seamless experience.
 
 ## Features
 
@@ -33,4 +33,4 @@ Spotlight is a premium, modern web application designed for university clubs and
 - `src/index.css`: Core design system tokens and Tailwind directives.
 
 ---
-*© 2026 SPOTLIGHT · Built for the modern event ecosystem.*
+*© 2026 SkylineOS · Built for the modern event ecosystem.*

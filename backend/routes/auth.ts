@@ -17,6 +17,7 @@ function isBcryptHash(value: string): boolean {
 function getPreferredName(existingName: string | null | undefined, incomingName: string | null | undefined): string {
   const isPlaceholder = (n: string) => 
     !n || 
+    n.toLowerCase() === 'skylineos user' || 
     n.toLowerCase() === 'spotlight user' || 
     n.toLowerCase() === 'club admin' || 
     n.includes('@');
@@ -27,7 +28,7 @@ function getPreferredName(existingName: string | null | undefined, incomingName:
   if (incomingName && !isPlaceholder(incomingName)) {
     return incomingName;
   }
-  return existingName || incomingName || 'Spotlight User';
+  return existingName || incomingName || 'SkylineOS User';
 }
 
 async function checkPassword(
@@ -240,7 +241,7 @@ router.post('/google', async (req: Request, res: Response): Promise<any> => {
     }
 
     const email = payload.email.toLowerCase().trim();
-    const name = payload.name || payload.given_name || clubName || 'Spotlight User';
+    const name = payload.name || payload.given_name || clubName || 'SkylineOS User';
     const googleUserId = `google_${payload.sub || crypto.createHash('md5').update(email).digest('hex')}`;
 
     let club = await prisma.club.findUnique({ where: { email } });

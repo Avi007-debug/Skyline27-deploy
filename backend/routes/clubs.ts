@@ -69,7 +69,7 @@ router.post('/verify-key', async (req: Request, res: Response): Promise<any> => 
     });
 
     if (!record) {
-      return res.status(400).json({ error: 'Invalid or expired registration key. Please contact Spotlight admins for an authorization code.' });
+      return res.status(400).json({ error: 'Invalid or expired registration key. Please contact SkylineOS admins for an authorization code.' });
     }
 
     return res.status(200).json({ valid: true, message: 'Authorization key verified successfully.' });
@@ -197,7 +197,7 @@ router.post('/', requireOptionalAuth, async (req: Request, res: Response): Promi
     });
 
     if (!keyRecord) {
-      return res.status(400).json({ error: 'Invalid or expired registration key. Please enter a valid key provided by Spotlight admins.' });
+      return res.status(400).json({ error: 'Invalid or expired registration key. Please enter a valid key provided by SkylineOS admins.' });
     }
 
     let userId = (req as any).auth?.userId;
