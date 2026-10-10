@@ -42,7 +42,8 @@ export default function App() {
   const [adminPasscode, setAdminPasscode] = useState('');
   const [showPasscode, setShowPasscode] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    () => localStorage.getItem('spotlight_admin_auth') === 'true' && Boolean(localStorage.getItem('spotlight_admin_secret'))
+    () => (localStorage.getItem('skyline_admin_auth') === 'true' || localStorage.getItem('spotlight_admin_auth') === 'true') &&
+          Boolean(localStorage.getItem('skyline_admin_secret') || localStorage.getItem('spotlight_admin_secret'))
   );
   const [authError, setAuthError] = useState<string | null>(null);
 

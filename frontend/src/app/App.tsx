@@ -850,7 +850,7 @@ function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError }: {
               <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Authorization Key</label>
               <input
                 type="text"
-                placeholder="SPOTLIGHT-XXXX-XXXX"
+                placeholder="SKYLINE-XXXX-XXXX"
                 autoFocus
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all uppercase tracking-widest"
                 style={{
@@ -4602,7 +4602,7 @@ function ClubOnboardingPage({ onSuccess }: ClubOnboardingPageProps) {
             <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Authorization Key</label>
             <input 
               type="text" 
-              placeholder="SPOTLIGHT-XXXX-XXXX" 
+              placeholder="SKYLINE-XXXX-XXXX" 
               required
               className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all uppercase tracking-wider font-mono placeholder:normal-case placeholder:font-sans" 
               style={{ background: isDark ? "rgba(255,255,255,0.02)" : "#e4e7ee", border: "1px solid rgba(240,61,78,0.4)" }} 

@@ -38,7 +38,7 @@ app.use((req, res, next) => {
 const PORT = parseInt(process.env.PORT || '5000', 10);
 
 app.get(['/', '/api', '/api/health', '/health'], (req: Request, res: Response): any => {
-  return res.status(200).json({ status: 'success', message: 'Spotlight API Server is live!' });
+  return res.status(200).json({ status: 'success', message: 'SkylineOS API Server is live!' });
 });
 
 // Support both /api/... and direct /... (resilient to Passenger/Apache prefix stripping)

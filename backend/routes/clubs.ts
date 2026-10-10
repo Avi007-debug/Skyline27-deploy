@@ -41,7 +41,7 @@ async function ensureActiveRegistrationKey(): Promise<string> {
 
     const part1 = Math.random().toString(36).substring(2, 6).toUpperCase();
     const part2 = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const newCode = `SPOTLIGHT-${part1}-${part2}`;
+    const newCode = `SKYLINE-${part1}-${part2}`;
 
     const created = await prisma.registrationKey.create({
       data: { code: newCode },
@@ -50,7 +50,7 @@ async function ensureActiveRegistrationKey(): Promise<string> {
     return created.code;
   } catch (err) {
     console.error('[RegistrationKey] Auto-generation failed:', err);
-    return 'SPOTLIGHT-KEY-FAIL';
+    return 'SKYLINE-KEY-FAIL';
   }
 }
 
