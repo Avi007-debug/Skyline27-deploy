@@ -633,11 +633,11 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
                       <h4 className="text-[#1e1b26] dark:text-white font-semibold text-sm mb-1.5">Reach Out For Support</h4>
                       <p className="text-xs text-slate-600 dark:text-[#bbbbbb] leading-relaxed mb-4">If you have concerns, deactivation requests, or reports of unauthorized dashboard activity, email support directly at:</p>
                       <a 
-                        href="mailto:spotlightapp.help@gmail.com" 
+                        href="mailto:abhishshetty05@gmail.com" 
                         className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20 text-xs font-semibold transition-all"
                       >
                         <Mail size={16} />
-                        <span>spotlightapp.help@gmail.com</span>
+                        <span>abhishshetty05@gmail.com</span>
                       </a>
                     </div>
 
@@ -888,8 +888,8 @@ function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError }: {
           <div className="mt-8 pt-6 border-t border-white/[0.08] text-center space-y-2">
             <p className="text-xs text-white/70 leading-relaxed font-normal" style={{ fontFamily: FB }}>
               Need an authorization key? Mail us at{" "}
-              <a href="mailto:spotlightapp.help@gmail.com" className="text-[#10B981] font-medium hover:text-[#34d399] transition-colors underline underline-offset-2">
-                spotlightapp.help@gmail.com
+              <a href="mailto:abhishshetty05@gmail.com" className="text-[#10B981] font-medium hover:text-[#34d399] transition-colors underline underline-offset-2">
+                abhishshetty05@gmail.com
               </a>
             </p>
             <p className="text-xs text-white/60 leading-relaxed font-normal max-w-sm mx-auto" style={{ fontFamily: FB }}>
@@ -4271,11 +4271,11 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
               </div>
             </div>
             <a
-              href="mailto:spotlightapp.help@gmail.com"
+              href="mailto:abhishshetty05@gmail.com"
               className="px-5 py-2.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 rounded-xl transition-all"
               style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", fontFamily: FB }}
             >
-              spotlightapp.help@gmail.com
+              abhishshetty05@gmail.com
             </a>
           </div>
         </div>
@@ -4461,7 +4461,7 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
 
                   <div>
                     <h4 className="text-[#1e1b26] dark:text-white font-medium text-sm mb-2">Contact Us</h4>
-                    <p className="text-xs text-slate-600 dark:text-[#bbbbbb]">If you have concerns, deactivation requests, or reports of unauthorized dashboard activity, email support at <strong>spotlightapp.help@gmail.com</strong>.</p>
+                    <p className="text-xs text-slate-600 dark:text-[#bbbbbb]">If you have concerns, deactivation requests, or reports of unauthorized dashboard activity, email support at <strong>abhishshetty05@gmail.com</strong>.</p>
                   </div>
                 </div>
 
@@ -4612,8 +4612,8 @@ function ClubOnboardingPage({ onSuccess }: ClubOnboardingPageProps) {
             <div className="mt-2.5 space-y-1.5 text-left">
               <p className="text-xs text-slate-600 dark:text-white/70 leading-relaxed font-normal" style={{ fontFamily: FB }}>
                 To request a key, email{" "}
-                <a href="mailto:spotlightapp.help@gmail.com" className="text-emerald-700 dark:text-[#10B981] font-semibold hover:underline underline-offset-2">
-                  spotlightapp.help@gmail.com
+                <a href="mailto:abhishshetty05@gmail.com" className="text-emerald-700 dark:text-[#10B981] font-semibold hover:underline underline-offset-2">
+                  abhishshetty05@gmail.com
                 </a>
               </p>
               <p className="text-xs text-slate-500 dark:text-white/60 leading-relaxed font-normal" style={{ fontFamily: FB }}>
