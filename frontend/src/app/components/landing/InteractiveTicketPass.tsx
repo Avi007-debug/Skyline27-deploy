@@ -51,14 +51,14 @@ export default function InteractiveTicketPass() {
       style={{ perspective: 1200 }}
     >
       {/* Mode Switcher */}
-      <div className="flex items-center gap-1 p-1 rounded-full bg-white/[0.06] backdrop-blur-xl mb-3.5 z-20 shadow-lg">
+      <div className="flex items-center gap-1 p-1 rounded-full bg-stone-900/5 dark:bg-white/[0.06] backdrop-blur-xl mb-3.5 z-20 shadow-md border border-amber-900/10 dark:border-transparent">
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
           className={`flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[10px] font-mono tracking-wider transition-all cursor-pointer ${
             !isFlipped
-              ? "bg-[#F03D4E] text-white shadow-md shadow-red-500/30 font-semibold"
-              : "text-slate-400 hover:text-white"
+              ? "bg-[#4285F4] dark:bg-[#F03D4E] text-white shadow-md shadow-blue-500/25 dark:shadow-red-500/30 font-semibold"
+              : "text-stone-600 dark:text-slate-400 hover:text-stone-900 dark:hover:text-white"
           }`}
         >
           <Ticket className="w-3 h-3" />
@@ -69,8 +69,8 @@ export default function InteractiveTicketPass() {
           onClick={(e) => { e.stopPropagation(); setIsFlipped(true); }}
           className={`flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[10px] font-mono tracking-wider transition-all cursor-pointer ${
             isFlipped
-              ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/30 font-semibold"
-              : "text-slate-400 hover:text-white"
+              ? "bg-[#EA4335] dark:bg-indigo-600 text-white shadow-md shadow-red-500/25 dark:shadow-indigo-500/30 font-semibold"
+              : "text-stone-600 dark:text-slate-400 hover:text-stone-900 dark:hover:text-white"
           }`}
         >
           <Users className="w-3 h-3" />

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useInView, useReducedMotion } from "motion/react";
 import {
   ArrowRight, Calendar, Users, CreditCard, Plus, MapPin,
   ChevronRight, Eye, EyeOff, LayoutDashboard,
@@ -19,6 +19,7 @@ import FeaturesSection from "./components/landing/FeaturesSection";
 import WorkflowSection from "./components/landing/WorkflowSection";
 import EcosystemSection from "./components/landing/EcosystemSection";
 import ShutterGlyphFooter from "@/components/ui/shutter-glyph-footer";
+import Typewriter from "./components/landing/Typewriter";
 import MerchPage from "./components/dashboard/MerchPage";
 import FundraiserPage from "./components/dashboard/FundraiserPage";
 import FinancePage from "./components/dashboard/FinancePage";
@@ -361,9 +362,9 @@ const QUICK_ACTIONS = [
   { id: "settings",   icon: Settings,       label: "Club Profile",        desc: "Edit club info, UPI ID & security" },
 ];
 const FEATURES = [
-  { icon: Calendar, title: "Liquid Event Creation", desc: "Craft events with a fluid step-by-step builder. From concept to live in under two minutes."      },
-  { icon: Shield,   title: "Payment Moderation",    desc: "QR-based verification with screenshot uploads, manual approval pipelines, and audit trails."     },
-  { icon: Zap,      title: "Smart Publishing",      desc: "Free events go live instantly. Paid events enter the intelligent moderation stream automatically." },
+  { icon: Calendar, title: "Members & Memberships", desc: "Sign up students, track dues, apply member perks automatically and verify anyone with a QR Club Pass." },
+  { icon: Shield,   title: "Tickets & Payments",    desc: "Sell tickets online with member pricing and seat limits, then check people in at the door in seconds with a QR scan." },
+  { icon: Zap,      title: "One Place for Money",   desc: "Dues, tickets, merch and fundraisers flow into one ledger so anyone on the team sees what came in, what went out and what is left." },
 ];
 
 function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
@@ -379,6 +380,31 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
     return () => clearInterval(id);
   }, [target]);
   return <>{count}{suffix}</>;
+}
+
+function InViewStatCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true, amount: 0.3 });
+  const shouldReduceMotion = useReducedMotion();
+  const [count, setCount] = useState(shouldReduceMotion ? target : 0);
+
+  useEffect(() => {
+    if (shouldReduceMotion) {
+      setCount(target);
+      return;
+    }
+    if (!isInView) return;
+    let frame = 0;
+    const total = 45;
+    const id = setInterval(() => {
+      frame++;
+      setCount(Math.round(target * Math.min(frame / total, 1)));
+      if (frame >= total) clearInterval(id);
+    }, 16);
+    return () => clearInterval(id);
+  }, [isInView, target, shouldReduceMotion]);
+
+  return <span ref={ref}>{count}{suffix}</span>;
 }
 
 function AuthInput({ label, type, placeholder, value, onChange }: {
@@ -455,32 +481,32 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
 
       <nav className="fixed top-0 left-0 right-0 z-30 transition-all duration-500"
         style={{
-          background:   scrolled ? (isDark ? "rgba(5,5,5,0.92)" : "rgba(240,242,246,0.92)") : (isDark ? "rgba(5,5,5,0.2)" : "rgba(240,242,246,0.65)"),
+          background:   scrolled ? (isDark ? "rgba(5,5,5,0.92)" : "rgba(250,248,245,0.92)") : (isDark ? "rgba(5,5,5,0.2)" : "rgba(250,248,245,0.65)"),
           backdropFilter: scrolled ? "blur(20px)" : "blur(8px)",
           WebkitBackdropFilter: scrolled ? "blur(20px)" : "blur(8px)",
-          borderBottom: scrolled ? (isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)") : "1px solid transparent",
+          borderBottom: scrolled ? (isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(120,100,80,0.12)") : "1px solid transparent",
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 sm:py-5 flex items-center justify-between">
           <div className="flex items-center gap-2.5 sm:gap-3">
             <img src="/logo.png" alt="SkylineOS Logo" className="h-8 sm:h-10 w-auto object-contain" />
-            <span className="text-xs sm:text-sm tracking-[0.2em] sm:tracking-[0.3em] font-semibold whitespace-nowrap transition-colors" style={{ fontFamily: F_LOGO, color: isDark ? "#ffffff" : "#1e1b26" }}>SkylineOS</span>
+            <span className="text-xs sm:text-sm tracking-[0.2em] sm:tracking-[0.3em] font-semibold whitespace-nowrap transition-colors" style={{ fontFamily: F_LOGO, color: isDark ? "#ffffff" : "#1c1917" }}>SkylineOS</span>
           </div>
 
           {/* Navigation Links for Smooth Scrolling */}
-          <div className="hidden md:flex items-center gap-7 text-xs font-medium text-slate-300" style={{ fontFamily: FB }}>
-            <a href="#features" className="hover:text-white transition-colors">Features</a>
-            <a href="#workflow" className="hover:text-white transition-colors">Workflow</a>
-            <a href="#ecosystem" className="hover:text-white transition-colors">Ecosystem</a>
+          <div className="hidden md:flex items-center gap-7 text-xs font-medium text-stone-600 dark:text-slate-300" style={{ fontFamily: FB }}>
+            <a href="#features" className="hover:text-stone-900 dark:hover:text-white transition-colors">Features</a>
+            <a href="#workflow" className="hover:text-stone-900 dark:hover:text-white transition-colors">Workflow</a>
+            <a href="#ecosystem" className="hover:text-stone-900 dark:hover:text-white transition-colors">Ecosystem</a>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
             <ThemeToggle />
             <button onClick={onRegister}
-              className="text-xs sm:text-sm px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all duration-400 cursor-pointer active:scale-95 font-medium border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white hidden sm:block"
+              className="text-xs sm:text-sm px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all duration-400 cursor-pointer active:scale-95 font-medium border border-amber-900/15 dark:border-white/10 hover:border-amber-900/30 dark:hover:border-white/20 bg-stone-900/5 hover:bg-stone-900/10 dark:bg-white/5 dark:hover:bg-white/10 text-stone-700 dark:text-slate-300 hover:text-stone-900 dark:hover:text-white hidden sm:block"
             >Register Club</button>
             <button onClick={onEnter}
-              className="text-xs sm:text-sm px-4 sm:px-5 py-1.5 sm:py-2 rounded-full transition-all duration-400 cursor-pointer active:scale-95 font-semibold bg-[#F03D4E] hover:bg-[#d83544] text-white shadow-md shadow-red-500/25"
+              className="text-xs sm:text-sm px-4 sm:px-5 py-1.5 sm:py-2 rounded-full transition-all duration-400 cursor-pointer active:scale-95 font-semibold bg-[#4285F4] hover:bg-[#1a73e8] dark:bg-[#F03D4E] dark:hover:bg-[#d83544] text-white shadow-md shadow-blue-500/25 dark:shadow-red-500/25"
             >Sign In</button>
           </div>
         </div>
@@ -544,7 +570,7 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
                   initial={{ opacity: 0, filter: "blur(10px)", scale: 0.96 }}
                   animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
                   transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="leading-none select-none tracking-[0.04em] sm:tracking-[0.06em] text-4xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl font-bold mb-3 sm:mb-4 whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-400"
+                  className="leading-none select-none tracking-[0.04em] sm:tracking-[0.06em] text-4xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl font-bold mb-3 sm:mb-4 whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-b from-stone-900 via-stone-800 to-stone-600 dark:from-white dark:via-slate-100 dark:to-slate-400"
                   style={{
                     fontFamily: F_LOGO,
                     textShadow: isDark ? "0 0 60px rgba(255,255,255,0.15)" : "none",
@@ -561,16 +587,16 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
                   className="max-w-xl"
                 >
                   <p
-                    className="text-base sm:text-lg md:text-xl font-medium leading-relaxed mb-2 text-slate-200"
+                    className="text-base sm:text-lg md:text-xl font-medium leading-relaxed mb-2 text-stone-900 dark:text-slate-200"
                     style={{ fontFamily: FB }}
                   >
-                    The Universal Campus <span className="text-[#F03D4E] font-semibold">Event Operating System</span>
+                    <Typewriter text="Run Your Whole Club From One Place" speed={22} />
                   </p>
                   <p
-                    className="text-xs sm:text-sm text-slate-400 leading-relaxed"
+                    className="text-xs sm:text-sm text-stone-600 dark:text-slate-400 leading-relaxed"
                     style={{ fontFamily: FB }}
                   >
-                    Eliminate Google Forms and manual payment spreadsheets. Solo & squad registrations, instant 5-char team passkeys, UPI verification, and venue door QR scanner in one unified platform.
+                    <Typewriter text="Retire the spreadsheet, the notebook and the WhatsApp chain. Memberships, event tickets, merch, announcements and the club budget in one unified platform." speed={22} delay={250} />
                   </p>
                 </motion.div>
 
@@ -583,10 +609,10 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
                 >
                   {/* Enter Dashboard */}
                   <motion.button
-                    whileHover={{ scale: 1.03, boxShadow: "0 0 30px rgba(240,61,78,0.45)" }}
+                    whileHover={{ scale: 1.03, boxShadow: "0 0 30px rgba(66,133,244,0.45)" }}
                     whileTap={{ scale: 0.97 }}
                     onClick={onEnter}
-                    className="cursor-pointer group inline-flex items-center justify-center gap-2 px-7 sm:px-8 py-3 text-sm font-semibold text-white bg-gradient-to-r from-[#F03D4E] to-[#e02d3e] hover:from-[#e02d3e] hover:to-[#c82232] rounded-full transition-all duration-300 shadow-[0_0_24px_rgba(240,61,78,0.35)] active:scale-95"
+                    className="cursor-pointer group inline-flex items-center justify-center gap-2 px-7 sm:px-8 py-3 text-sm font-semibold text-white bg-gradient-to-r from-[#4285F4] to-[#1a73e8] dark:from-[#F03D4E] dark:to-[#e02d3e] hover:from-[#1a73e8] hover:to-[#174ea6] dark:hover:from-[#e02d3e] dark:hover:to-[#c82232] rounded-full transition-all duration-300 shadow-[0_0_24px_rgba(66,133,244,0.35)] dark:shadow-[0_0_24px_rgba(240,61,78,0.35)] active:scale-95"
                   >
                     <span>Enter Dashboard</span>
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -597,56 +623,78 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                     onClick={onRegister}
-                    className="cursor-pointer group inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 text-sm font-medium rounded-full transition-all duration-300 bg-white/[0.06] hover:bg-white/[0.12] text-white active:scale-95 backdrop-blur-md"
+                    className="cursor-pointer group inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 text-sm font-medium rounded-full transition-all duration-300 bg-stone-900/5 hover:bg-stone-900/10 text-stone-900 dark:bg-white/[0.06] dark:hover:bg-white/[0.12] dark:text-white active:scale-95 backdrop-blur-md border border-amber-900/10 dark:border-white/5"
                   >
                     <span>Register Club</span>
                   </motion.button>
                 </motion.div>
 
-                {/* Live Campus Telemetry Strip with Repeating Scroll Animation */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false, amount: 0.2 }}
-                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="mt-8 sm:mt-10 pt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 w-full"
-                >
-                  <div>
-                    <div className="text-xl sm:text-2xl font-bold text-white font-mono">
-                      {stats.clubs > 0 ? `${stats.clubs}+` : "24+"}
+                {/* Live Campus Telemetry Strip with Repeating Scroll Slide-in Animation */}
+                <div className="mt-8 sm:mt-10 pt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 w-full">
+                  <motion.div
+                    initial={{ opacity: 0, y: 35, scale: 0.93 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: false, amount: 0.15 }}
+                    transition={{ duration: 0.65, delay: 0 * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                    whileHover={{ y: -6, scale: 1.03, transition: { duration: 0.2 } }}
+                    className="cursor-default p-3 rounded-2xl bg-[#FFFDF9]/95 dark:bg-white/[0.02] border border-amber-900/10 dark:border-white/5 backdrop-blur-sm shadow-[0_4px_20px_-4px_rgba(200,180,160,0.25)] dark:shadow-none"
+                  >
+                    <div className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white font-mono">
+                      <InViewStatCounter target={stats.clubs > 0 ? stats.clubs : 9} suffix="+" />
                     </div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase tracking-wider font-medium mt-0.5" style={{ fontFamily: FM }}>
+                    <div className="text-[10px] sm:text-[11px] text-stone-600 dark:text-slate-400 uppercase tracking-wider font-medium mt-0.5" style={{ fontFamily: FM }}>
                       Campus Clubs
                     </div>
-                  </div>
+                  </motion.div>
 
-                  <div>
-                    <div className="text-xl sm:text-2xl font-bold text-white font-mono">
-                      {stats.registrations > 0 ? `${stats.registrations}+` : "1.8k+"}
+                  <motion.div
+                    initial={{ opacity: 0, y: 35, scale: 0.93 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: false, amount: 0.15 }}
+                    transition={{ duration: 0.65, delay: 1 * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                    whileHover={{ y: -6, scale: 1.03, transition: { duration: 0.2 } }}
+                    className="cursor-default p-3 rounded-2xl bg-[#FFFDF9]/95 dark:bg-white/[0.02] border border-amber-900/10 dark:border-white/5 backdrop-blur-sm shadow-[0_4px_20px_-4px_rgba(200,180,160,0.25)] dark:shadow-none"
+                  >
+                    <div className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white font-mono">
+                      <InViewStatCounter target={stats.registrations > 0 ? stats.registrations : 21} suffix="+" />
                     </div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase tracking-wider font-medium mt-0.5" style={{ fontFamily: FM }}>
+                    <div className="text-[10px] sm:text-[11px] text-stone-600 dark:text-slate-400 uppercase tracking-wider font-medium mt-0.5" style={{ fontFamily: FM }}>
                       Tickets Issued
                     </div>
-                  </div>
+                  </motion.div>
 
-                  <div>
-                    <div className="text-xl sm:text-2xl font-bold text-emerald-400 font-mono">
-                      &lt; 2s
+                  <motion.div
+                    initial={{ opacity: 0, y: 35, scale: 0.93 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: false, amount: 0.15 }}
+                    transition={{ duration: 0.65, delay: 2 * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                    whileHover={{ y: -6, scale: 1.03, transition: { duration: 0.2 } }}
+                    className="cursor-default p-3 rounded-2xl bg-[#FFFDF9]/95 dark:bg-white/[0.02] border border-amber-900/10 dark:border-white/5 backdrop-blur-sm shadow-[0_4px_20px_-4px_rgba(200,180,160,0.25)] dark:shadow-none"
+                  >
+                    <div className="text-xl sm:text-2xl font-bold text-[#1e8e3e] dark:text-emerald-400 font-mono">
+                      <InViewStatCounter target={1} />
                     </div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase tracking-wider font-medium mt-0.5" style={{ fontFamily: FM }}>
-                      Door Check-In
+                    <div className="text-[10px] sm:text-[11px] text-stone-600 dark:text-slate-400 uppercase tracking-wider font-medium mt-0.5" style={{ fontFamily: FM }}>
+                      1 QR Pass for Everything
                     </div>
-                  </div>
+                  </motion.div>
 
-                  <div>
-                    <div className="text-xl sm:text-2xl font-bold text-cyan-400 font-mono">
-                      100%
+                  <motion.div
+                    initial={{ opacity: 0, y: 35, scale: 0.93 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: false, amount: 0.15 }}
+                    transition={{ duration: 0.65, delay: 3 * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                    whileHover={{ y: -6, scale: 1.03, transition: { duration: 0.2 } }}
+                    className="cursor-default p-3 rounded-2xl bg-[#FFFDF9]/95 dark:bg-white/[0.02] border border-amber-900/10 dark:border-white/5 backdrop-blur-sm shadow-[0_4px_20px_-4px_rgba(200,180,160,0.25)] dark:shadow-none"
+                  >
+                    <div className="text-xl sm:text-2xl font-bold text-[#1a73e8] dark:text-cyan-400 font-mono">
+                      <InViewStatCounter target={5} />
                     </div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-400 uppercase tracking-wider font-medium mt-0.5" style={{ fontFamily: FM }}>
-                      UPI Verified
+                    <div className="text-[10px] sm:text-[11px] text-stone-600 dark:text-slate-400 uppercase tracking-wider font-medium mt-0.5" style={{ fontFamily: FM }}>
+                      5 Tools Replaced
                     </div>
-                  </div>
-                </motion.div>
+                  </motion.div>
+                </div>
               </motion.div>
 
               {/* Right Column: 3D Holographic Interactive VIP Ticket Pass */}
@@ -672,39 +720,73 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
         {/* Multi-Device Ecosystem Matrix */}
         <EcosystemSection />
 
-        {/* Closing Call to Action Banner with Repeating Scroll Animation */}
+        {/* Closing Call to Action Banner with Rich Entrance & Button Fade Animations */}
         <motion.section
           id="cta"
-          initial={{ opacity: 0, y: 40, scale: 0.96 }}
+          initial={{ opacity: 0, y: 45, scale: 0.96 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: false, amount: 0.2 }}
-          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: false, amount: 0.18 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          whileHover={{ y: -6, transition: { duration: 0.3 } }}
           className="w-full py-20 px-4 sm:px-8 max-w-5xl mx-auto text-center relative z-10"
         >
-          <div className="rounded-3xl p-10 sm:p-14 bg-gradient-to-b from-[#F03D4E]/15 via-black/50 to-black/80 backdrop-blur-2xl relative overflow-hidden shadow-2xl">
+          <div className="rounded-3xl p-10 sm:p-14 bg-gradient-to-b from-[#4285F4]/12 via-[#FFFDF9]/90 to-[#FFFDF9] dark:from-[#F03D4E]/15 dark:via-black/50 dark:to-black/80 bg-[#FFFDF9] dark:bg-black backdrop-blur-2xl relative overflow-hidden shadow-[0_20px_50px_-15px_rgba(200,180,160,0.4)] dark:shadow-2xl border border-amber-900/10 dark:border-white/10 group">
+            {/* Ambient Radial Pulse */}
+            <motion.div
+              animate={{ opacity: [0.15, 0.3, 0.15], scale: [1, 1.08, 1] }}
+              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+              className="absolute inset-0 bg-gradient-to-br from-[#4285F4]/15 dark:from-[#F03D4E]/20 via-transparent to-transparent pointer-events-none"
+            />
             <div className="relative z-10 flex flex-col items-center">
-              <span className="text-[11px] font-mono tracking-widest text-[#F03D4E] uppercase mb-3" style={{ fontFamily: FM }}>
-                ELEVATE YOUR CAMPUS EXPERIENCES
-              </span>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight" style={{ fontFamily: FC }}>
-                Ready to Deploy Skyline on Campus?
+              <motion.span
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="text-[11px] font-mono tracking-widest text-[#4285F4] dark:text-[#F03D4E] uppercase mb-3 inline-block"
+                style={{ fontFamily: FM }}
+              >
+                RUN YOUR CLUB, NOT YOUR SPREADSHEETS
+              </motion.span>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900 dark:text-white mb-4 tracking-tight" style={{ fontFamily: FC }}>
+                <Typewriter text="Ready to Run Your Club on Skyline?" speed={22} />
               </h2>
-              <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto mb-8 leading-relaxed" style={{ fontFamily: FB }}>
-                Say goodbye to WhatsApp payment screenshots and printed attendee rosters. Step into a modern campus operating system.
-              </p>
+              <motion.p
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-sm sm:text-base text-stone-600 dark:text-slate-300 max-w-xl mx-auto mb-8 leading-relaxed"
+                style={{ fontFamily: FB }}
+              >
+                Say goodbye to the spreadsheet, the notebook and the WhatsApp chain. Step into one platform that runs your whole club.
+              </motion.p>
               <div className="flex flex-wrap items-center justify-center gap-4">
-                <button
+                <motion.button
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: false }}
+                  transition={{ duration: 0.6, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                  whileHover={{ scale: 1.05, boxShadow: "0 0 35px rgba(66,133,244,0.6)" }}
+                  whileTap={{ scale: 0.96 }}
                   onClick={onEnter}
-                  className="cursor-pointer px-8 py-3.5 rounded-full bg-[#F03D4E] hover:bg-[#d83544] text-white text-sm font-semibold tracking-wide transition-all shadow-lg shadow-red-500/30 active:scale-95"
+                  className="cursor-pointer px-8 py-3.5 rounded-full bg-[#4285F4] hover:bg-[#1a73e8] dark:bg-[#F03D4E] dark:hover:bg-[#d83544] text-white text-sm font-semibold tracking-wide transition-all shadow-lg shadow-blue-500/25 dark:shadow-red-500/30 active:scale-95 flex items-center gap-2"
                 >
-                  Enter Command Center
-                </button>
-                <button
+                  <span>Enter Command Center</span>
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </motion.button>
+                <motion.button
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: false }}
+                  transition={{ duration: 0.6, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.96 }}
                   onClick={onRegister}
-                  className="cursor-pointer px-7 py-3.5 rounded-full border border-white/15 hover:border-white/30 bg-white/5 hover:bg-white/10 text-white text-sm font-medium transition-all backdrop-blur-md active:scale-95"
+                  className="cursor-pointer px-7 py-3.5 rounded-full border border-amber-900/15 dark:border-white/15 hover:border-amber-900/30 dark:hover:border-white/30 bg-stone-900/5 hover:bg-stone-900/10 dark:bg-white/5 dark:hover:bg-white/10 text-stone-800 dark:text-white text-sm font-medium transition-all backdrop-blur-md active:scale-95"
                 >
-                  Register Authorized Club
-                </button>
+                  <span>Register Authorized Club</span>
+                </motion.button>
               </div>
             </div>
           </div>
@@ -713,7 +795,7 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
         <ShutterGlyphFooter
           brand="SKYLINE"
           wordmark="SKYLINE"
-          company="SkylineOS · Universal Campus Event Operating System"
+          company="SkylineOS · Universal Student Organization System"
           since={2026}
           shutterAt={2}
           background={isDark ? "#06070a" : "#f1f3f7"}
