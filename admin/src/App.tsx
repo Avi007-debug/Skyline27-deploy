@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import skylineLogo from './assets/logo.png';
 import {
   Copy,
   Check,
@@ -187,7 +188,7 @@ export default function App() {
         <div className="w-full max-w-md p-6 sm:p-10 rounded-3xl" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(16px)" }}>
           <div className="flex flex-col items-center mb-6 sm:mb-8">
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-3 sm:mb-4 overflow-hidden p-1.5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)" }}>
-              <img src="/logo.png" alt="SkylineOS Logo" className="w-full h-full object-contain rounded-xl" />
+              <img src={skylineLogo} alt="SkylineOS Logo" className="w-full h-full object-contain rounded-xl" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "./logo.png"; }} />
             </div>
             <span className="text-[10px] sm:text-xs tracking-[0.4em] uppercase text-white/50 mb-1" style={{ fontFamily: F_LOGO }}>SKYLINEOS</span>
             <h1 className="text-xl sm:text-2xl font-bold text-white text-center" style={{ fontFamily: FC }}>Admin Portal</h1>
@@ -244,7 +245,7 @@ export default function App() {
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 sm:pb-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center overflow-hidden p-1.5 flex-shrink-0" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)" }}>
-            <img src="/logo.png" alt="SkylineOS Logo" className="w-full h-full object-contain rounded-xl" />
+            <img src={skylineLogo} alt="SkylineOS Logo" className="w-full h-full object-contain rounded-xl" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "./logo.png"; }} />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">

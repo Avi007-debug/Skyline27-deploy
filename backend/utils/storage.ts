@@ -80,7 +80,7 @@ export async function uploadBase64Image(base64Str: string, folder: string): Prom
         else if (mimeType.includes('svg')) extension = 'svg';
 
         const filename = `${folder}/${crypto.randomUUID()}.${extension}`;
-        const bucket = 'spotlight-images';
+        const bucket = (process.env.SUPABASE_STORAGE_BUCKET || 'skyline-images').trim();
         const uploadUrl = `${supabaseUrl}/storage/v1/object/${bucket}/${filename}`;
 
         const response = await fetch(uploadUrl, {
@@ -141,13 +141,23 @@ export async function deleteImage(publicUrl: string): Promise<boolean> {
 
   if (supabaseKey && publicUrl.includes('supabase.co')) {
     try {
-      const bucketPrefix = '/storage/v1/object/public/spotlight-images/';
-      const index = publicUrl.indexOf(bucketPrefix);
-      if (index !== -1) {
-        const filename = publicUrl.substring(index + bucketPrefix.length);
-        const bucket = 'spotlight-images';
-        const deleteUrl = `${supabaseUrl}/storage/v1/object/${bucket}/${filename}`;
+      const bucket = (process.env.SUPABASE_STORAGE_BUCKET || 'skyline-images').trim();
+      let targetBucket = bucket;
+      let filename = '';
 
+      const skylinePrefix = `/storage/v1/object/public/${bucket}/`;
+      const legacyPrefix = '/storage/v1/object/public/spotlight-images/';
+
+      if (publicUrl.includes(skylinePrefix)) {
+        filename = publicUrl.substring(publicUrl.indexOf(skylinePrefix) + skylinePrefix.length);
+        targetBucket = bucket;
+      } else if (publicUrl.includes(legacyPrefix)) {
+        filename = publicUrl.substring(publicUrl.indexOf(legacyPrefix) + legacyPrefix.length);
+        targetBucket = 'spotlight-images';
+      }
+
+      if (filename) {
+        const deleteUrl = `${supabaseUrl}/storage/v1/object/${targetBucket}/${filename}`;
         const response = await fetch(deleteUrl, {
           method: 'DELETE',
           headers: {
