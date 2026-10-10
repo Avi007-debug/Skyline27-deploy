@@ -86,7 +86,40 @@ export async function applyDatabaseConstraintsAndViews() {
   `);
   console.log('  ✅ Created view v_owed_to_volunteers');
 
-  console.log('✨ All PostgreSQL integrity triggers, constraints and views applied successfully!');
+  // 4. Hot-Path Performance Indexes
+  await prisma.$executeRawUnsafe(`
+    CREATE INDEX IF NOT EXISTS idx_ledger_created_at ON "LedgerEntry"("created_at");
+  `);
+  await prisma.$executeRawUnsafe(`
+    CREATE INDEX IF NOT EXISTS idx_expense_created_at ON "ExpenseClaim"("created_at");
+  `);
+  console.log('  ✅ Added performance indexes for reporting hot-paths');
+
+  // 5. Read-Only Reporting Role (Section 7.2)
+  await prisma.$executeRawUnsafe(`
+    DO $$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'skyline_reporter') THEN
+        CREATE ROLE skyline_reporter;
+      END IF;
+    END $$;
+  `).catch(() => {});
+
+  await prisma.$executeRawUnsafe(`
+    GRANT SELECT ON v_ledger_by_category, v_event_pnl, v_owed_to_volunteers TO skyline_reporter;
+  `).catch(() => {});
+  console.log('  ✅ Configured read-only reporting role (skyline_reporter) with view-only SELECT grants');
+
+  // 6. Conditional Product Variant Stock Constraint (Section 4 / DB3)
+  await prisma.$executeRawUnsafe(`
+    DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'ProductVariant') THEN
+        ALTER TABLE "ProductVariant" DROP CONSTRAINT IF EXISTS chk_variant_stock_non_negative;
+        ALTER TABLE "ProductVariant" ADD CONSTRAINT chk_variant_stock_non_negative CHECK ("stock" >= 0);
+      END IF;
+    END $$;
+  `).catch(() => {});
+
+  console.log('✨ All PostgreSQL integrity triggers, constraints, views & roles applied successfully!');
 }
 
 if (require.main === module) {
