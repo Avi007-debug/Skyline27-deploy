@@ -18,9 +18,25 @@ async function runLedgerTests() {
     }
   };
 
-  // Reset test ledger
+  // Reset test ledger (safely bypass immutable trigger for test teardown)
+  await prisma.$executeRawUnsafe(`
+    DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_ledger_immutable') THEN
+        ALTER TABLE "LedgerEntry" DISABLE TRIGGER trg_ledger_immutable;
+      END IF;
+    END $$;
+  `).catch(() => {});
+
   await prisma.ledgerEntry.deleteMany();
   await prisma.ledgerHead.deleteMany();
+
+  await prisma.$executeRawUnsafe(`
+    DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_ledger_immutable') THEN
+        ALTER TABLE "LedgerEntry" ENABLE TRIGGER trg_ledger_immutable;
+      END IF;
+    END $$;
+  `).catch(() => {});
 
   // Test 1: Genesis verify
   await test('Empty ledger verifies against genesis hash', async () => {
@@ -167,6 +183,70 @@ async function runLedgerTests() {
 
     const verify = await verifyChain();
     if (!verify.valid) throw new Error(`Chain broke under identical race condition: ${verify.reason}`);
+  });
+
+  // Test 7: Tamper detection & Append-Only enforcement
+  await test('Tampering with an entry hash or amount causes verifyChain to fail', async () => {
+    // 1. Verify trigger blocks raw UPDATE
+    try {
+      await prisma.$executeRawUnsafe(
+        `UPDATE "LedgerEntry" SET amount_paise = 999999 WHERE id = ${entry1.id}`
+      );
+      throw new Error('Expected PostgreSQL trigger to block UPDATE');
+    } catch (err: any) {
+      if (!err.message.includes('immutable and append-only')) throw err;
+    }
+
+    // 2. Temporarily simulate raw tamper (e.g. offline DBA bypass or storage corruption)
+    await prisma.$executeRawUnsafe(`
+      DO $$ BEGIN
+        IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_ledger_immutable') THEN
+          ALTER TABLE "LedgerEntry" DISABLE TRIGGER trg_ledger_immutable;
+        END IF;
+      END $$;
+    `).catch(() => {});
+
+    // Tamper with amount_paise
+    await prisma.$executeRawUnsafe(
+      `UPDATE "LedgerEntry" SET amount_paise = 999999 WHERE id = ${entry1.id}`
+    );
+
+    const tamperedVerify = await verifyChain();
+    if (tamperedVerify.valid) {
+      throw new Error('verifyChain failed to detect tampered entry amount!');
+    }
+    if (tamperedVerify.brokenAt !== entry1.id) {
+      throw new Error(`Expected brokenAt to be ${entry1.id}, got ${tamperedVerify.brokenAt}`);
+    }
+
+    // Restore original amount
+    await prisma.$executeRawUnsafe(
+      `UPDATE "LedgerEntry" SET amount_paise = ${entry1.amountPaise} WHERE id = ${entry1.id}`
+    );
+
+    // Re-enable trigger
+    await prisma.$executeRawUnsafe(`
+      DO $$ BEGIN
+        IF EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'trg_ledger_immutable') THEN
+          ALTER TABLE "LedgerEntry" ENABLE TRIGGER trg_ledger_immutable;
+        END IF;
+      END $$;
+    `).catch(() => {});
+
+    const restoredVerify = await verifyChain();
+    if (!restoredVerify.valid) {
+      throw new Error(`Chain did not recover after restoring valid entry: ${restoredVerify.reason}`);
+    }
+  });
+
+  // Test 8: LedgerHead agreement
+  await test('Final entry hash strictly agrees with LedgerHead.lastHash', async () => {
+    const head = await prisma.ledgerHead.findUnique({ where: { id: 1 } });
+    const lastEntry = await prisma.ledgerEntry.findFirst({ orderBy: { id: 'desc' } });
+    if (!head || !lastEntry) throw new Error('Missing head or last entry');
+    if (head.lastHash !== lastEntry.hash) {
+      throw new Error(`Head hash ${head.lastHash} does not match last entry hash ${lastEntry.hash}`);
+    }
   });
 
   console.log(`\n📊 Ledger Tests Summary: ${passed} passed, ${failed} failed.\n`);
