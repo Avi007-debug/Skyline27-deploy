@@ -52,6 +52,55 @@ router.get('/', async (req: Request, res: Response): Promise<any> => {
   }
 });
 
+router.get('/:id', async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { id } = req.params;
+    const e = await prisma.event.findUnique({
+      where: { id: id as string },
+      include: {
+        club: true,
+        _count: {
+          select: { registrations: true },
+        },
+      },
+    });
+
+    if (!e) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    const normalizedType = e.eventType === 'Individual' ? 'Solo' : (e.eventType ?? 'Solo');
+    const mapped = {
+      id: e.id,
+      title: e.name,
+      venue: e.venue ?? 'TBD',
+      image_url: e.bannerUrl ?? null,
+      category: normalizedType,
+      price: e.fee ?? 0,
+      description: e.description ?? '',
+      date: e.eventDate ? e.eventDate.toISOString() : null,
+      eventDate: e.eventDate ? e.eventDate.toISOString() : null,
+      eventEndDate: e.eventEndDate ? e.eventEndDate.toISOString() : null,
+      eventType: normalizedType,
+      teamSizeLimit: e.teamSizeLimit,
+      minTeamSize: e.minTeamSize ?? null,
+      registration_deadline: e.registrationDeadline ? e.registrationDeadline.toISOString() : null,
+      registration_limit: e.registrationLimit,
+      club: e.club ? { id: e.club.id, name: e.club.name, logoUrl: e.club.logoUrl, logo_url: e.club.logoUrl, upiId: (e as any).upiId ?? e.club.upiId } : null,
+      upiId: (e as any).upiId ?? e.club?.upiId ?? null,
+      qrUrl: e.qrUrl ?? (e.fee > 0 && e.club ? e.club.qrUrl : null),
+      bannerUrl: e.bannerUrl ?? null,
+      clubLogoUrl: e.club?.logoUrl ?? null,
+      registrationCount: e._count?.registrations ?? 0,
+    };
+
+    return res.status(200).json({ event: mapped });
+  } catch (error: any) {
+    console.error('Single event fetch error:', error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 router.post('/create', requireAuth, async (req: Request, res: Response): Promise<any> => {
   try {
     const userId = req.auth!.userId;
