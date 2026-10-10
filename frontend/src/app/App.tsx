@@ -569,7 +569,7 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
                     {activeModal === 'contact' && 'Contact Us'}
                   </h3>
                   <p className="text-xs mt-1" style={{ fontFamily: FB, color: isDark ? "#999" : "#64748b" }}>
-                    {activeModal === 'contact' ? 'Reach out to SkylineOS Support' : 'Last Updated: July 26,© 2026'}
+                    {activeModal === 'contact' ? 'Reach out to SkylineOS Support' : 'Last Updated: 10th October 2026'}
                   </p>
                 </div>
                 <button onClick={() => setActiveModal(null)}
@@ -4421,7 +4421,7 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h3 className="text-lg font-semibold text-[#1e1b26] dark:text-white" style={{ fontFamily: FC }}>Dashboard Privacy Policy</h3>
-                    <p className="text-xs text-slate-500 dark:text-[#999] mt-1" style={{ fontFamily: FB }}>Last Updated: July 26,© 2026</p>
+                    <p className="text-xs text-slate-500 dark:text-[#999] mt-1" style={{ fontFamily: FB }}>Last Updated: 10th October 2026</p>
                   </div>
                   <button onClick={() => setShowPrivacyModal(false)} className="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white transition-colors">
                     <X size={16} />
