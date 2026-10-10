@@ -841,7 +841,7 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
                     {activeModal === 'contact' && 'Contact Us'}
                   </h3>
                   <p className="text-xs mt-1" style={{ fontFamily: FB, color: isDark ? "#999" : "#64748b" }}>
-                    {activeModal === 'contact' ? 'Reach out to SkylineOS Support' : 'Last Updated: July 2026'}
+                    {activeModal === 'contact' ? 'Reach out to SkylineOS Support' : 'Last Updated: 10th October 2026'}
                   </p>
                 </div>
                 <button onClick={() => setActiveModal(null)}
@@ -883,8 +883,8 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
                 {activeModal === 'terms' && (
                   <>
                     <div>
-                      <h4 className="text-[#1e1b26] dark:text-white font-semibold text-sm mb-1.5">About the Spotlight Club Dashboard</h4>
-                      <p className="text-xs text-slate-600 dark:text-[#bbbbbb] leading-relaxed">The Spotlight Club Dashboard allows authorized clubs to create, publish, and manage events. Once published, these events are visible to users of the Spotlight mobile application. Clubs can review, manage, approve, or deny participant registrations, including verifying payment proofs.</p>
+                      <h4 className="text-[#1e1b26] dark:text-white font-semibold text-sm mb-1.5">About the SkylineOS Club Dashboard</h4>
+                      <p className="text-xs text-slate-600 dark:text-[#bbbbbb] leading-relaxed">The SkylineOS Club Dashboard allows authorized clubs to create, publish, and manage events. Once published, these events are visible to users of the SkylineOS mobile application. Clubs can review, manage, approve, or deny participant registrations, including verifying payment proofs.</p>
                     </div>
 
                     <div>
@@ -905,11 +905,11 @@ function LandingPage({ onEnter, onRegister }: { onEnter: () => void; onRegister:
                       <h4 className="text-[#1e1b26] dark:text-white font-semibold text-sm mb-1.5">Reach Out For Support</h4>
                       <p className="text-xs text-slate-600 dark:text-[#bbbbbb] leading-relaxed mb-4">If you have concerns, deactivation requests, or reports of unauthorized dashboard activity, email support directly at:</p>
                       <a 
-                        href="mailto:spotlightapp.help@gmail.com" 
+                        href="mailto:abhishshetty05@gmail.com" 
                         className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20 text-xs font-semibold transition-all"
                       >
                         <Mail size={16} />
-                        <span>spotlightapp.help@gmail.com</span>
+                        <span>abhishshetty05@gmail.com</span>
                       </a>
                     </div>
 
@@ -1122,7 +1122,7 @@ function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError }: {
               <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Authorization Key</label>
               <input
                 type="text"
-                placeholder="SPOTLIGHT-XXXX-XXXX"
+                placeholder="SKYLINE-XXXX-XXXX"
                 autoFocus
                 className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all uppercase tracking-widest"
                 style={{
@@ -1160,8 +1160,8 @@ function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError }: {
           <div className="mt-8 pt-6 border-t border-white/[0.08] text-center space-y-2">
             <p className="text-xs text-white/70 leading-relaxed font-normal" style={{ fontFamily: FB }}>
               Need an authorization key? Mail us at{" "}
-              <a href="mailto:spotlightapp.help@gmail.com" className="text-[#10B981] font-medium hover:text-[#34d399] transition-colors underline underline-offset-2">
-                spotlightapp.help@gmail.com
+              <a href="mailto:abhishshetty05@gmail.com" className="text-[#10B981] font-medium hover:text-[#34d399] transition-colors underline underline-offset-2">
+                abhishshetty05@gmail.com
               </a>
             </p>
             <p className="text-xs text-white/60 leading-relaxed font-normal max-w-sm mx-auto" style={{ fontFamily: FB }}>
@@ -4543,11 +4543,11 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
               </div>
             </div>
             <a
-              href="mailto:spotlightapp.help@gmail.com"
+              href="mailto:abhishshetty05@gmail.com"
               className="px-5 py-2.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 rounded-xl transition-all"
               style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", fontFamily: FB }}
             >
-              spotlightapp.help@gmail.com
+              abhishshetty05@gmail.com
             </a>
           </div>
         </div>
@@ -4693,7 +4693,7 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h3 className="text-lg font-semibold text-[#1e1b26] dark:text-white" style={{ fontFamily: FC }}>Dashboard Privacy Policy</h3>
-                    <p className="text-xs text-slate-500 dark:text-[#999] mt-1" style={{ fontFamily: FB }}>Last Updated: July 26,© 2026</p>
+                    <p className="text-xs text-slate-500 dark:text-[#999] mt-1" style={{ fontFamily: FB }}>Last Updated: 10th October 2026</p>
                   </div>
                   <button onClick={() => setShowPrivacyModal(false)} className="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white transition-colors">
                     <X size={16} />
@@ -4702,8 +4702,8 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
 
                 <div className="flex-1 overflow-y-auto pr-2 space-y-6 text-sm text-slate-700 dark:text-[#ccc] leading-relaxed border-t border-b border-slate-200 dark:border-white/5 py-6" style={{ fontFamily: FB }}>
                   <div>
-                    <h4 className="text-[#1e1b26] dark:text-white font-medium text-sm mb-2">About the Spotlight Club Dashboard</h4>
-                    <p className="text-xs text-slate-600 dark:text-[#bbbbbb]">The Spotlight Club Dashboard allows authorized clubs to create, publish, and manage events. Once published, these events are visible to users of the Spotlight mobile application. Clubs can review, manage, approve, or deny participant registrations, including verifying payment proofs.</p>
+                    <h4 className="text-[#1e1b26] dark:text-white font-medium text-sm mb-2">About the SkylineOS Club Dashboard</h4>
+                    <p className="text-xs text-slate-600 dark:text-[#bbbbbb]">The SkylineOS Club Dashboard allows authorized clubs to create, publish, and manage events. Once published, these events are visible to users of the SkylineOS mobile application. Clubs can review, manage, approve, or deny participant registrations, including verifying payment proofs.</p>
                   </div>
 
                   <div>
@@ -4733,7 +4733,7 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
 
                   <div>
                     <h4 className="text-[#1e1b26] dark:text-white font-medium text-sm mb-2">Contact Us</h4>
-                    <p className="text-xs text-slate-600 dark:text-[#bbbbbb]">If you have concerns, deactivation requests, or reports of unauthorized dashboard activity, email support at <strong>spotlightapp.help@gmail.com</strong>.</p>
+                    <p className="text-xs text-slate-600 dark:text-[#bbbbbb]">If you have concerns, deactivation requests, or reports of unauthorized dashboard activity, email support at <strong>abhishshetty05@gmail.com</strong>.</p>
                   </div>
                 </div>
 
@@ -4866,7 +4866,7 @@ function ClubOnboardingPage({ onSuccess }: ClubOnboardingPageProps) {
         <div className="text-center mb-8">
           <p className="text-[11px] tracking-[0.5em] uppercase mb-2 text-slate-700 dark:text-[#f3f4f6] font-semibold" style={{ fontFamily: FM }}>Step 1 · Onboarding</p>
           <h2 className="text-2xl md:text-3xl font-semibold text-[#1e1b26] dark:text-white mb-2" style={{ fontFamily: FC }}>Set Up Your Club</h2>
-          <p className="text-xs text-slate-600 dark:text-[#d1d5db]" style={{ fontFamily: FB }}>Welcome to Spotlight! Provide your club details and authorization key to activate the dashboard.</p>
+          <p className="text-xs text-slate-600 dark:text-[#d1d5db]" style={{ fontFamily: FB }}>Welcome to SkylineOS! Provide your club details and authorization key to activate the dashboard.</p>
         </div>
 
         <form noValidate onSubmit={handleSubmit} className="space-y-6">
@@ -4874,7 +4874,7 @@ function ClubOnboardingPage({ onSuccess }: ClubOnboardingPageProps) {
             <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Authorization Key</label>
             <input 
               type="text" 
-              placeholder="SPOTLIGHT-XXXX-XXXX" 
+              placeholder="SKYLINE-XXXX-XXXX" 
               required
               className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all uppercase tracking-wider font-mono placeholder:normal-case placeholder:font-sans" 
               style={{ background: isDark ? "rgba(255,255,255,0.02)" : "#e4e7ee", border: "1px solid rgba(240,61,78,0.4)" }} 
@@ -4884,8 +4884,8 @@ function ClubOnboardingPage({ onSuccess }: ClubOnboardingPageProps) {
             <div className="mt-2.5 space-y-1.5 text-left">
               <p className="text-xs text-slate-600 dark:text-white/70 leading-relaxed font-normal" style={{ fontFamily: FB }}>
                 To request a key, email{" "}
-                <a href="mailto:spotlightapp.help@gmail.com" className="text-emerald-700 dark:text-[#10B981] font-semibold hover:underline underline-offset-2">
-                  spotlightapp.help@gmail.com
+                <a href="mailto:abhishshetty05@gmail.com" className="text-emerald-700 dark:text-[#10B981] font-semibold hover:underline underline-offset-2">
+                  abhishshetty05@gmail.com
                 </a>
               </p>
               <p className="text-xs text-slate-500 dark:text-white/60 leading-relaxed font-normal" style={{ fontFamily: FB }}>
@@ -5232,7 +5232,7 @@ function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onSignOut:
             </div>
           )}
           <span className="text-[13px] tracking-[0.16em] font-bold truncate max-w-[150px]" title={name} style={{ fontFamily: FB, color: isDark ? "rgba(255,255,255,0.9)" : "#1e1b26" }}>
-            {name || 'SPOTLIGHT'}
+            {name || 'SkylineOS'}
           </span>
         </div>
         <div className="px-4 mb-5 flex-shrink-0">
@@ -5312,7 +5312,7 @@ function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onSignOut:
               </div>
             )}
             <span className="text-xs sm:text-[13px] tracking-[0.14em] font-bold truncate max-w-[180px]" title={name} style={{ fontFamily: FB, color: isDark ? "rgba(255,255,255,0.9)" : "#1e1b26" }}>
-              {name || 'SPOTLIGHT'}
+              {name || 'SkylineOS'}
             </span>
           </div>
           <ThemeToggle />
@@ -5493,7 +5493,7 @@ function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onSignOut:
                     </div>
                   )}
                   <span className="text-xs tracking-[0.14em] font-bold truncate max-w-[150px]" title={name} style={{ fontFamily: FB, color: isDark ? "rgba(255,255,255,0.9)" : "#1e1b26" }}>
-                    {name || 'SPOTLIGHT'}
+                    {name || 'SkylineOS'}
                   </span>
                 </div>
                 <button onClick={() => setIsMobileMenuOpen(false)} className={`p-1.5 rounded-lg active:bg-black/5 ${isDark ? "text-white/60 hover:text-white" : "text-slate-600 hover:text-black"}`}>
@@ -5551,7 +5551,7 @@ function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onSignOut:
             className="w-full max-w-md p-8 rounded-3xl relative border border-slate-200 dark:border-white/10 shadow-2xl"
             style={{ background: isDark ? "rgba(15,15,15,0.98)" : "#f0f2f6" }}
           >
-            <h2 className="text-xl font-bold text-[#1e1b26] dark:text-white mb-2" style={{ fontFamily: FC }}>Welcome to Spotlight! 🚀</h2>
+            <h2 className="text-xl font-bold text-[#1e1b26] dark:text-white mb-2" style={{ fontFamily: FC }}>Welcome to SkylineOS! 🚀</h2>
             <p className="text-xs text-slate-600 dark:text-[#d1d5db] mb-6 leading-relaxed" style={{ fontFamily: FB }}>
               Your club has been successfully created, but a few settings are yet to be completed. Please configure the pending fields below:
             </p>
