@@ -202,4 +202,63 @@ router.get('/audit/verify', requireRole(['TREASURER', 'ADMIN']), async (req: Req
   }
 });
 
+// 4. Semester Financial Report (JSON)
+router.get('/report', requireRole(['TREASURER', 'ADMIN']), async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { clubId, from, to } = req.query;
+    const { generateSemesterReport } = await import('../services/reports');
+    const report = await generateSemesterReport({
+      clubId: clubId as string | undefined,
+      from: from as string | undefined,
+      to: to as string | undefined,
+    });
+    return res.status(200).json({ report });
+  } catch (error: any) {
+    console.error('Semester report error:', error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// 5. Semester Financial Report CSV Download
+router.get('/report/csv', requireRole(['TREASURER', 'ADMIN']), async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { clubId, from, to } = req.query;
+    const { generateSemesterReport, generateReportCSV } = await import('../services/reports');
+    const report = await generateSemesterReport({
+      clubId: clubId as string | undefined,
+      from: from as string | undefined,
+      to: to as string | undefined,
+    });
+    const csv = generateReportCSV(report);
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="skyline_financial_report_${Date.now()}.csv"`);
+    return res.status(200).send(csv);
+  } catch (error: any) {
+    console.error('Report CSV error:', error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// 6. Semester Financial Report HTML / Printable Document
+router.get('/report/html', requireRole(['TREASURER', 'ADMIN']), async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { clubId, from, to } = req.query;
+    const { generateSemesterReport, generateReportHTML } = await import('../services/reports');
+    const report = await generateSemesterReport({
+      clubId: clubId as string | undefined,
+      from: from as string | undefined,
+      to: to as string | undefined,
+    });
+    const html = generateReportHTML(report);
+
+    res.setHeader('Content-Type', 'text/html');
+    return res.status(200).send(html);
+  } catch (error: any) {
+    console.error('Report HTML error:', error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
+
