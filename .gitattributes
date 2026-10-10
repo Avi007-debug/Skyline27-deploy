@@ -1,0 +1,15 @@
+# Auto-generated lockfiles - collapse and treat as generated on GitHub
+package-lock.json linguist-generated=true
+**/package-lock.json linguist-generated=true
+pnpm-lock.yaml linguist-generated=true
+yarn.lock linguist-generated=true
+
+# Normalize text file line endings to LF to prevent CRLF line count inflation
+* text=auto eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.md text eol=lf
