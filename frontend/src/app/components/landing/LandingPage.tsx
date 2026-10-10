@@ -11,10 +11,10 @@ import EcosystemSection from "./EcosystemSection";
 import ShutterGlyphFooter from "@/components/ui/shutter-glyph-footer";
 import Typewriter from "./Typewriter";
 
-const FC = "'Playfair Display', serif";
+const FC = "'Space Grotesk', sans-serif";
 const F_LOGO = "'Cinzel', serif";
 const FM = "'JetBrains Mono', monospace";
-const FB = "'Manrope', sans-serif";
+const FB = "'Archivo', sans-serif";
 
 function InViewStatCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -81,12 +81,12 @@ export default function LandingPage({ onEnter, onRegister }: { onEnter: () => vo
   }, []);
 
   return (
-    <div id="ls" className="min-h-screen w-full flex flex-col relative bg-background transition-colors duration-300 overflow-x-hidden">
+    <div id="ls" className="min-h-screen w-full flex flex-col relative bg-background transition-colors duration-300 overflow-x-hidden" style={{ fontFamily: FB }}>
       <div id="top-sentinel" className="absolute top-0 left-0 w-full h-10 pointer-events-none z-0" />
 
       <nav className="fixed top-0 left-0 right-0 z-30 transition-all duration-500"
         style={{
-          background:   scrolled ? (isDark ? "rgba(5,5,5,0.92)" : "rgba(250,248,245,0.92)") : (isDark ? "rgba(5,5,5,0.2)" : "rgba(250,248,245,0.65)"),
+          background: scrolled ? (isDark ? "rgba(5,5,5,0.92)" : "rgba(250,248,245,0.92)") : (isDark ? "rgba(5,5,5,0.2)" : "rgba(250,248,245,0.65)"),
           backdropFilter: scrolled ? "blur(20px)" : "blur(8px)",
           WebkitBackdropFilter: scrolled ? "blur(20px)" : "blur(8px)",
           borderBottom: scrolled ? (isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(120,100,80,0.12)") : "1px solid transparent",
@@ -157,7 +157,7 @@ export default function LandingPage({ onEnter, onRegister }: { onEnter: () => vo
         <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 lg:px-12 w-full max-w-7xl mx-auto pt-24 sm:pt-28 pb-10">
           <section className="w-full">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-              
+
               {/* Left Column: Brand Story & Conversion */}
               <motion.div
                 initial={{ opacity: 0, y: 25 }}
@@ -177,11 +177,11 @@ export default function LandingPage({ onEnter, onRegister }: { onEnter: () => vo
                   transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
                   className="leading-none select-none tracking-[0.04em] sm:tracking-[0.06em] text-4xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl font-bold mb-3 sm:mb-4 whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-b from-stone-900 via-stone-800 to-stone-600 dark:from-white dark:via-slate-100 dark:to-slate-400"
                   style={{
-                    fontFamily: F_LOGO,
+                    fontFamily: FC,
                     textShadow: isDark ? "0 0 60px rgba(255,255,255,0.15)" : "none",
                   }}
                 >
-                  SKYLINEOS
+                  SkylineOS
                 </motion.h1>
 
                 {/* Subtitle / Value Proposition */}
@@ -452,17 +452,15 @@ export default function LandingPage({ onEnter, onRegister }: { onEnter: () => vo
                   </p>
                 </div>
                 <button onClick={() => setActiveModal(null)}
-                  className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-                    isDark ? "bg-white/5 hover:bg-white/10 text-white/60 hover:text-white" : "bg-black/5 hover:bg-black/10 text-slate-600 hover:text-slate-900"
-                  }`}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isDark ? "bg-white/5 hover:bg-white/10 text-white/60 hover:text-white" : "bg-black/5 hover:bg-black/10 text-slate-600 hover:text-slate-900"
+                    }`}
                 >
                   <X size={16} />
                 </button>
               </div>
 
-              <div className={`flex-1 overflow-y-auto pr-2 space-y-6 text-sm leading-relaxed border-t border-b py-6 text-left ${
-                isDark ? "text-[#ccc] border-white/5" : "text-slate-600 border-slate-200"
-              }`} style={{ fontFamily: FB }}>
+              <div className={`flex-1 overflow-y-auto pr-2 space-y-6 text-sm leading-relaxed border-t border-b py-6 text-left ${isDark ? "text-[#ccc] border-white/5" : "text-slate-600 border-slate-200"
+                }`} style={{ fontFamily: FB }}>
                 {activeModal === 'privacy' && (
                   <>
                     <div>

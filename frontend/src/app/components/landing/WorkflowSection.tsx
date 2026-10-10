@@ -4,8 +4,8 @@ import { KeyRound, CalendarPlus, UserCheck, QrCode, CheckCircle2, Copy, Users } 
 import Typewriter from "./Typewriter";
 
 const FM = "'JetBrains Mono', monospace";
-const FB = "'Manrope', sans-serif";
-const FC = "'Playfair Display', serif";
+const FB = "'Archivo', sans-serif";
+const FC = "'Space Grotesk', sans-serif";
 
 export default function WorkflowSection() {
   const [activeStep, setActiveStep] = useState<number>(0);
@@ -206,7 +206,7 @@ export default function WorkflowSection() {
   ];
 
   return (
-    <section id="workflow" className="w-full py-24 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto relative z-10">
+    <section id="workflow" className="w-full py-24 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto relative z-10" style={{ fontFamily: FB }}>
       {/* Header with Typewriter Animation */}
       <motion.div
         initial={{ opacity: 0, y: 28 }}
@@ -317,7 +317,7 @@ export default function WorkflowSection() {
                     </span>
                   </div>
 
-                  <h3 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white mb-2 tracking-tight" style={{ fontFamily: FB }}>
+                  <h3 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white mb-2 tracking-tight" style={{ fontFamily: FC }}>
                     <Typewriter text={step.title} speed={22} />
                   </h3>
 

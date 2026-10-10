@@ -5,8 +5,8 @@ import confetti from "canvas-confetti";
 import Typewriter from "./Typewriter";
 
 const FM = "'JetBrains Mono', monospace";
-const FB = "'Manrope', sans-serif";
-const FC = "'Playfair Display', serif";
+const FB = "'Archivo', sans-serif";
+const FC = "'Space Grotesk', sans-serif";
 
 export default function FeaturesSection() {
   const shouldReduceMotion = useReducedMotion();
@@ -73,7 +73,7 @@ export default function FeaturesSection() {
   const chipRoles = ["MEM", "VOL", "OFC"];
 
   return (
-    <section id="features" className="w-full py-20 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto relative z-10 overflow-hidden">
+    <section id="features" className="w-full py-20 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto relative z-10 overflow-hidden" style={{ fontFamily: FB }}>
       {/* Section Header with Typewriter Animation */}
       <motion.div
         initial={{ opacity: 0, y: 28 }}
@@ -112,7 +112,7 @@ export default function FeaturesSection() {
               </span>
             </div>
 
-            <h3 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white mb-3 tracking-tight" style={{ fontFamily: FB }}>
+            <h3 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white mb-3 tracking-tight" style={{ fontFamily: FC }}>
               <Typewriter text="One QR Club Pass" speed={22} />
             </h3>
 
@@ -182,7 +182,7 @@ export default function FeaturesSection() {
               </span>
             </div>
 
-            <h3 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white mb-3 tracking-tight" style={{ fontFamily: FB }}>
+            <h3 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white mb-3 tracking-tight" style={{ fontFamily: FC }}>
               <Typewriter text="Door Check-In, No Printed List" speed={22} />
             </h3>
 
@@ -246,7 +246,7 @@ export default function FeaturesSection() {
               </span>
             </div>
 
-            <h3 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white mb-3 tracking-tight" style={{ fontFamily: FB }}>
+            <h3 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white mb-3 tracking-tight" style={{ fontFamily: FC }}>
               <Typewriter text="Every Rupee in One Ledger" speed={22} />
             </h3>
 
@@ -304,7 +304,7 @@ export default function FeaturesSection() {
               </span>
             </div>
 
-            <h3 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white mb-3 tracking-tight" style={{ fontFamily: FB }}>
+            <h3 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white mb-3 tracking-tight" style={{ fontFamily: FC }}>
               <Typewriter text="Single-Use Club Keys" speed={22} />
             </h3>
 

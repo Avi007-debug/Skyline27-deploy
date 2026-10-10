@@ -3,8 +3,8 @@ import { Smartphone, LayoutDashboard, Globe, ShieldCheck } from "lucide-react";
 import Typewriter from "./Typewriter";
 
 const FM = "'JetBrains Mono', monospace";
-const FB = "'Manrope', sans-serif";
-const FC = "'Playfair Display', serif";
+const FB = "'Archivo', sans-serif";
+const FC = "'Space Grotesk', sans-serif";
 
 const CLIENTS = [
   {
@@ -47,7 +47,7 @@ const CLIENTS = [
 
 export default function EcosystemSection() {
   return (
-    <section id="ecosystem" className="w-full py-20 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto relative z-10">
+    <section id="ecosystem" className="w-full py-20 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto relative z-10" style={{ fontFamily: FB }}>
       {/* Header with Typewriter Animation */}
       <motion.div
         initial={{ opacity: 0, y: 28 }}
@@ -87,7 +87,7 @@ export default function EcosystemSection() {
                   </span>
                 </div>
 
-                <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-1" style={{ fontFamily: FB }}>
+                <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-1" style={{ fontFamily: FC }}>
                   {client.title}
                 </h3>
                 <div className={`text-[10px] font-mono mb-3 ${client.techColor}`}>

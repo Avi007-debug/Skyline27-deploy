@@ -4,7 +4,8 @@ import { QrCode, Users, CheckCircle2, RotateCcw, Copy, Check, Sparkles, MapPin, 
 
 const FM = "'JetBrains Mono', monospace";
 const F_LOGO = "'Cinzel', serif";
-const FB = "'Manrope', sans-serif";
+const FB = "'Archivo', sans-serif";
+const FC = "'Space Grotesk', sans-serif";
 
 export default function InteractiveTicketPass() {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -48,7 +49,7 @@ export default function InteractiveTicketPass() {
       viewport={{ once: false, amount: 0.15 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="relative flex flex-col items-center select-none py-2"
-      style={{ perspective: 1200 }}
+      style={{ perspective: 1200, fontFamily: FB }}
     >
       {/* Mode Switcher */}
       <div className="flex items-center gap-1 p-1 rounded-full bg-stone-900/5 dark:bg-white/[0.06] backdrop-blur-xl mb-3.5 z-20 shadow-md border border-amber-900/10 dark:border-transparent">
@@ -142,7 +143,7 @@ export default function InteractiveTicketPass() {
                   <Sparkles className="w-3 h-3 text-[#F03D4E]" />
                   ANNUAL HACKATHON
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-snug mb-3" style={{ fontFamily: FB }}>
+                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-snug mb-3" style={{ fontFamily: FC }}>
                   Skyline CyberHack '26
                 </h3>
 
