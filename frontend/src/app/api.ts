@@ -1,24 +1,3 @@
-import {
-  getMockEvents,
-  saveMockEvents,
-  getMockRegistrations,
-  saveMockRegistrations,
-  getMockClub,
-  saveMockClub,
-  getMockProfile,
-  computeMockDashboardStats,
-  MockEvent,
-} from './mockData';
-
-// =========================================================================
-// MOCK DATA LAYER (DEMO MODE)
-// -------------------------------------------------------------------------
-// When USE_MOCK_DATA is true, all frontend endpoints serve realistic mock data.
-// Set USE_MOCK_DATA = false or VITE_USE_MOCK=false to connect to live backend.
-// NONE of the original backend endpoints, types, or fetch logic were deleted!
-// =========================================================================
-export const USE_MOCK_DATA: boolean = (import.meta as any).env?.VITE_USE_MOCK !== 'false';
-
 export function sanitizeErrorMessage(err: any, fallback: string = "Something went wrong. Please try again."): string {
   if (!err) return fallback;
 
@@ -154,40 +133,10 @@ async function request(path: string, options: RequestInit = {}, token?: string) 
 }
 
 export async function fetchPublicStats() {
-  if (USE_MOCK_DATA) {
-    const events = getMockEvents();
-    const regs = getMockRegistrations();
-    return {
-      liveEvents: events.filter(e => e.status !== 'previous').length,
-      registrations: regs.length,
-      clubs: 14,
-      totalEvents: events.length,
-      totalStudents: 1420,
-    };
-  }
   return request('/public/stats');
 }
 
 export async function clubLogin(email: string, password: string) {
-  if (USE_MOCK_DATA) {
-    await new Promise(r => setTimeout(r, 350));
-    const club = getMockClub();
-    const cleanEmail = email.trim().toLowerCase();
-    const prefix = cleanEmail.split('@')[0] || 'Admin';
-    const profile = {
-      id: 'user-demo-admin',
-      fullName: prefix.charAt(0).toUpperCase() + prefix.slice(1) + ' Admin',
-      email: cleanEmail,
-      clubId: club.id,
-      hasPassword: true,
-    };
-    const token = 'skyline_mock_jwt_token_' + Date.now();
-    return {
-      message: 'Logged in successfully',
-      profile,
-      token,
-    };
-  }
   return request('/auth/club-login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
@@ -200,27 +149,14 @@ export async function syncProfile(
   name: string,
   token?: string
 ) {
-  if (USE_MOCK_DATA) {
-    const profile = getMockProfile();
-    return {
-      message: 'Profile synced',
-      profile: {
-        ...profile,
-        email: email || profile.email,
-        fullName: name || profile.fullName,
-      },
-    };
-  }
   return request('/auth/sync', {
     method: 'POST',
     body: JSON.stringify({ clerkUserId, email, name }),
   }, token);
+
 }
 
 export async function getProfile(userId: string) {
-  if (USE_MOCK_DATA) {
-    return { profile: getMockProfile() };
-  }
   return request(`/profiles/${userId}`);
 }
 
@@ -228,9 +164,6 @@ export async function changePassword(data: {
   oldPassword?: string;
   newPassword?: string;
 }, token?: string) {
-  if (USE_MOCK_DATA) {
-    return { message: 'Password updated successfully.' };
-  }
   return request('/auth/change-password', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -238,16 +171,6 @@ export async function changePassword(data: {
 }
 
 export async function fetchEvents() {
-  if (USE_MOCK_DATA) {
-    const events = getMockEvents();
-    const regs = getMockRegistrations();
-    return {
-      events: events.map(e => ({
-        ...e,
-        registrationCount: regs.filter(r => r.eventId === e.id).length,
-      })),
-    };
-  }
   return request('/events');
 }
 
@@ -268,38 +191,6 @@ export async function createEvent(data: {
   qrUrl?: string;
   upiId?: string;
 }, token?: string) {
-  if (USE_MOCK_DATA) {
-    await new Promise(r => setTimeout(r, 350));
-    const events = getMockEvents();
-    const newEvt: MockEvent = {
-      id: 'evt-' + Date.now(),
-      title: data.name,
-      name: data.name,
-      description: data.description || '',
-      date: data.eventDate || new Date().toISOString(),
-      eventDate: data.eventDate || new Date().toISOString(),
-      eventEndDate: data.eventEndDate || new Date(Date.now() + 86400000).toISOString(),
-      venue: data.venue || 'TBD',
-      capacity: data.registrationLimit ? Number(data.registrationLimit) : 100,
-      registrationLimit: data.registrationLimit ? Number(data.registrationLimit) : 100,
-      type: data.eventType || 'Solo',
-      eventType: data.eventType || 'Solo',
-      teamSizeLimit: data.teamSizeLimit ? Number(data.teamSizeLimit) : null,
-      minTeamSize: data.minTeamSize ? Number(data.minTeamSize) : null,
-      club: 'Skyline Innovation Hub',
-      club_id: data.clubId || 'club-skyline-01',
-      clubId: data.clubId || 'club-skyline-01',
-      status: 'upcoming',
-      price: data.fee ? Number(data.fee) : 0,
-      fee: data.fee ? Number(data.fee) : 0,
-      qrUrl: data.qrUrl || null,
-      bannerUrl: data.bannerUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&auto=format&fit=crop&q=80',
-      registrationDeadline: data.registrationDeadline || new Date().toISOString(),
-      pendingCount: 0,
-    };
-    saveMockEvents([newEvt, ...events]);
-    return { event: newEvt };
-  }
   return request('/events/create', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -307,12 +198,6 @@ export async function createEvent(data: {
 }
 
 export async function updateEventDeadline(eventId: string, deadline: string, token?: string) {
-  if (USE_MOCK_DATA) {
-    const events = getMockEvents();
-    const updated = events.map(e => e.id === eventId ? { ...e, registrationDeadline: deadline } : e);
-    saveMockEvents(updated);
-    return { event: updated.find(e => e.id === eventId) };
-  }
   return request(`/events/${eventId}/deadline`, {
     method: 'PUT',
     body: JSON.stringify({ registrationDeadline: deadline }),
@@ -330,28 +215,6 @@ export async function updateEvent(eventId: string, data: {
   bannerUrl?: string;
   password?: string;
 }, token?: string) {
-  if (USE_MOCK_DATA) {
-    const events = getMockEvents();
-    const updated = events.map(e => {
-      if (e.id === eventId) {
-        return {
-          ...e,
-          venue: data.venue !== undefined ? data.venue : e.venue,
-          registrationLimit: data.registrationLimit !== undefined ? Number(data.registrationLimit) : e.registrationLimit,
-          capacity: data.registrationLimit !== undefined ? Number(data.registrationLimit) : e.capacity,
-          teamSizeLimit: data.teamSizeLimit !== undefined ? Number(data.teamSizeLimit) : e.teamSizeLimit,
-          minTeamSize: data.minTeamSize !== undefined ? Number(data.minTeamSize) : e.minTeamSize,
-          bannerUrl: data.bannerUrl !== undefined ? data.bannerUrl : e.bannerUrl,
-          eventDate: data.eventDate || e.eventDate,
-          eventEndDate: data.eventEndDate || e.eventEndDate,
-          registrationDeadline: data.registrationDeadline || e.registrationDeadline,
-        };
-      }
-      return e;
-    });
-    saveMockEvents(updated);
-    return { event: updated.find(e => e.id === eventId) };
-  }
   return request(`/events/${eventId}`, {
     method: 'PUT',
     body: JSON.stringify(data),
@@ -359,16 +222,10 @@ export async function updateEvent(eventId: string, data: {
 }
 
 export async function fetchClubs() {
-  if (USE_MOCK_DATA) {
-    return { clubs: [getMockClub()] };
-  }
   return request('/clubs');
 }
 
 export async function verifyRegistrationKey(key: string) {
-  if (USE_MOCK_DATA) {
-    return { valid: true, message: 'Authorization key verified successfully.' };
-  }
   return request('/clubs/verify-key', {
     method: 'POST',
     body: JSON.stringify({ key }),
@@ -376,9 +233,6 @@ export async function verifyRegistrationKey(key: string) {
 }
 
 export async function checkClubEmail(email: string) {
-  if (USE_MOCK_DATA) {
-    return { exists: false, message: 'Email is available.' };
-  }
   return request('/clubs/check-email', {
     method: 'POST',
     body: JSON.stringify({ email }),
@@ -386,23 +240,6 @@ export async function checkClubEmail(email: string) {
 }
 
 export async function googleAuth(authPayload: { credential?: string; access_token?: string; registrationKey?: string; clubName?: string }) {
-  if (USE_MOCK_DATA) {
-    await new Promise(r => setTimeout(r, 400));
-    const club = getMockClub();
-    const profile = {
-      id: 'user-google-demo',
-      fullName: authPayload.clubName || 'Skyline Organizer',
-      email: 'organizer@skylineos.com',
-      clubId: club.id,
-      hasPassword: true,
-    };
-    return {
-      message: 'Google login successful',
-      profile,
-      club,
-      token: 'skyline_mock_google_jwt_' + Date.now(),
-    };
-  }
   return request('/auth/google', {
     method: 'POST',
     body: JSON.stringify(authPayload),
@@ -417,19 +254,6 @@ export async function createClub(data: {
   password?: string;
   registrationKey: string;
 }, token?: string) {
-  if (USE_MOCK_DATA) {
-    const club = {
-      id: 'club-' + Date.now(),
-      name: data.name,
-      email: data.email,
-      logoUrl: data.logoUrl || '/logo.png',
-      upiId: 'skyline@upi',
-      qrUrl: null,
-      adminIds: ['user-demo-admin'],
-    };
-    saveMockClub(club);
-    return { club };
-  }
   return request('/clubs', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -444,19 +268,6 @@ export async function updateClub(clubId: string, data: {
   qrUrl?: string;
   password?: string;
 }, token?: string) {
-  if (USE_MOCK_DATA) {
-    const club = getMockClub();
-    const updated = {
-      ...club,
-      name: data.name ?? club.name,
-      email: data.email ?? club.email,
-      logoUrl: data.logoUrl !== undefined ? data.logoUrl : club.logoUrl,
-      upiId: data.upiId !== undefined ? data.upiId : club.upiId,
-      qrUrl: data.qrUrl !== undefined ? data.qrUrl : club.qrUrl,
-    };
-    saveMockClub(updated);
-    return { club: updated };
-  }
   return request(`/clubs/${clubId}`, {
     method: 'PUT',
     body: JSON.stringify(data),
@@ -464,35 +275,16 @@ export async function updateClub(clubId: string, data: {
 }
 
 export async function fetchEventRegistrations(eventId: string, token?: string) {
-  if (USE_MOCK_DATA) {
-    const allRegs = getMockRegistrations();
-    const eventRegs = allRegs.filter(r => r.eventId === eventId);
-    return { registrations: eventRegs };
-  }
   return request(`/events/${eventId}/registrations`, {}, token);
 } 
 
 export async function approveRegistration(registrationId: string, token?: string) {
-  if (USE_MOCK_DATA) {
-    await new Promise(r => setTimeout(r, 250));
-    const allRegs = getMockRegistrations();
-    const updated = allRegs.map(r => r.id === registrationId ? { ...r, status: 'CONFIRMED' as const } : r);
-    saveMockRegistrations(updated);
-    return { message: 'Registration approved and notification sent.' };
-  }
   return request(`/registrations/${registrationId}/approve`, {
     method: 'PUT',
   }, token);
 }
 
 export async function rejectRegistration(registrationId: string, token?: string) {
-  if (USE_MOCK_DATA) {
-    await new Promise(r => setTimeout(r, 250));
-    const allRegs = getMockRegistrations();
-    const updated = allRegs.map(r => r.id === registrationId ? { ...r, status: 'REJECTED' as const } : r);
-    saveMockRegistrations(updated);
-    return { message: 'Registration rejected successfully.' };
-  }
   return request(`/registrations/${registrationId}/reject`, {
     method: 'DELETE',
   }, token);
@@ -502,10 +294,6 @@ export async function fetchAllRegistrationsForEvents(
   events: { id: string; title: string }[],
   token?: string
 ): Promise<any[]> {
-  if (USE_MOCK_DATA) {
-    const allRegs = getMockRegistrations();
-    return allRegs;
-  }
   if (events.length === 0) return [];
   const results = await Promise.allSettled(
     events.map(ev =>
@@ -518,43 +306,10 @@ export async function fetchAllRegistrationsForEvents(
 }
 
 export async function fetchClubDashboardStats(clubId: string, token?: string) {
-  if (USE_MOCK_DATA) {
-    return computeMockDashboardStats();
-  }
   return request(`/clubs/${clubId}/dashboard-stats`, {}, token);
 }
 
 export async function verifyTicketQR(ticketId: string, eventId: string, token?: string) {
-  if (USE_MOCK_DATA) {
-    await new Promise(r => setTimeout(r, 350));
-    const allRegs = getMockRegistrations();
-    let reg = allRegs.find(r => r.id === ticketId || (r.team && r.team.passkey === ticketId.trim().toUpperCase()));
-    if (!reg) {
-      reg = allRegs[0];
-    }
-    const nowStr = new Date().toISOString();
-    const updated = allRegs.map(r => r.id === reg!.id ? { ...r, checkedInAt: nowStr } : r);
-    saveMockRegistrations(updated);
-
-    return {
-      valid: true,
-      alreadyCheckedIn: false,
-      ticket: {
-        id: reg.id,
-        status: 'CONFIRMED',
-        createdAt: reg.created_at,
-        event: {
-          id: reg.eventId,
-          title: reg.eventTitle,
-          date: reg.created_at,
-          venue: 'Apex Auditorium & Innovation Hall',
-          eventType: reg.team ? 'Team' : 'Solo',
-        },
-        attendee: reg.user,
-        team: reg.team,
-      },
-    };
-  }
   return request(`/registrations/verify-ticket`, {
     method: 'POST',
     body: JSON.stringify({ ticketId, eventId }),
