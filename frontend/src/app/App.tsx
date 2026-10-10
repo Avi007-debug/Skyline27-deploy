@@ -5,8 +5,10 @@ import {
   ArrowRight, Calendar, Users, CreditCard, Plus, MapPin,
   ChevronRight, Eye, EyeOff, LayoutDashboard,
   CheckCircle, Zap, Shield, ChevronLeft, ChevronDown, Check, Upload,
-  X, Key, Copy, Settings, LogOut, Mail, Menu, AlertTriangle, Image as ImageIcon, Camera, QrCode, RotateCcw
+  X, Key, Copy, Settings, LogOut, Mail, Menu, AlertTriangle, Image as ImageIcon, Camera, QrCode, RotateCcw,
+  Wallet
 } from "lucide-react";
+import FinanceApp from "./finance/FinanceApp";
 import { Html5Qrcode } from "html5-qrcode";
 import { useGoogleLogin } from "@react-oauth/google";
 import { syncProfile, fetchEvents, fetchClubs, fetchEventRegistrations, approveRegistration, rejectRegistration, createEvent, fetchAllRegistrationsForEvents, createClub, fetchClubDashboardStats, updateClub, fetchPublicStats, clubLogin, changePassword, updateEventDeadline, updateEvent, sanitizeErrorMessage, verifyRegistrationKey, checkClubEmail, googleAuth, verifyTicketQR } from "./api";
@@ -4696,6 +4698,7 @@ function ClubOnboardingPage({ onSuccess }: ClubOnboardingPageProps) {
 const DASH_NAV = [
   { icon: LayoutDashboard, label: "Overview",  id: "overview" },
   { icon: Calendar,        label: "Events",    id: "events"   },
+  { icon: Wallet,          label: "Finance",   id: "finance"  },
   { icon: Settings,        label: "Settings",  id: "settings" },
 ];
 
@@ -5140,12 +5143,17 @@ function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onSignOut:
                  <TeamsPage />
               </motion.div>
             )}
+            {activeTab === "finance" && (
+              <motion.div key="finance" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
+                 <FinanceApp clubId={profile?.clubId} getToken={getToken} />
+              </motion.div>
+            )}
             {activeTab === "settings" && (
               <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
                  <SettingsPage club={clubs.find((c: any) => c.id === profile?.clubId)} profile={profile} getToken={getToken} onUpdate={refreshEvents} onLogout={onSignOut} />
               </motion.div>
             )}
-            {activeTab !== "overview" && activeTab !== "teams" && activeTab !== "events" && activeTab !== "settings" && activeTab !== "create" && (
+            {activeTab !== "overview" && activeTab !== "teams" && activeTab !== "events" && activeTab !== "finance" && activeTab !== "settings" && activeTab !== "create" && (
               <motion.div key="fallback" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-10 text-[#444] text-sm" style={{ fontFamily: FB }}>
                  {DASH_NAV.find(n => n.id === activeTab)?.label || activeTab} Module - Under Construction
               </motion.div>
