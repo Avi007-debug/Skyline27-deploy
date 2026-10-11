@@ -20,15 +20,23 @@
   --popover-foreground: var(--sk-fg);
   --primary: var(--sk-brand);
   --primary-foreground: #ffffff;
+  --primary-hover: var(--sk-brand-hover);
   --secondary: var(--sk-raised);
   --secondary-foreground: var(--sk-fg);
   --muted: var(--sk-raised);
   --muted-foreground: var(--sk-muted);
   --accent: var(--sk-raised);
   --accent-foreground: var(--sk-fg);
-  --destructive: #d4183d;
+  --destructive: var(--sk-danger);
   --destructive-foreground: #ffffff;
+  --success: var(--sk-ok);
+  --success-foreground: #ffffff;
+  --warning: var(--sk-warn);
+  --warning-foreground: #ffffff;
+  --info: var(--sk-info);
+  --info-foreground: #ffffff;
   --border: var(--sk-line);
+  --border-strong: var(--sk-line-strong);
   --input: var(--sk-line);
   --input-background: var(--sk-raised);
   --switch-background: #e2e8f0;
@@ -61,16 +69,26 @@
   --popover-foreground: var(--sk-fg);
   --primary: var(--sk-brand);
   --primary-foreground: #ffffff;
+  --primary-hover: var(--sk-brand-hover);
   --secondary: var(--sk-raised);
   --secondary-foreground: var(--sk-fg);
   --muted: var(--sk-raised);
   --muted-foreground: var(--sk-muted);
   --accent: var(--sk-raised);
   --accent-foreground: var(--sk-fg);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --destructive: var(--sk-danger);
+  --destructive-foreground: #ffffff;
+  --success: var(--sk-ok);
+  --success-foreground: #ffffff;
+  --warning: var(--sk-warn);
+  --warning-foreground: #ffffff;
+  --info: var(--sk-info);
+  --info-foreground: #ffffff;
   --border: var(--sk-line);
+  --border-strong: var(--sk-line-strong);
   --input: var(--sk-line);
+  --input-background: var(--sk-raised);
+  --switch-background: #27272a;
   --ring: var(--sk-brand-soft);
   --font-weight-medium: 500;
   --font-weight-normal: 400;
@@ -79,6 +97,7 @@
   --chart-3: oklch(0.5 0 0);
   --chart-4: oklch(0.4 0 0);
   --chart-5: oklch(0.3 0 0);
+  --radius: 0.625rem;
   --sidebar: var(--sk-surface);
   --sidebar-foreground: var(--sk-fg);
   --sidebar-primary: var(--sk-brand);
@@ -98,6 +117,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -106,7 +126,14 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-input-background: var(--input-background);
   --color-switch-background: var(--switch-background);
@@ -128,6 +155,31 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Skyline tokens aliased directly for Tailwind utility classes */
+  --color-sk-canvas: var(--sk-canvas);
+  --color-sk-surface: var(--sk-surface);
+  --color-sk-raised: var(--sk-raised);
+  --color-sk-line: var(--sk-line);
+  --color-sk-line-strong: var(--sk-line-strong);
+  --color-sk-fg: var(--sk-fg);
+  --color-sk-muted: var(--sk-muted);
+  --color-sk-faint: var(--sk-faint);
+  --color-sk-brand: var(--sk-brand);
+  --color-sk-brand-hover: var(--sk-brand-hover);
+  --color-sk-brand-soft: var(--sk-brand-soft);
+  --color-sk-brand-xsoft: var(--sk-brand-xsoft);
+  --color-sk-ok: var(--sk-ok);
+  --color-sk-ok-soft: var(--sk-ok-soft);
+  --color-sk-warn: var(--sk-warn);
+  --color-sk-warn-soft: var(--sk-warn-soft);
+  --color-sk-info: var(--sk-info);
+  --color-sk-info-soft: var(--sk-info-soft);
+  --color-sk-danger: var(--sk-danger);
+  --color-sk-danger-soft: var(--sk-danger-soft);
+  --font-sk: var(--sk-font);
+  --font-sk-body: var(--sk-font-body);
+  --font-sk-mono: var(--sk-mono);
 }
 
 @layer base {
@@ -654,6 +706,10 @@ html.light button.bg-\[\var(--sk-brand)\],
 html.light button.bg-\[\var(--sk-brand)\] *,
 html.light .bg-\[\var(--sk-brand)\],
 html.light .bg-\[\var(--sk-brand)\] *,
+html.light .bg-sk-brand,
+html.light .bg-sk-brand *,
+html.light button.bg-sk-brand,
+html.light button.bg-sk-brand *,
 html.light button.bg-\[\#10B981\],
 html.light button.bg-\[\#10b981\],
 html.light button.bg-emerald-600,

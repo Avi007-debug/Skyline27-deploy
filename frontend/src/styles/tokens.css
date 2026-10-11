@@ -1,56 +1,176 @@
-/* Light palette: Radix Colors "Sand" (warm, low-glare). Dark palette: neutral near-black.
-   SkylineOS design tokens: the single source of colour, type and shape for all three areas
-   (student site, club dashboard, admin console). Every area's own variables alias these.
+/* ─────────────────────────────────────────────────────────────────────────────
+   SkylineOS Design Tokens
+   Single source of colour, type and shape for all three areas
+   (student site, club dashboard, admin console).
 
-   Principles: one typeface (Inter), neutral surfaces, near-black (never #000) in dark mode,
-   GDG colours: Google Blue for primary actions and focus, Green for success, Yellow for warnings; red only for errors and destructive actions, thin borders instead of glows. */
+   Light palette: GDG-inspired — Google Blue primary, warm neutral canvas.
+   Dark palette:  Near-black depth with vibrant accent and glow layers.
+   ──────────────────────────────────────────────────────────────────────────── */
 
+/* ── Light / GDG-Professional ───────────────────────────────────────────── */
 :root, .light {
-  --sk-canvas: #f1f0ef;     /* page background */
-  --sk-surface: #f9f9f8;    /* cards, panels, sidebars */
-  --sk-raised: #e9e8e6;     /* inputs, hover rows, segmented controls */
-  --sk-line: #e2e1de;       /* borders, dividers */
-  --sk-line-strong: #cfceca;
-  --sk-fg: #21201c;         /* primary text */
-  --sk-muted: #63635e;      /* secondary text */
-  --sk-faint: #82827c;      /* hints, meta */
-  --sk-brand: #1a73e8;
-  --sk-brand-hover: #1765cc;
-  --sk-brand-soft: rgba(26, 115, 232, 0.10);
-  --sk-ok: #188038;   --sk-ok-soft: rgba(52, 168, 83, 0.12);
-  --sk-warn: #b06000; --sk-warn-soft: rgba(251, 188, 4, 0.18);
-  --sk-info: #1a73e8; --sk-info-soft: rgba(26, 115, 232, 0.10);
-  --sk-shadow: 0 1px 2px rgba(33, 32, 28, 0.05);
-  --sk-shadow-lg: 0 8px 24px rgba(33, 32, 28, 0.08);
-  --sk-font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --sk-mono: ui-monospace, 'SFMono-Regular', 'Cascadia Mono', Menlo, monospace;
-  --sk-radius: 8px;
-  --sk-radius-lg: 12px;
-  --sk-danger: #d93025;
-  --sk-danger-soft: rgba(217, 48, 37, 0.10);
+  /* Canvas & surfaces */
+  --sk-canvas:         #ffffff;
+  --sk-surface:        #ffffff;
+  --sk-raised:         #f3f4f6;
+  --sk-line:           #e5e7eb;
+  --sk-line-strong:    #d1d5db;
+
+  /* Text */
+  --sk-fg:             #111827;
+  --sk-muted:          #4b5563;
+  --sk-faint:          #9ca3af;
+
+  /* GDG brand — Google Blue */
+  --sk-brand:          #1a73e8;
+  --sk-brand-hover:    #1557b0;
+  --sk-brand-soft:     rgba(26, 115, 232, 0.10);
+  --sk-brand-xsoft:    rgba(26, 115, 232, 0.06);
+
+  /* GDG semantic */
+  --sk-ok:             #188038;
+  --sk-ok-soft:        rgba(24, 128, 56, 0.10);
+  --sk-warn:           #b45309;
+  --sk-warn-soft:      rgba(251, 191, 36, 0.18);
+  --sk-info:           #1a73e8;
+  --sk-info-soft:      rgba(26, 115, 232, 0.10);
+  --sk-danger:         #c5221f;
+  --sk-danger-soft:    rgba(197, 34, 31, 0.10);
+
+  /* Shadows — crisp, professional */
+  --sk-shadow:         0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --sk-shadow-md:      0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --sk-shadow-lg:      0 12px 32px rgba(0, 0, 0, 0.10), 0 4px 8px rgba(0, 0, 0, 0.05);
+  --sk-shadow-brand:   0 4px 20px rgba(26, 115, 232, 0.25);
+
+  /* Typography */
+  --sk-font:           'Google Sans', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sk-font-body:      'Inter', 'Google Sans', ui-sans-serif, system-ui, sans-serif;
+  --sk-mono:           'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Shape */
+  --sk-radius:         8px;
+  --sk-radius-md:      12px;
+  --sk-radius-lg:      16px;
+  --sk-radius-xl:      20px;
+
+  /* Animation */
+  --sk-ease-spring:    cubic-bezier(0.16, 1, 0.3, 1);
+  --sk-ease-smooth:    cubic-bezier(0.4, 0, 0.2, 1);
+  --sk-duration-fast:  120ms;
+  --sk-duration:       200ms;
+  --sk-duration-slow:  350ms;
 }
 
+/* ── Dark / Aurora ───────────────────────────────────────────────────────── */
 .dark {
-  --sk-canvas: #0e0e10;
-  --sk-surface: #161618;
-  --sk-raised: #1d1d20;
-  --sk-line: #2a2a2e;
-  --sk-line-strong: #3a3a3f;
-  --sk-fg: #ededef;
-  --sk-muted: #a0a0a8;
-  --sk-faint: #74747c;
-  --sk-brand: #2b7de9;
-  --sk-brand-hover: #4a90ef;
-  --sk-brand-soft: rgba(138, 180, 248, 0.14);
-  --sk-ok: #81c995;   --sk-ok-soft: rgba(129, 201, 149, 0.14);
-  --sk-warn: #fdd663; --sk-warn-soft: rgba(253, 214, 99, 0.14);
-  --sk-info: #8ab4f8; --sk-info-soft: rgba(138, 180, 248, 0.14);
-  --sk-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --sk-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.45);
-  --sk-danger: #f28b82;
-  --sk-danger-soft: rgba(242, 139, 130, 0.14);
+  /* Canvas & surfaces */
+  --sk-canvas:         #0b0b0d;
+  --sk-surface:        #141416;
+  --sk-raised:         #1c1c1f;
+  --sk-line:           #27272a;
+  --sk-line-strong:    #3f3f46;
+
+  /* Text */
+  --sk-fg:             #fafafa;
+  --sk-muted:          #a1a1aa;
+  --sk-faint:          #71717a;
+
+  /* Brand (lighter for dark bg contrast) */
+  --sk-brand:          #4a8ff5;
+  --sk-brand-hover:    #6fa8f8;
+  --sk-brand-soft:     rgba(74, 143, 245, 0.15);
+  --sk-brand-xsoft:    rgba(74, 143, 245, 0.08);
+
+  /* Semantic */
+  --sk-ok:             #4ade80;
+  --sk-ok-soft:        rgba(74, 222, 128, 0.14);
+  --sk-warn:           #fbbf24;
+  --sk-warn-soft:      rgba(251, 191, 36, 0.14);
+  --sk-info:           #60a5fa;
+  --sk-info-soft:      rgba(96, 165, 250, 0.14);
+  --sk-danger:         #f87171;
+  --sk-danger-soft:    rgba(248, 113, 113, 0.14);
+
+  /* Shadows — deep, glowy */
+  --sk-shadow:         0 1px 3px rgba(0, 0, 0, 0.4);
+  --sk-shadow-md:      0 4px 16px rgba(0, 0, 0, 0.5);
+  --sk-shadow-lg:      0 16px 48px rgba(0, 0, 0, 0.6);
+  --sk-shadow-brand:   0 4px 24px rgba(74, 143, 245, 0.20);
+
+  /* Typography — same stacks */
+  --sk-font:           'Inter', 'Google Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sk-font-body:      'Inter', ui-sans-serif, system-ui, sans-serif;
+  --sk-mono:           'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Shape — same as light */
+  --sk-radius:         8px;
+  --sk-radius-md:      12px;
+  --sk-radius-lg:      16px;
+  --sk-radius-xl:      20px;
+
+  /* Aurora glow vars for dark-specific decorations */
+  --sk-glow-blue:      rgba(74, 143, 245, 0.18);
+  --sk-glow-purple:    rgba(139, 92, 246, 0.14);
+  --sk-glow-teal:      rgba(20, 184, 166, 0.12);
+
+  /* Animation — same */
+  --sk-ease-spring:    cubic-bezier(0.16, 1, 0.3, 1);
+  --sk-ease-smooth:    cubic-bezier(0.4, 0, 0.2, 1);
+  --sk-duration-fast:  120ms;
+  --sk-duration:       200ms;
+  --sk-duration-slow:  350ms;
 }
 
-html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-.tabular, td, .sk-num { font-variant-numeric: tabular-nums; }
-::selection { background: var(--sk-brand-soft); }
+/* ── Global resets & utilities ──────────────────────────────────────────── */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+body { font-family: var(--sk-font-body); }
+
+/* Numbers always tabular for alignment in tables/dashboards */
+.tabular, td, .sk-num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Brand text selection */
+::selection {
+  background: var(--sk-brand-soft);
+  color: var(--sk-fg);
+}
+
+/* Page transition: fade+slide provided via CSS for the initial mount */
+@keyframes sk-page-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.sk-page-enter {
+  animation: sk-page-in 0.3s var(--sk-ease-spring) forwards;
+}
+
+/* Scrollbar — thin, theme-aware */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sk-line-strong) transparent;
+}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--sk-line-strong); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--sk-faint); }
+
+/* Focus ring — always brand-coloured, never offset-ugly */
+:focus-visible {
+  outline: 2px solid var(--sk-brand);
+  outline-offset: 2px;
+}
+
+/* Dark-mode aurora gradient decoration — used via class or pseudo-elements */
+.dark .sk-aurora-bg {
+  background: radial-gradient(ellipse 80% 50% at 20% -10%, var(--sk-glow-blue), transparent),
+              radial-gradient(ellipse 60% 40% at 80% 110%, var(--sk-glow-purple), transparent),
+              radial-gradient(ellipse 50% 30% at 50% 60%,  var(--sk-glow-teal), transparent);
+}
