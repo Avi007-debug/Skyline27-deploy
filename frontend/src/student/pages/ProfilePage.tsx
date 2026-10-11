@@ -170,12 +170,15 @@ export default function ProfilePage() {
       {/* ── Stats Row ──────────────────────────────────── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 28 }}>
         {[
-          { icon: <Ticket size={22} color="var(--color-crimson)" strokeWidth={1.8} />, label: 'Registered', value: stats.registrationsCount },
-          { icon: <Bookmark size={22} color="var(--color-crimson)" strokeWidth={1.8} />, label: 'Saved', value: stats.savedCount },
-          { icon: <Users size={22} color="var(--color-crimson)" strokeWidth={1.8} />, label: 'Clubs', value: stats.clubsCount },
-        ].map(({ icon, label, value }) => (
-          <div
+          { icon: <Ticket size={22} color="var(--color-crimson)" strokeWidth={1.8} />, label: 'Registered', value: stats.registrationsCount, path: '/tickets' },
+          { icon: <Bookmark size={22} color="var(--color-crimson)" strokeWidth={1.8} />, label: 'Saved', value: stats.savedCount, path: '/tickets' },
+          { icon: <Users size={22} color="var(--color-crimson)" strokeWidth={1.8} />, label: 'Clubs', value: stats.clubsCount, path: '/clubs' },
+        ].map(({ icon, label, value, path }) => (
+          <button
             key={label}
+            type="button"
+            onClick={() => navigate(path)}
+            title={`View ${label}`}
             style={{
               background: 'var(--surface)',
               border: '1px solid var(--border)',
@@ -185,13 +188,42 @@ export default function ProfilePage() {
               flexDirection: 'column',
               alignItems: 'center',
               gap: 8,
+              cursor: 'pointer',
+              transition: 'transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.borderColor = 'var(--sk-brand)';
+              e.currentTarget.style.boxShadow = 'var(--sk-shadow)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.borderColor = 'var(--border)';
+              e.currentTarget.style.boxShadow = 'none';
             }}
           >
             {icon}
             <p style={{ fontSize: 24, fontWeight: 900, color: 'var(--text)', lineHeight: 1 }}>{value}</p>
             <p style={{ fontSize: 12, color: 'var(--subtext)', fontWeight: 500 }}>{label}</p>
-          </div>
+          </button>
         ))}
+      </div>
+
+      {/* ── Activities & Passes ───────────────────────── */}
+      <SectionLabel text="My Activities & Passes" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 28 }}>
+        <SettingsRow
+          icon={<Ticket size={18} strokeWidth={1.8} />}
+          label="My Registered Events & Tickets"
+          rightLabel={`${stats.registrationsCount} ${stats.registrationsCount === 1 ? 'event' : 'events'}`}
+          onClick={() => navigate('/tickets')}
+        />
+        <SettingsRow
+          icon={<Bookmark size={18} strokeWidth={1.8} />}
+          label="Saved & Bookmarked Events"
+          rightLabel={`${stats.savedCount} saved`}
+          onClick={() => navigate('/tickets')}
+        />
       </div>
 
       {/* ── Academic Profile ─────────────────────────── */}
