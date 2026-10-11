@@ -384,11 +384,11 @@ function AuthInput({ label, type, placeholder, value, onChange }: {
 }) {
   return (
     <label className="block space-y-1.5">
-      <span className="block text-sm font-medium text-[color:var(--sk-fg)]">{label}</span>
+      <span className="block text-[11px] font-semibold text-[color:var(--sk-fg)]">{label}</span>
       <input
         type={type} placeholder={placeholder} value={value}
         onChange={e => onChange(e.target.value)}
-        className="w-full h-10 rounded-lg px-3 text-sm outline-none transition-colors border border-[color:var(--sk-line-strong)] bg-[color:var(--sk-surface)] text-[color:var(--sk-fg)] placeholder:text-[color:var(--sk-faint)] focus:border-[color:var(--sk-fg)]"
+        className="w-full h-[46px] rounded-xl px-4 text-sm outline-none transition-colors border border-[color:var(--sk-line-strong)] bg-[color:var(--sk-surface)] text-[color:var(--sk-fg)] placeholder:text-[color:var(--sk-faint)] focus:border-[color:var(--sk-fg)]"
       />
     </label>
   );
@@ -578,9 +578,9 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
       >
         <button onClick={onBack}
           className="absolute top-8 left-8 flex items-center gap-2 text-sm transition-all duration-300"
-          style={{ color: isDark ? "#999" : "var(--sk-fg)", fontFamily: FB }}
+          style={{ color: isDark ? "var(--sk-muted)" : "var(--sk-fg)", fontFamily: FB }}
           onMouseEnter={e => (e.currentTarget.style.color = 'var(--sk-fg)')}
-          onMouseLeave={e => (e.currentTarget.style.color = isDark ? "#999" : "var(--sk-fg)")}
+          onMouseLeave={e => (e.currentTarget.style.color = isDark ? "var(--sk-muted)" : "var(--sk-fg)")}
         ><ChevronLeft size={14} /> Back</button>
 
         <div className="absolute top-8 right-8">
@@ -602,7 +602,7 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
 
           <form noValidate onSubmit={handleVerifyKey} className="space-y-6">
             <div className="space-y-1.5">
-              <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Authorization Key</label>
+              <label className="text-[11px] font-semibold text-[color:var(--sk-fg)] block">Authorization Key</label>
               <input
                 type="text"
                 placeholder="SKYLINE-XXXX-XXXX"
@@ -641,19 +641,19 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
           </form>
 
           <div className="mt-8 pt-6 border-t border-white/[0.08] text-center space-y-2">
-            <p className="text-xs text-white/70 leading-relaxed font-normal" style={{ fontFamily: FB }}>
+            <p className="text-xs text-[color:var(--sk-muted)] leading-relaxed font-normal" style={{ fontFamily: FB }}>
               Need an authorization key? Mail us at{" "}
-              <a href="mailto:abhishshetty05@gmail.com" className="text-[#10B981] font-medium hover:text-[#34d399] transition-colors underline underline-offset-2">
+              <a href="mailto:abhishshetty05@gmail.com" className="text-[color:var(--sk-brand)] font-medium hover:opacity-80 transition-opacity underline underline-offset-2">
                 abhishshetty05@gmail.com
               </a>
             </p>
-            <p className="text-xs text-white/60 leading-relaxed font-normal max-w-sm mx-auto" style={{ fontFamily: FB }}>
+            <p className="text-xs text-[color:var(--sk-muted)] leading-relaxed font-normal max-w-sm mx-auto" style={{ fontFamily: FB }}>
               Requests must be submitted using an official club mail ID or student mail ID. Personal email requests will not be processed.
             </p>
           </div>
 
-          <p className="text-center text-[11px] text-[#555] mt-6" style={{ fontFamily: FM }}>Already have an account?{" "}
-            <button onClick={() => { setError(null); setRegistrationKey(""); onTabChange("login"); }} className="text-white/50 hover:text-white transition-colors underline underline-offset-2">Sign In</button>
+          <p className="text-center text-xs text-[color:var(--sk-muted)] mt-6">Already have an account?{" "}
+            <button onClick={() => { setError(null); setRegistrationKey(""); onTabChange("login"); }} className="text-[color:var(--sk-muted)] hover:text-[color:var(--sk-fg)] transition-colors underline underline-offset-2">Sign In</button>
           </p>
         </div>
       </motion.div>
@@ -673,7 +673,7 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
         className="absolute top-8 left-8 flex items-center gap-2 text-sm transition-all duration-300"
         style={{ color: "var(--sk-fg)", fontFamily: FB }}
         onMouseEnter={e => (e.currentTarget.style.color = 'var(--sk-fg)')}
-        onMouseLeave={e => (e.currentTarget.style.color = isDark ? "#999999" : "var(--sk-fg)")}
+        onMouseLeave={e => (e.currentTarget.style.color = isDark ? "var(--sk-muted)" : "var(--sk-fg)")}
       ><ChevronLeft size={14} /> Back</button>
 
       <div className="absolute top-8 right-8">
@@ -700,8 +700,8 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
               )}
               <span className={`relative z-10 transition-colors duration-300 font-semibold ${
                 tab === t
-                  ? (isDark ? "text-black" : "text-[color:var(--sk-fg)]")
-                  : (isDark ? "text-[#aaaaaa]" : "text-slate-500 hover:text-slate-900")
+                  ? "text-[color:var(--sk-fg)]"
+                  : "text-[color:var(--sk-muted)] hover:text-[color:var(--sk-fg)]"
               }`}>
                 {t === "login" ? "Sign In" : "Sign Up"}
               </span>
@@ -735,13 +735,12 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
               <form noValidate onSubmit={tab === "login" ? handleSignIn : handleSignUp} className="space-y-6">
                 {tab === "register" && (
                   <div className="space-y-1.5">
-                    <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Club Name</label>
+                    <label className="text-[11px] font-semibold text-[color:var(--sk-fg)] block">Club Name</label>
                     <input 
                       type="text" 
                       placeholder="Enter club name" 
                       required
-                      className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all focus:border-white/30" 
-                      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }} 
+                      className="w-full h-[46px] rounded-xl px-4 text-sm outline-none transition-colors border border-[color:var(--sk-line-strong)] bg-[color:var(--sk-surface)] text-[color:var(--sk-fg)] placeholder:text-[color:var(--sk-faint)] focus:border-[color:var(--sk-fg)]" 
                       value={clubName} 
                       onChange={e => setClubName(e.target.value)}
                     />
@@ -749,34 +748,32 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
                 )}
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Email ID</label>
+                  <label className="text-[11px] font-semibold text-[color:var(--sk-fg)] block">Email ID</label>
                   <input 
                     type="email" 
                     placeholder="Enter email address" 
                     required
-                    className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all focus:border-white/30" 
-                    style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }} 
+                    className="w-full h-[46px] rounded-xl px-4 text-sm outline-none transition-colors border border-[color:var(--sk-line-strong)] bg-[color:var(--sk-surface)] text-[color:var(--sk-fg)] placeholder:text-[color:var(--sk-faint)] focus:border-[color:var(--sk-fg)]" 
                     value={email} 
                     onChange={e => setEmail(e.target.value)}
                   />
                 </div>
 
                 <div className="space-y-1.5 relative">
-                  <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Password</label>
+                  <label className="text-[11px] font-semibold text-[color:var(--sk-fg)] block">Password</label>
                   <div className="relative">
                     <input 
                       type={showPassword ? "text" : "password"} 
                       placeholder="Enter password" 
                       required
-                      className="w-full rounded-xl pl-4 pr-12 py-3 text-sm text-white outline-none transition-all focus:border-white/30" 
-                      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }} 
+                      className="w-full h-[46px] rounded-xl pl-4 pr-12 text-sm outline-none transition-colors border border-[color:var(--sk-line-strong)] bg-[color:var(--sk-surface)] text-[color:var(--sk-fg)] placeholder:text-[color:var(--sk-faint)] focus:border-[color:var(--sk-fg)]" 
                       value={password} 
                       onChange={e => setPassword(e.target.value)}
                     />
                     <button 
                       type="button" 
                       onClick={() => setShowPassword(!showPassword)} 
-                      className="password-toggle-btn absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-800 dark:text-white/65 dark:hover:text-white transition-colors bg-transparent border-0 outline-none p-1 cursor-pointer flex items-center justify-center"
+                      className="password-toggle-btn absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-800 dark:text-[color:var(--sk-muted)] dark:hover:text-[color:var(--sk-fg)] transition-colors bg-transparent border-0 outline-none p-1 cursor-pointer flex items-center justify-center"
                       style={{ background: "transparent", backgroundColor: "transparent", border: "none", boxShadow: "none" }}
                       aria-label={showPassword ? "Hide password" : "Show password"}
                     >
@@ -790,7 +787,7 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
                     <button
                       type="button"
                       onClick={() => { setShowForgotModal(true); setForgotEmail(email); setForgotDone(false); setForgotError(null); }}
-                      className="text-[11px] text-white/40 hover:text-[color:var(--sk-fg)] transition-colors cursor-pointer underline-offset-2"
+                      className="text-[11px] text-[color:var(--sk-muted)] hover:text-[color:var(--sk-fg)] transition-colors cursor-pointer underline-offset-2"
                       style={{ fontFamily: FB }}
                     >
                       Forgot password?
@@ -821,7 +818,7 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
               {tab === "login" && (<>
               <div className="flex items-center gap-4 my-6">
                 <div className={`h-[1px] flex-1 ${isDark ? "bg-white/10" : "bg-black/10"}`} />
-                <span className={`text-[11px] tracking-normal ${isDark ? "text-white/55" : "text-[color:var(--sk-muted)]"}`} style={{ fontFamily: FM }}>or</span>
+                <span className={`text-[11px] tracking-normal ${isDark ? "text-[color:var(--sk-muted)]" : "text-[color:var(--sk-muted)]"}`} style={{ fontFamily: FM }}>or</span>
                 <div className={`h-[1px] flex-1 ${isDark ? "bg-white/10" : "bg-black/10"}`} />
               </div>
 
@@ -831,7 +828,7 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                 className={`cursor-pointer w-full flex items-center justify-center gap-3 py-3 text-sm font-semibold rounded-xl transition-all duration-300 ${
                   isDark
-                    ? "bg-white/5 border border-white/10 hover:bg-white/10 text-white"
+                    ? "bg-white/5 border border-white/10 hover:bg-white/10 text-[color:var(--sk-fg)]"
                     : "bg-[color:var(--sk-surface)]/70 border border-slate-300 hover:bg-black/5 text-[color:var(--sk-fg)] shadow-sm"
                 }`}
                 style={{ fontFamily: FB }}
@@ -847,7 +844,7 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
               </>)}
 
               {tab === "login" && (
-                <p className="text-center text-xs text-[#999999] mt-6" style={{ fontFamily: FB }}>
+                <p className="text-center text-xs text-[color:var(--sk-muted)] mt-6" style={{ fontFamily: FB }}>
                   Want to register a new club?{" "}
                   <button
                     type="button"
@@ -890,12 +887,12 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               transition={{ type: "spring", stiffness: 380, damping: 28 }}
               className="w-full max-w-sm p-8 rounded-xl relative"
-              style={{ background: "#0c0c12", border: "1px solid rgba(255,255,255,0.09)" }}
+              style={{ background: "var(--sk-surface)", border: "1px solid var(--sk-line)", boxShadow: "var(--sk-shadow-lg)" }}
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 onClick={() => { setShowForgotModal(false); setForgotDone(false); }}
-                className="absolute top-4 right-4 text-white/30 hover:text-white transition-colors cursor-pointer"
+                className="absolute top-4 right-4 text-[color:var(--sk-muted)] hover:text-[color:var(--sk-fg)] transition-colors cursor-pointer"
               >
                 <X size={16} />
               </button>
@@ -905,35 +902,35 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
                   <div className="w-14 h-14 rounded-full bg-green-500/15 border border-green-500/25 flex items-center justify-center mx-auto mb-5">
                     <CheckCircle size={28} className="text-green-400" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2" style={{ fontFamily: FC }}>Check your inbox</h3>
-                  <p className="text-sm text-white/50 leading-relaxed" style={{ fontFamily: FB }}>
+                  <h3 className="text-xl font-bold text-[color:var(--sk-fg)] mb-2" style={{ fontFamily: FC }}>Check your inbox</h3>
+                  <p className="text-sm text-[color:var(--sk-muted)] leading-relaxed" style={{ fontFamily: FB }}>
                     If an account exists for that email, a reset link has been sent. It expires in 1 hour.
                   </p>
                   <button
                     onClick={() => { setShowForgotModal(false); setForgotDone(false); }}
-                    className="mt-6 w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-sm text-white/70 hover:text-white transition-all cursor-pointer"
+                    className="mt-6 w-full py-2.5 rounded-xl bg-[color:var(--sk-raised)] hover:bg-[color:var(--sk-line)] text-sm text-[color:var(--sk-muted)] hover:text-[color:var(--sk-fg)] transition-all cursor-pointer"
                     style={{ fontFamily: FB }}
                   >Done</button>
                 </motion.div>
               ) : (
                 <>
                   <div className="mb-6">
-                    <div className="w-12 h-12 rounded-xl bg-[color:var(--sk-danger-soft)] border border-[color:var(--sk-danger)]/30 flex items-center justify-center mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-[color:var(--sk-raised)] border border-[color:var(--sk-line)] flex items-center justify-center mb-4">
                       <Mail size={22} className="text-[color:var(--sk-fg)]" />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-1" style={{ fontFamily: FC }}>Reset password</h3>
-                    <p className="text-xs text-white/40" style={{ fontFamily: FB }}>Enter your email address to receive a secure reset link.</p>
+                    <h3 className="text-xl font-bold text-[color:var(--sk-fg)] mb-1" style={{ fontFamily: FC }}>Reset password</h3>
+                    <p className="text-xs text-[color:var(--sk-muted)]" style={{ fontFamily: FB }}>Enter your email address to receive a secure reset link.</p>
                   </div>
                   <form onSubmit={handleForgotPassword} className="space-y-4">
                     <div>
-                      <label className="text-[10px] tracking-normal text-white/40 block mb-1.5" style={{ fontFamily: FM }}>Email address</label>
+                      <label className="text-[10px] tracking-normal text-[color:var(--sk-muted)] block mb-1.5" style={{ fontFamily: FM }}>Email address</label>
                       <input
                         type="email"
                         value={forgotEmail}
                         onChange={(e) => setForgotEmail(e.target.value)}
                         placeholder="club@example.com"
                         autoFocus
-                        className="w-full px-4 py-2.5 rounded-xl text-sm text-white outline-none transition-all"
+                        className="w-full px-4 py-2.5 rounded-xl text-sm text-[color:var(--sk-fg)] outline-none transition-all"
                         style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }}
                         onFocus={(e) => (e.currentTarget.style.borderColor = "color-mix(in srgb, var(--sk-brand) 50%, transparent)")}
                         onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}

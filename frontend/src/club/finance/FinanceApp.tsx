@@ -78,11 +78,9 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
   const getHeaders = useCallback(() => {
     const raw = getToken ? (getToken() as any) : null;
     const token = (typeof raw === 'string' ? raw : null) || localStorage.getItem('spotlight_token') || '';
-    const secret = localStorage.getItem('spotlight_admin_secret') || 'skyline_admin_secret_key_2026';
     return {
       'Content-Type': 'application/json',
       Authorization: token ? `Bearer ${token}` : '',
-      'x-admin-secret': secret,
     };
   }, [getToken]);
 
@@ -266,14 +264,46 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
     }
   };
 
-  // CSV Report Download Action
-  const handleDownloadCSV = () => {
-    const params = new URLSearchParams();
-    if (clubId) params.append('clubId', clubId);
-    if (reportDateRange.from) params.append('from', reportDateRange.from);
-    if (reportDateRange.to) params.append('to', reportDateRange.to);
-    window.open(`${API_BASE}/finance/report/csv?${params.toString()}`, '_blank');
+  const [downloading, setDownloading] = useState<'csv' | 'pdf' | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+
+  /**
+   * Download a report. The address is protected, so a plain link or window.open would arrive without
+   * the login token and be refused; fetch it with the token and save the response as a file instead.
+   */
+  const downloadReport = async (kind: 'csv' | 'pdf') => {
+    setDownloading(kind);
+    setDownloadError(null);
+    try {
+      const params = new URLSearchParams();
+      if (clubId) params.append('clubId', clubId);
+      if (reportDateRange.from) params.append('from', reportDateRange.from);
+      if (reportDateRange.to) params.append('to', reportDateRange.to);
+      const headers = getHeaders() as Record<string, string>;
+      delete headers['Content-Type'];
+      const res = await fetch(`${API_BASE}/finance/report/${kind}?${params.toString()}`, { headers });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || `The server could not create the report (${res.status}).`);
+      }
+      const blob = await res.blob();
+      const fromHeader = /filename="?([^";]+)"?/i.exec(res.headers.get('Content-Disposition') || '')?.[1];
+      const filename = fromHeader || `financial_report.${kind}`;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    } catch (e: any) {
+      setDownloadError(e?.message || 'Download failed. Please try again.');
+    } finally {
+      setDownloading(null);
+    }
   };
+  const handleDownloadCSV = () => downloadReport('csv');
 
   const vault = summaryData?.summary || {
     totalIncomePaise: 0,

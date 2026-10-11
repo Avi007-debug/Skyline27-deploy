@@ -251,6 +251,27 @@ router.get('/report/csv', requireClubManager, async (req: Request, res: Response
   }
 });
 
+// Semester Financial Report as a downloadable PDF
+router.get('/report/pdf', requireClubManager, async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { from, to } = req.query;
+    const clubId = resolveClubScope(currentUser(req), optStr(req.query.clubId));
+    const { generateSemesterReport } = await import('./reports.service');
+    const { generateReportPDF } = await import('./reports.pdf');
+    const report = await generateSemesterReport({ clubId, from: from as string | undefined, to: to as string | undefined });
+    const pdf = await generateReportPDF(report);
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="skyline_financial_report_${new Date().toISOString().slice(0, 10)}.pdf"`);
+    res.setHeader('Content-Length', String(pdf.length));
+    return res.status(200).send(pdf);
+  } catch (error: any) {
+    if (error instanceof HttpError) throw error;
+    console.error('Report PDF error:', error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 // 6. Semester Financial Report HTML / Printable Document
 router.get('/report/html', requireClubManager, async (req: Request, res: Response): Promise<any> => {
   try {
