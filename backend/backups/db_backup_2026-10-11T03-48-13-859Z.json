@@ -1,0 +1,380 @@
+{
+  "metadata": {
+    "exportedAt": "2026-10-11T03:48:13.860Z",
+    "nodeEnv": "development"
+  },
+  "tables": {
+    "Club": [
+      {
+        "id": "e226ebaa-cff8-43d6-a79b-08c896d3a61d",
+        "name": "NMIT x DANCE",
+        "email": "jashminpatel4906@gmail.com",
+        "logoUrl": null,
+        "password": "$2b$10$h4TuybEjAOA.di086VtTJudLCtwhQ8Ey7C6xO63nPy9HPC3bxN.BS",
+        "qrUrl": null,
+        "upiId": null,
+        "membershipFeePaise": 0,
+        "membershipMonths": 12,
+        "isArchived": false,
+        "eventCount": 2,
+        "productCount": 1
+      },
+      {
+        "id": "c2c5c67c-98ce-4760-8b59-9973acdacbe1",
+        "name": "NMIT_HACKS",
+        "email": "abhishshetty05@gmail.com",
+        "logoUrl": null,
+        "password": "$2b$10$dNqRTJY4wtFnho6.1SCzK.FxKz0qXdSjygFfPFevH46yQOo7rB7Ua",
+        "qrUrl": null,
+        "upiId": null,
+        "membershipFeePaise": 0,
+        "membershipMonths": 12,
+        "isArchived": false,
+        "eventCount": 1,
+        "productCount": 0
+      }
+    ],
+    "Profile": [
+      {
+        "id": "user_887944e9d12d",
+        "fullName": "NMIT x DANCE Admin",
+        "email": "jashminpatel4906@gmail.com",
+        "password": "$2b$10$h4TuybEjAOA.di086VtTJudLCtwhQ8Ey7C6xO63nPy9HPC3bxN.BS",
+        "usn": null,
+        "branch": null,
+        "phone": null,
+        "year": null,
+        "sem": null,
+        "clubId": "e226ebaa-cff8-43d6-a79b-08c896d3a61d",
+        "role": "CLUB_HEAD",
+        "passwordResetToken": null,
+        "passwordResetExpiry": null,
+        "isActive": true,
+        "createdAt": "2026-10-11T03:40:39.917Z",
+        "unreadNotificationCount": 0
+      },
+      {
+        "id": "user_a3af242ae883",
+        "fullName": "Abhish Shetty",
+        "email": "1ms24is152@msrit.edu",
+        "password": "$2b$10$GqwzJzujg4JKK9GUrBzLBusCLvaBx0v0xnsIyoUV6FSbfHi0AhK0m",
+        "usn": "1MS24IS152",
+        "branch": "IS",
+        "phone": "8073707236",
+        "year": null,
+        "sem": null,
+        "clubId": null,
+        "role": "STUDENT",
+        "passwordResetToken": null,
+        "passwordResetExpiry": null,
+        "isActive": true,
+        "createdAt": "2026-10-11T03:41:02.436Z",
+        "unreadNotificationCount": 0
+      },
+      {
+        "id": "usr_admin_skyline_01",
+        "fullName": "Skyline Admin",
+        "email": "skyline@gmail.com",
+        "password": "$2b$10$VCp1MiS.dGty1ryJgNxP1um3pby22.xShkYC7jMe13aad.tLtCbaO",
+        "usn": null,
+        "branch": null,
+        "phone": null,
+        "year": null,
+        "sem": null,
+        "clubId": null,
+        "role": "SUPER_ADMIN",
+        "passwordResetToken": null,
+        "passwordResetExpiry": null,
+        "isActive": true,
+        "createdAt": "2026-10-11T03:38:10.804Z",
+        "unreadNotificationCount": 0
+      },
+      {
+        "id": "user_f8bac1e07193",
+        "fullName": "NMIT_HACKS Admin",
+        "email": "abhishshetty05@gmail.com",
+        "password": "$2b$10$dNqRTJY4wtFnho6.1SCzK.FxKz0qXdSjygFfPFevH46yQOo7rB7Ua",
+        "usn": null,
+        "branch": null,
+        "phone": null,
+        "year": null,
+        "sem": null,
+        "clubId": "c2c5c67c-98ce-4760-8b59-9973acdacbe1",
+        "role": "CLUB_HEAD",
+        "passwordResetToken": null,
+        "passwordResetExpiry": null,
+        "isActive": true,
+        "createdAt": "2026-10-11T03:43:13.484Z",
+        "unreadNotificationCount": 0
+      },
+      {
+        "id": "user_04c8caf56c39",
+        "fullName": "Patel Jashmin Kumar",
+        "email": "1ms24is081@msrit.edu",
+        "password": "$2b$10$5uJleSY1PhKiSn/cJhu.Yum1L6xosGgLrU8E7M8gr.Pd9HFay3NMq",
+        "usn": null,
+        "branch": "IS",
+        "phone": "9164714748",
+        "year": null,
+        "sem": null,
+        "clubId": null,
+        "role": "STUDENT",
+        "passwordResetToken": null,
+        "passwordResetExpiry": null,
+        "isActive": true,
+        "createdAt": "2026-10-11T03:38:13.931Z",
+        "unreadNotificationCount": 0
+      }
+    ],
+    "RegistrationKey": [
+      {
+        "id": "3bbfe9d1-18bd-43b1-93e1-c31736dab4f5",
+        "code": "SKYLINE-KU2T-N8FN",
+        "isUsed": true,
+        "usedByClubId": "e226ebaa-cff8-43d6-a79b-08c896d3a61d",
+        "createdAt": "2026-10-11T03:40:16.053Z",
+        "usedAt": "2026-10-11T03:40:39.853Z",
+        "expiresAt": null,
+        "createdById": "usr_admin_skyline_01"
+      },
+      {
+        "id": "50cad333-7261-4b1c-940e-52c244a8573c",
+        "code": "SKYLINE-28UF-W5M2",
+        "isUsed": true,
+        "usedByClubId": "c2c5c67c-98ce-4760-8b59-9973acdacbe1",
+        "createdAt": "2026-10-11T03:42:28.149Z",
+        "usedAt": "2026-10-11T03:43:13.436Z",
+        "expiresAt": null,
+        "createdById": "usr_admin_skyline_01"
+      }
+    ],
+    "Event": [
+      {
+        "id": "b6b403a7-f6f6-4d9c-9b70-8bfd8af7041b",
+        "clubId": "e226ebaa-cff8-43d6-a79b-08c896d3a61d",
+        "name": "Cultural Fest",
+        "description": "Culture",
+        "eventType": "Team",
+        "fee": 900,
+        "memberFee": 800,
+        "registrationLimit": 300,
+        "registrationDeadline": "2026-10-11T10:10:00.000Z",
+        "registrationOpensAt": null,
+        "eventDate": "2026-10-11T10:20:00.000Z",
+        "qrUrl": "https://tcgadglenmdmnmkioswz.supabase.co/storage/v1/object/public/skyline-images/events/qrs/7e5fe488-6f2e-4386-853f-29c4acc79901.jpg",
+        "bannerUrl": "https://tcgadglenmdmnmkioswz.supabase.co/storage/v1/object/public/skyline-images/events/banners/a962bfd4-e91d-4a22-a602-70590e359dd3.jpg",
+        "venue": "Main",
+        "teamSizeLimit": 6,
+        "minTeamSize": 1,
+        "eventEndDate": "2026-10-30T23:59:00.000Z",
+        "upiId": "fake@upi",
+        "isPublished": true,
+        "registrationClosedManually": false,
+        "isArchived": false,
+        "pendingCount": 0,
+        "confirmedCount": 0,
+        "rejectedCount": 0,
+        "taskCount": 0,
+        "taskDoneCount": 0
+      },
+      {
+        "id": "70cc7bd1-a8c4-4e64-9ac3-47b6a76abe7a",
+        "clubId": "e226ebaa-cff8-43d6-a79b-08c896d3a61d",
+        "name": "Technical Fest",
+        "description": "Tech Events",
+        "eventType": "Team",
+        "fee": 0,
+        "memberFee": null,
+        "registrationLimit": 2000,
+        "registrationDeadline": "2026-10-19T23:59:00.000Z",
+        "registrationOpensAt": null,
+        "eventDate": "2026-10-21T12:00:00.000Z",
+        "qrUrl": null,
+        "bannerUrl": null,
+        "venue": "NMIT Ground",
+        "teamSizeLimit": 6,
+        "minTeamSize": 1,
+        "eventEndDate": "2026-10-21T23:59:00.000Z",
+        "upiId": null,
+        "isPublished": true,
+        "registrationClosedManually": false,
+        "isArchived": false,
+        "pendingCount": 0,
+        "confirmedCount": 0,
+        "rejectedCount": 0,
+        "taskCount": 0,
+        "taskDoneCount": 0
+      },
+      {
+        "id": "e6c4ff87-b83e-49ea-ba9f-5806f788613c",
+        "clubId": "c2c5c67c-98ce-4760-8b59-9973acdacbe1",
+        "name": "Code and conquer",
+        "description": "Have fun and code",
+        "eventType": "Solo",
+        "fee": 0,
+        "memberFee": null,
+        "registrationLimit": 100,
+        "registrationDeadline": "2026-10-11T10:59:00.000Z",
+        "registrationOpensAt": null,
+        "eventDate": "2026-10-11T12:00:00.000Z",
+        "qrUrl": null,
+        "bannerUrl": "https://tcgadglenmdmnmkioswz.supabase.co/storage/v1/object/public/skyline-images/events/banners/870290e4-da0e-430e-8f86-5042bc24306d.jpg",
+        "venue": "NMIT",
+        "teamSizeLimit": null,
+        "minTeamSize": null,
+        "eventEndDate": "2026-10-11T23:59:00.000Z",
+        "upiId": null,
+        "isPublished": true,
+        "registrationClosedManually": false,
+        "isArchived": false,
+        "pendingCount": 0,
+        "confirmedCount": 0,
+        "rejectedCount": 0,
+        "taskCount": 0,
+        "taskDoneCount": 0
+      }
+    ],
+    "Team": [],
+    "Registration": [],
+    "Notification": [],
+    "SavedEvent": [],
+    "EventTask": [],
+    "Announcement": [],
+    "Product": [
+      {
+        "id": "c60c1103-80e7-40ab-9cff-e252147c3518",
+        "clubId": "e226ebaa-cff8-43d6-a79b-08c896d3a61d",
+        "name": "Kurta Set",
+        "description": "To be worn during cultural fest",
+        "imageUrl": null,
+        "pricePaise": 100000,
+        "memberDiscountPercent": 0,
+        "isPublished": true,
+        "isArchived": false,
+        "createdAt": "2026-10-11T03:44:31.061Z",
+        "updatedAt": "2026-10-11T03:44:31.061Z",
+        "totalStock": 88
+      }
+    ],
+    "ProductVariant": [
+      {
+        "id": "c583b4c1-bb5d-48a6-b594-7f8a2654598e",
+        "productId": "c60c1103-80e7-40ab-9cff-e252147c3518",
+        "label": "Standard",
+        "stock": 10,
+        "pricePaiseOverride": null,
+        "isActive": true
+      },
+      {
+        "id": "b800f2e2-3aee-4cc4-bd8f-7d40911befc4",
+        "productId": "c60c1103-80e7-40ab-9cff-e252147c3518",
+        "label": "M",
+        "stock": 78,
+        "pricePaiseOverride": null,
+        "isActive": true
+      }
+    ],
+    "Order": [],
+    "Membership": [],
+    "ExpenseClaim": [],
+    "LedgerHead": [
+      {
+        "id": 1,
+        "lastHash": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    ],
+    "LedgerEntry": [],
+    "AuditLog": [
+      {
+        "id": "05a5234f-e3af-4f19-b1eb-bde8bde9dbed",
+        "actorId": "usr_admin_skyline_01",
+        "action": "ADMIN_LOGIN",
+        "entityType": "Profile",
+        "entityId": "usr_admin_skyline_01",
+        "details": null,
+        "createdAt": "2026-10-11T03:39:42.600Z"
+      },
+      {
+        "id": "a3a08199-7668-4193-95cb-536814e03cbd",
+        "actorId": "usr_admin_skyline_01",
+        "action": "GENERATE_REGISTRATION_KEY",
+        "entityType": "RegistrationKey",
+        "entityId": "3bbfe9d1-18bd-43b1-93e1-c31736dab4f5",
+        "details": "{\"code\":\"SKYLINE-****\",\"expiresAt\":null}",
+        "createdAt": "2026-10-11T03:40:16.249Z"
+      },
+      {
+        "id": "09e457ee-49e8-4b90-afca-e372e5a89499",
+        "actorId": null,
+        "action": "CREATE_CLUB",
+        "entityType": "Club",
+        "entityId": "e226ebaa-cff8-43d6-a79b-08c896d3a61d",
+        "details": "{\"name\":\"NMIT x DANCE\",\"via\":\"registration_key\"}",
+        "createdAt": "2026-10-11T03:40:39.981Z"
+      },
+      {
+        "id": "c316995e-829b-49cd-8704-e79d63d71639",
+        "actorId": "usr_admin_skyline_01",
+        "action": "ADMIN_LOGIN",
+        "entityType": "Profile",
+        "entityId": "usr_admin_skyline_01",
+        "details": null,
+        "createdAt": "2026-10-11T03:42:22.422Z"
+      },
+      {
+        "id": "b6cee63d-6e3f-404e-b45f-b84068946d95",
+        "actorId": "usr_admin_skyline_01",
+        "action": "GENERATE_REGISTRATION_KEY",
+        "entityType": "RegistrationKey",
+        "entityId": "50cad333-7261-4b1c-940e-52c244a8573c",
+        "details": "{\"code\":\"SKYLINE-****\",\"expiresAt\":null}",
+        "createdAt": "2026-10-11T03:42:28.376Z"
+      },
+      {
+        "id": "443338b4-121a-4c6d-bb00-1f12a4b1db05",
+        "actorId": "user_887944e9d12d",
+        "action": "CREATE_EVENT",
+        "entityType": "Event",
+        "entityId": "b6b403a7-f6f6-4d9c-9b70-8bfd8af7041b",
+        "details": "{\"name\":\"Cultural Fest\",\"clubId\":\"e226ebaa-cff8-43d6-a79b-08c896d3a61d\"}",
+        "createdAt": "2026-10-11T03:42:38.536Z"
+      },
+      {
+        "id": "67f0f733-69e2-47fb-8f35-597c680a5cf1",
+        "actorId": null,
+        "action": "CREATE_CLUB",
+        "entityType": "Club",
+        "entityId": "c2c5c67c-98ce-4760-8b59-9973acdacbe1",
+        "details": "{\"name\":\"NMIT_HACKS\",\"via\":\"registration_key\"}",
+        "createdAt": "2026-10-11T03:43:13.539Z"
+      },
+      {
+        "id": "de7f9d54-8e05-4107-8995-c3d3d2256704",
+        "actorId": "user_887944e9d12d",
+        "action": "CREATE_EVENT",
+        "entityType": "Event",
+        "entityId": "70cc7bd1-a8c4-4e64-9ac3-47b6a76abe7a",
+        "details": "{\"name\":\"Technical Fest\",\"clubId\":\"e226ebaa-cff8-43d6-a79b-08c896d3a61d\"}",
+        "createdAt": "2026-10-11T03:43:34.736Z"
+      },
+      {
+        "id": "6c6192ec-056a-4df4-9378-b7bff1db245c",
+        "actorId": "user_887944e9d12d",
+        "action": "CREATE_PRODUCT",
+        "entityType": "Product",
+        "entityId": "c60c1103-80e7-40ab-9cff-e252147c3518",
+        "details": "{\"name\":\"Kurta Set\",\"clubId\":\"e226ebaa-cff8-43d6-a79b-08c896d3a61d\"}",
+        "createdAt": "2026-10-11T03:44:31.379Z"
+      },
+      {
+        "id": "8fcb79b7-0b02-4a89-9108-d2a31ca9a363",
+        "actorId": "user_f8bac1e07193",
+        "action": "CREATE_EVENT",
+        "entityType": "Event",
+        "entityId": "e6c4ff87-b83e-49ea-ba9f-5806f788613c",
+        "details": "{\"name\":\"Code and conquer\",\"clubId\":\"c2c5c67c-98ce-4760-8b59-9973acdacbe1\"}",
+        "createdAt": "2026-10-11T03:44:40.297Z"
+      }
+    ]
+  }
+}
