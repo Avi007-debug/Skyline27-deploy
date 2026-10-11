@@ -11,14 +11,16 @@
       })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="SkylineOS — The unified platform for campus clubs, events, memberships and merchandise." />
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="shortcut icon" type="image/png" href="/favicon.png" />
-    <title>SkylineOS</title>
+    <title>SkylineOS — Campus Event Operating System</title>
 
-    <!-- Preconnect to server origins proactively for faster font & asset loading -->
+    <!-- Preconnect to font origins for faster loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" />
+    <!-- Google Sans (Product Sans feel) + Inter + display fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" />
 
     <script>
       (function() {
@@ -32,16 +34,92 @@
     </script>
 
     <style>
-      html, body {
-        margin: 0;
-        padding: 0;
+      html, body { margin: 0; padding: 0; }
+      #root { min-height: 100%; }
+
+      /* ── Splash Screen ──────────────────────────────────────────────── */
+      #skyline-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        background: #0e0e10;
+        transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                    transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: opacity, transform;
       }
-      #root {
-        min-height: 100%;
+      html.light #skyline-splash {
+        background: #f1f0ef;
+      }
+      #skyline-splash.splash-out {
+        opacity: 0;
+        transform: scale(0.97);
+        pointer-events: none;
+      }
+
+      .splash-logo-ring {
+        position: relative;
+        width: 72px;
+        height: 72px;
+      }
+      .splash-logo-ring img {
+        width: 72px;
+        height: 72px;
+        object-fit: contain;
+        border-radius: 18px;
+        animation: splashPop 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0;
+        transform: scale(0.7);
+      }
+      @keyframes splashPop {
+        to { opacity: 1; transform: scale(1); }
+      }
+
+      .splash-spinner {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2.5px solid rgba(255,255,255,0.08);
+        border-top-color: #1a73e8;
+        animation: splashSpin 0.8s linear infinite;
+      }
+      html.light .splash-spinner {
+        border-color: rgba(0,0,0,0.06);
+        border-top-color: #1a73e8;
+      }
+      @keyframes splashSpin {
+        to { transform: rotate(360deg); }
+      }
+
+      .splash-wordmark {
+        font-family: 'Inter', 'Google Sans', system-ui, sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: rgba(255,255,255,0.75);
+        animation: splashFade 0.5s 0.15s ease forwards;
+        opacity: 0;
+      }
+      html.light .splash-wordmark { color: #21201c; }
+      @keyframes splashFade {
+        to { opacity: 1; }
       }
     </style>
   </head>
   <body>
+    <!-- Splash screen — removed by React after first paint -->
+    <div id="skyline-splash" aria-hidden="true">
+      <div class="splash-logo-ring">
+        <img src="/logo.png" alt="" />
+      </div>
+      <span class="splash-wordmark">SkylineOS</span>
+      <div class="splash-spinner"></div>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
