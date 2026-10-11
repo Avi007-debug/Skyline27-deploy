@@ -1,7 +1,7 @@
 # Database design (PostgreSQL via Prisma)
 
 Source of truth: `backend/prisma/schema.prisma`. Migrations are additive and never edit earlier ones:
-`0_init` → `0_init_1_schema_sync` → `1_enhancements` → `2_three_roles_merch` → `3_schema_optimization` → **`4_membership_tasks_announcements`**.
+`0_init` → `0_init_1_schema_sync` → `1_enhancements` → `2_three_roles_merch` → `3_schema_optimization` → `4_membership_tasks_announcements` → **`5_saved_events`**.
 
 ## Principles
 
@@ -60,6 +60,7 @@ Search uses `pg_trgm`, so case-insensitive `contains` queries (`ILIKE '%x%'`, Pr
 | `Order.isMemberPrice` | Whether the stored `unitPricePaise` was the member price. |
 | `EventTask` + `Event.taskCount / taskDoneCount` | Volunteer tasks; the counters are trigger-maintained like the registration counters. |
 | `Announcement` | Club feed; posting bulk-notifies active members. |
+| `SavedEvent` | Bookmarked events stored on the server so they follow a student across devices. Composite primary key `(userId, eventId)`. |
 
 Dues are recorded in the ledger as category `DUES` (already part of the report and summary breakdown).
 All member/guest decisions go through `modules/memberships/membership.service.ts`; do not re-implement them.
