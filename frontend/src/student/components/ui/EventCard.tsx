@@ -42,7 +42,7 @@ export default function EventCard({ event, compact = false }: EventCardProps) {
       onClick={() => navigate(`/events/${event.id}`)}
       style={{ cursor: 'pointer', overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%', opacity: past ? 0.7 : 1 }}
     >
-      <div style={{ position: 'relative', aspectRatio: compact ? '16 / 9' : '16 / 9', background: 'var(--raised)' }}>
+      <div style={{ position: 'relative', height: compact ? 150 : 180, width: '100%', overflow: 'hidden', flexShrink: 0, background: 'var(--raised)' }}>
         {event.imageUrl ? (
           <img
             src={event.imageUrl}

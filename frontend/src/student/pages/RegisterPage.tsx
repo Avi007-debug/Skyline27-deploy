@@ -133,13 +133,12 @@ export default function RegisterPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#000000', color: '#ffffff', padding: '16px 20px 48px' }}>
+    <div style={{ maxWidth: 640, margin: '0 auto', padding: '24px 20px 60px', color: 'var(--text)' }}>
       
       {/* ── Top Bar ────────────────────────────────────────────────────── */}
       <div
         style={{
-          maxWidth: 440,
-          margin: '0 auto 28px',
+          margin: '0 0 24px',
           display: 'flex',
           alignItems: 'center',
           gap: 16,
@@ -151,7 +150,7 @@ export default function RegisterPage() {
           style={{
             background: 'none',
             border: 'none',
-            color: '#ffffff',
+            color: 'var(--text)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -161,12 +160,12 @@ export default function RegisterPage() {
         >
           <ArrowLeft size={22} strokeWidth={2.5} />
         </button>
-        <h1 style={{ fontSize: 20, fontWeight: 700, color: '#ffffff', letterSpacing: '-0.3px' }}>
+        <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.3px' }}>
           Register
         </h1>
       </div>
 
-      <div style={{ maxWidth: 440, margin: '0 auto' }}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
 
         {/* ── Team Mode Switcher (if team event) ────────────────────────── */}
         {isTeamEvent && (
@@ -174,7 +173,7 @@ export default function RegisterPage() {
             style={{
               height: 52,
               padding: 4,
-              background: '#141416',
+              background: 'var(--surface)', border: '1px solid var(--border)',
               borderRadius: 28,
               display: 'flex',
               marginBottom: 28,
@@ -234,13 +233,13 @@ export default function RegisterPage() {
             {/* Team Name (editable) */}
             <div
               style={{
-                background: '#1E1E22',
+                background: 'var(--surface)', border: '1px solid var(--border)',
                 borderRadius: 16,
                 padding: '12px 20px',
                 marginBottom: 16,
               }}
             >
-              <p style={{ fontSize: 12, color: '#A09B9B', fontWeight: 500, marginBottom: 4 }}>
+              <p style={{ fontSize: 12, color: 'var(--subtext)', fontWeight: 500, marginBottom: 4 }}>
                 Team Name
               </p>
               <input
@@ -253,7 +252,7 @@ export default function RegisterPage() {
                   background: 'transparent',
                   border: 'none',
                   outline: 'none',
-                  color: '#FFFFFF',
+                  color: 'var(--text)',
                   fontSize: 16,
                   fontWeight: 500,
                   fontFamily: 'inherit',
@@ -271,7 +270,7 @@ export default function RegisterPage() {
             <div
               style={{
                 padding: '14px 18px',
-                background: '#141416',
+                background: 'var(--surface)', border: '1px solid var(--border)',
                 borderRadius: 16,
                 display: 'flex',
                 alignItems: 'flex-start',
@@ -281,7 +280,7 @@ export default function RegisterPage() {
               }}
             >
               <Info size={18} color="var(--color-crimson, var(--sk-brand))" style={{ flexShrink: 0, marginTop: 2 }} />
-              <p style={{ fontSize: 13, color: '#A09B9B', lineHeight: 1.5 }}>
+              <p style={{ fontSize: 13, color: 'var(--subtext)', lineHeight: 1.5 }}>
                 A unique passkey will be generated after you submit. Share it with your teammates.
                 {event.teamSizeLimit ? ` Team size limit is ${event.teamSizeLimit} members.` : ''}
               </p>
@@ -294,13 +293,13 @@ export default function RegisterPage() {
             {/* Team Passkey (editable) */}
             <div
               style={{
-                background: '#1E1E22',
+                background: 'var(--surface)', border: '1px solid var(--border)',
                 borderRadius: 16,
                 padding: '12px 20px',
                 marginBottom: 16,
               }}
             >
-              <p style={{ fontSize: 12, color: '#A09B9B', fontWeight: 500, marginBottom: 4 }}>
+              <p style={{ fontSize: 12, color: 'var(--subtext)', fontWeight: 500, marginBottom: 4 }}>
                 Team Passkey
               </p>
               <input
@@ -314,7 +313,7 @@ export default function RegisterPage() {
                   background: 'transparent',
                   border: 'none',
                   outline: 'none',
-                  color: '#FFFFFF',
+                  color: 'var(--text)',
                   fontSize: 16,
                   fontWeight: 600,
                   letterSpacing: '2px',
@@ -338,7 +337,7 @@ export default function RegisterPage() {
             borderRadius: 30,
             background: 'var(--color-crimson, var(--sk-brand))',
             border: 'none',
-            color: '#ffffff',
+            color: 'var(--text)',
             fontSize: 16,
             fontWeight: 700,
             cursor: isSubmitting ? 'default' : 'pointer',
@@ -376,7 +375,7 @@ export default function RegisterPage() {
         >
           <div
             style={{
-              background: '#141416',
+              background: 'var(--surface)', border: '1px solid var(--border)',
               borderRadius: 24,
               padding: 28,
               maxWidth: 380,
@@ -385,10 +384,10 @@ export default function RegisterPage() {
               boxShadow: '0 10px 40px rgba(0, 0, 0, 0.6)',
             }}
           >
-            <h3 style={{ fontSize: 20, fontWeight: 700, color: '#ffffff', marginBottom: 12 }}>
+            <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 12 }}>
               Team Created!
             </h3>
-            <p style={{ fontSize: 14, color: '#A09B9B', marginBottom: 20 }}>
+            <p style={{ fontSize: 14, color: 'var(--subtext)', marginBottom: 20 }}>
               Share this passkey with your teammates:
             </p>
 
@@ -442,7 +441,7 @@ export default function RegisterPage() {
                 borderRadius: 24,
                 background: 'var(--color-crimson, var(--sk-brand))',
                 border: 'none',
-                color: '#ffffff',
+                color: 'var(--text)',
                 fontSize: 15,
                 fontWeight: 700,
                 cursor: 'pointer',
@@ -462,7 +461,7 @@ function LockedCredentialField({ label, value }: { label: string; value: string 
   return (
     <div
       style={{
-        background: '#141416',
+        background: 'var(--surface)', border: '1px solid var(--border)',
         borderRadius: 16,
         padding: '14px 20px',
         display: 'flex',
@@ -475,7 +474,7 @@ function LockedCredentialField({ label, value }: { label: string; value: string 
         <p
           style={{
             fontSize: 12,
-            color: '#A09B9B',
+            color: 'var(--subtext)',
             fontWeight: 500,
             marginBottom: 4,
           }}
@@ -485,7 +484,7 @@ function LockedCredentialField({ label, value }: { label: string; value: string 
         <p
           style={{
             fontSize: 16,
-            color: '#FFFFFF',
+            color: 'var(--text)',
             fontWeight: 500,
           }}
         >
