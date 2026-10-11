@@ -3,7 +3,7 @@ services:
     name: spotlight-backend
     env: node
     region: singapore
-    buildCommand: npm install && npm run build
+    buildCommand: npm install && npm run build && npx prisma migrate deploy
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -12,7 +12,19 @@ services:
         sync: false
       - key: JWT_SECRET
         sync: false
-      - key: ADMIN_SECRET
+      - key: CORS_ORIGINS
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: CAMPUS_UTC_OFFSET_MINUTES
+        value: "330"
+      - key: SITE_URL
+        sync: false
+      - key: CRON_SECRET
         sync: false
       - key: GOOGLE_CLIENT_ID
         sync: false

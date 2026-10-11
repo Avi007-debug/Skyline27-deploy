@@ -1,0 +1,146 @@
+/* Student / public area. Everything is scoped to .stu-root so its design tokens
+   (--bg, --surface, --border, ...) never leak into the club dashboard or admin console. */
+
+.stu-root {
+  --color-crimson: #e63946;
+  --color-crimson-hover: #cc2f3c;
+  --color-crimson-dim: rgba(230, 57, 70, 0.12);
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Manrope', sans-serif;
+
+  /* light theme */
+  --bg: #f8f9fa;
+  --surface: #ffffff;
+  --border: rgba(0, 0, 0, 0.08);
+  --text: #000000;
+  --subtext: #6b7280;
+
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html.dark .stu-root {
+  --bg: #000000;
+  --surface: #141416;
+  --border: transparent;
+  --text: #ffffff;
+  --subtext: #a0a0a0;
+}
+
+.stu-root ::selection {
+  background: rgba(230, 57, 70, 0.25);
+  color: var(--text);
+}
+
+.stu-root .spotlight-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: box-shadow 0.2s ease;
+}
+.stu-root .spotlight-card:hover { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12); }
+html.dark .stu-root .spotlight-card:hover { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); }
+
+.stu-root .btn-primary {
+  background: var(--color-crimson);
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  font-family: var(--font-sans);
+}
+.stu-root .btn-primary:hover { background: var(--color-crimson-hover); }
+.stu-root .btn-primary:active { transform: scale(0.98); }
+.stu-root .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.stu-root .btn-secondary {
+  background: var(--border);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  font-family: var(--font-sans);
+}
+
+.stu-root .input-field {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 13px 16px;
+  font-size: 15px;
+  color: var(--text);
+  width: 100%;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.stu-root .input-field:focus { border-color: var(--color-crimson); }
+.stu-root .input-field::placeholder { color: var(--subtext); }
+
+.stu-root a { color: inherit; }
+
+/* Badges */
+.stu-root .badge-live {
+  background: rgba(230, 57, 70, 0.15);
+  color: var(--color-crimson);
+  border: 1px solid rgba(230, 57, 70, 0.3);
+  border-radius: 99px;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.stu-root .badge-upcoming {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 99px;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+html.dark .stu-root .badge-upcoming { color: #4ade80; background: rgba(34, 197, 94, 0.08); }
+.stu-root .badge-past {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+  border: 1px solid rgba(107, 114, 128, 0.2);
+  border-radius: 99px;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Animations (keyframe names are prefixed so they cannot clash with other areas) */
+@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+@keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.stu-root .animate-fade-in { animation: fade-in 0.3s ease forwards; }
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+.stu-root .skeleton {
+  background: linear-gradient(90deg, var(--border) 25%, rgba(255, 255, 255, 0.05) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 8px;
+}
+@keyframes sheetSlideUp { from { transform: translateY(100%); opacity: 0.9; } to { transform: translateY(0); opacity: 1; } }
+.stu-root .sheet-slide-up { animation: sheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+@media (min-width: 1024px) {
+  .stu-root .event-detail-bottom-bar { left: 220px !important; }
+}
+
+/* Used by inline `animation: 'spin ...'` styles across the site */
+@keyframes spin { to { transform: rotate(360deg); } }

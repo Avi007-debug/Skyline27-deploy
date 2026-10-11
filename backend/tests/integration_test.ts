@@ -99,17 +99,26 @@ async function runApiIntegrationTests() {
       if (!data.token) throw new Error('No club token returned');
     });
 
-    // 7. Verify Admin Secret verification route
-    await test('POST /api/clubs/verify-admin-secret validates secret', async () => {
-      const res = await fetch(`${baseUrl}/api/clubs/verify-admin-secret`, {
+    // 7. Super Admin login (replaces the old shared admin-secret passcode)
+    await test('POST /api/auth/admin-login authenticates the Super Admin and rejects students', async () => {
+      const ok = await fetch(`${baseUrl}/api/auth/admin-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret: process.env.ADMIN_SECRET || 'skyline_admin_secret_key_2026' }),
+        body: JSON.stringify({ email: 'admin@skyline.local', password: 'Password@123' }),
       });
-      if (res.status !== 200) throw new Error(`Expected status 200, got ${res.status}`);
+      if (ok.status !== 200) throw new Error(`Expected 200, got ${ok.status}`);
+      const data = await ok.json();
+      if (data.profile?.role !== 'SUPER_ADMIN' || !data.token) throw new Error('Expected a SUPER_ADMIN session');
+      const bad = await fetch(`${baseUrl}/api/auth/admin-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'priya.nair@college.edu', password: 'Password@123' }),
+      });
+      if (bad.status !== 401) throw new Error(`Student must not use admin login, got ${bad.status}`);
     });
 
     console.log(`\n📊 API Integration Test Summary: ${passed} passed, ${failed} failed.\n`);
+    if (failed > 0) process.exitCode = 1;
   } finally {
     await new Promise<void>((resolve) => server.close(() => resolve()));
   }

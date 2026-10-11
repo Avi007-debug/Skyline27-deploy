@@ -1,7 +1,7 @@
 import app from '../index';
 import http from 'http';
 import prisma from '../config/db';
-import { signToken } from '../middlewares/auth';
+import { signToken } from '../middlewares/authenticate';
 import { Role } from '@prisma/client';
 
 async function runReportsAndAuditTests() {
@@ -28,14 +28,15 @@ async function runReportsAndAuditTests() {
 
   try {
     const treasurerId = 'usr_test_treasurer_rep';
+    const GDG_ID = (await prisma.club.findFirstOrThrow({ where: { email: 'gdg@college.edu' } })).id;
     await prisma.profile.upsert({
       where: { id: treasurerId },
-      update: { role: Role.TREASURER },
+      update: { role: Role.CLUB_HEAD, clubId: GDG_ID },
       create: {
         id: treasurerId,
         fullName: 'Treasurer Reporter',
         email: 'treasurer.rep@college.edu',
-        role: Role.TREASURER,
+        role: Role.CLUB_HEAD, clubId: GDG_ID,
       },
     });
     const treasurerToken = signToken(treasurerId);

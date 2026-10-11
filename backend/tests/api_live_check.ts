@@ -1,7 +1,7 @@
 import app from '../index';
 import http from 'http';
 import prisma from '../config/db';
-import { signToken } from '../middlewares/auth';
+import { signToken } from '../middlewares/authenticate';
 import { Role } from '@prisma/client';
 
 async function verifyAllApis() {
@@ -19,15 +19,16 @@ async function verifyAllApis() {
   // Setup test actors
   const treasurerId = 'usr_treasurer_verify';
   const volunteerId = 'usr_volunteer_verify';
+  const GDG_ID = (await prisma.club.findFirstOrThrow({ where: { email: 'gdg@college.edu' } })).id;
   await prisma.profile.upsert({
     where: { id: treasurerId },
-    update: { role: Role.TREASURER },
-    create: { id: treasurerId, fullName: 'Verified Treasurer', email: 'treasurer.verify@college.edu', role: Role.TREASURER }
+    update: { role: Role.CLUB_HEAD, clubId: GDG_ID },
+    create: { id: treasurerId, fullName: 'Verified Treasurer', email: 'treasurer.verify@college.edu', role: Role.CLUB_HEAD, clubId: GDG_ID }
   });
   await prisma.profile.upsert({
     where: { id: volunteerId },
-    update: { role: Role.VOLUNTEER },
-    create: { id: volunteerId, fullName: 'Verified Volunteer', email: 'volunteer.verify@college.edu', role: Role.VOLUNTEER }
+    update: { role: Role.CLUB_HEAD, clubId: GDG_ID },
+    create: { id: volunteerId, fullName: 'Verified Volunteer', email: 'volunteer.verify@college.edu', role: Role.CLUB_HEAD, clubId: GDG_ID }
   });
 
   const treasurerToken = signToken(treasurerId);

@@ -1,0 +1,70 @@
+/* Super Admin console. Design tokens are namespaced (ad-*) so they cannot collide
+   with the club dashboard's shadcn tokens or the student area's variables. */
+
+:root {
+  --ad-ink: #f4f4f6;
+  --ad-surface: #ffffff;
+  --ad-raised: #f1f1f4;
+  --ad-line: #e4e4e7;
+  --ad-fg: #18181b;
+  --ad-muted: #52525b;
+  --ad-faint: #71717a;
+  --ad-brand: #f03d4e;
+}
+html.dark {
+  --ad-ink: #070708;
+  --ad-surface: #111113;
+  --ad-raised: #18181b;
+  --ad-line: #27272a;
+  --ad-fg: #fafafa;
+  --ad-muted: #a1a1aa;
+  --ad-faint: #71717a;
+}
+
+@theme inline {
+  --color-ad-ink: var(--ad-ink);
+  --color-ad-surface: var(--ad-surface);
+  --color-ad-raised: var(--ad-raised);
+  --color-ad-line: var(--ad-line);
+  --color-ad-fg: var(--ad-fg);
+  --color-ad-muted: var(--ad-muted);
+  --color-ad-faint: var(--ad-faint);
+  --color-ad-brand: var(--ad-brand);
+  --color-ad-ok: #22c55e;
+  --color-ad-warn: #f59e0b;
+  --color-ad-info: #3b82f6;
+}
+
+/* Shared button base. Declared with @utility so the variants below can @apply it (Tailwind v4). */
+@utility ad-btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors;
+}
+
+.admin-root {
+  background: var(--ad-ink);
+  color: var(--ad-fg);
+  font-family: 'Manrope', system-ui, sans-serif;
+}
+.admin-root :focus-visible {
+  outline: 2px solid var(--ad-brand);
+  outline-offset: 2px;
+}
+.admin-root button:disabled { cursor: not-allowed; }
+.admin-root input::-ms-reveal, .admin-root input::-ms-clear { display: none; }
+
+.ad-field {
+  @apply w-full rounded-xl border border-ad-line bg-ad-raised px-3.5 py-2.5 text-sm text-ad-fg placeholder:text-ad-faint;
+  transition: border-color 0.15s;
+}
+.ad-field:focus { @apply border-ad-brand outline-none; }
+.ad-field:disabled { @apply opacity-60; }
+select.ad-field { @apply pr-8; }
+.ad-btn-primary { @apply ad-btn bg-ad-brand text-white hover:bg-[#d92f40] disabled:opacity-50; }
+.ad-btn-ghost { @apply ad-btn border border-ad-line bg-transparent text-ad-fg hover:bg-ad-raised disabled:opacity-50; }
+.ad-btn-danger { @apply ad-btn border border-ad-brand/40 bg-ad-brand/10 text-ad-brand hover:bg-ad-brand/20 disabled:opacity-50; }
+.ad-btn-sm { @apply px-3 py-1.5 text-xs; }
+.ad-card { @apply rounded-2xl border border-ad-line bg-ad-surface; }
+.ad-th { @apply whitespace-nowrap px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ad-faint; }
+.ad-td { @apply px-4 py-3 text-sm align-middle; }
+
+@keyframes pulse-row { 50% { opacity: 0.45; } }

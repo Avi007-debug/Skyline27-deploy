@@ -1,7 +1,7 @@
 import app from '../index';
 import http from 'http';
 import prisma from '../config/db';
-import { signToken } from '../middlewares/auth';
+import { signToken } from '../middlewares/authenticate';
 import { Role } from '@prisma/client';
 
 async function runExpensesAndFinanceTests() {
@@ -31,25 +31,26 @@ async function runExpensesAndFinanceTests() {
     const volunteerId = 'usr_test_volunteer_01';
     const treasurerId = 'usr_test_treasurer_01';
 
+    const GDG_ID = (await prisma.club.findFirstOrThrow({ where: { email: 'gdg@college.edu' } })).id;
     await prisma.profile.upsert({
       where: { id: volunteerId },
-      update: { role: Role.VOLUNTEER },
+      update: { role: Role.CLUB_HEAD, clubId: GDG_ID },
       create: {
         id: volunteerId,
         fullName: 'Test Volunteer',
         email: 'volunteer.test@college.edu',
-        role: Role.VOLUNTEER,
+        role: Role.CLUB_HEAD, clubId: GDG_ID,
       },
     });
 
     await prisma.profile.upsert({
       where: { id: treasurerId },
-      update: { role: Role.TREASURER },
+      update: { role: Role.CLUB_HEAD, clubId: GDG_ID },
       create: {
         id: treasurerId,
         fullName: 'Test Treasurer',
         email: 'treasurer.test@college.edu',
-        role: Role.TREASURER,
+        role: Role.CLUB_HEAD, clubId: GDG_ID,
       },
     });
 

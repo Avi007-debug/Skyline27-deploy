@@ -1,76 +1,128 @@
 generator client {
-  provider   = "prisma-client-js"
-  engineType = "library"
+  provider        = "prisma-client-js"
+  engineType      = "library"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider   = "postgresql"
+  extensions = [pg_trgm]
 }
 
 model Profile {
-  id                   String         @id
-  fullName             String         @map("full_name")
-  email                String         @unique(map: "profile_email_key")
-  password             String?
-  usn                  String?        @unique(map: "profile_usn_key")
-  branch               String?
-  phone                String?
-  year                 Int?
-  sem                  Int?
-  clubId               String?        @map("club_id")
-  role                 Role           @default(STUDENT)
-  passwordResetToken   String?        @map("password_reset_token")
-  passwordResetExpiry  DateTime?      @map("password_reset_expiry")
-  club                 Club?          @relation(fields: [clubId], references: [id], map: "fk_profile_club")
-  registrations        Registration[]
-  expenses             ExpenseClaim[] @relation("ClaimantExpenses")
-  approvedClaims       ExpenseClaim[] @relation("ApproverExpenses")
-  auditLogs            AuditLog[]
+  id                      String            @id
+  fullName                String            @map("full_name")
+  email                   String            @unique(map: "profile_email_key")
+  password                String?
+  usn                     String?           @unique(map: "profile_usn_key")
+  branch                  String?
+  phone                   String?
+  year                    Int?
+  sem                     Int?
+  clubId                  String?           @map("club_id")
+  role                    Role              @default(STUDENT)
+  passwordResetToken      String?           @map("password_reset_token")
+  passwordResetExpiry     DateTime?         @map("password_reset_expiry")
+  isActive                Boolean           @default(true) @map("is_active")
+  createdAt               DateTime          @default(now()) @map("created_at")
+  /// Unread notifications. Maintained by a database trigger on "Notification"; never write it from the app.
+  unreadNotificationCount Int               @default(0) @map("unread_notification_count")
+  club                    Club?             @relation(fields: [clubId], references: [id], map: "fk_profile_club")
+  registrations           Registration[]
+  expenses                ExpenseClaim[]    @relation("ClaimantExpenses")
+  approvedClaims          ExpenseClaim[]    @relation("ApproverExpenses")
+  auditLogs               AuditLog[]
+  orders                  Order[]
+  notifications           Notification[]
+  createdKeys             RegistrationKey[] @relation("KeyCreator")
+  memberships             Membership[]      @relation("MemberOf")
+  verifiedMemberships     Membership[]      @relation("MembershipVerifier")
+  assignedTasks           EventTask[]       @relation("TaskAssignee")
+  createdTasks            EventTask[]       @relation("TaskCreator")
+  announcements           Announcement[]
 
-  @@index([clubId], map: "idx_profile_club")
+  // Admin user list: filter by role/status, sorted by name; club-head lookups by club.
+  @@index([clubId, role], map: "idx_profile_club_role")
+  @@index([role, isActive], map: "idx_profile_role_active")
+  @@index([fullName, id], map: "idx_profile_name")
+  @@index([createdAt], map: "idx_profile_created")
+  // Search ("contains", case-insensitive) without scanning the table.
+  @@index([fullName(ops: raw("gin_trgm_ops"))], type: Gin, map: "idx_profile_name_trgm")
+  @@index([email(ops: raw("gin_trgm_ops"))], type: Gin, map: "idx_profile_email_trgm")
+  @@index([usn(ops: raw("gin_trgm_ops"))], type: Gin, map: "idx_profile_usn_trgm")
 }
 
 model Club {
-  id               String            @id @default(uuid())
-  name             String
-  email            String            @unique(map: "club_email_key")
-  logoUrl          String?           @map("logo_url") @db.Text
-  password         String?
-  qrUrl            String?           @map("qr_url") @db.Text
-  upiId            String?           @map("upi_id")
-  events           Event[]
-  admins           Profile[]
-  registrationKeys RegistrationKey[]
+  id                 String            @id @default(uuid())
+  name               String
+  email              String            @unique(map: "club_email_key")
+  logoUrl            String?           @map("logo_url") @db.Text
+  password           String?
+  qrUrl              String?           @map("qr_url") @db.Text
+  upiId              String?           @map("upi_id")
+  /// Dues for one membership period, in paise (0 = the club has no paid membership), and its length.
+  membershipFeePaise Int               @default(0) @map("membership_fee_paise")
+  membershipMonths   Int               @default(12) @map("membership_months")
+  isArchived         Boolean           @default(false) @map("is_archived")
+  /// Non-archived events / products. Maintained by database triggers; never write from the app.
+  eventCount         Int               @default(0) @map("event_count")
+  productCount       Int               @default(0) @map("product_count")
+  events             Event[]
+  admins             Profile[]
+  registrationKeys   RegistrationKey[]
+  products           Product[]
+  orders             Order[]
+  memberships        Membership[]
+  announcements      Announcement[]
+
+  @@index([isArchived, name], map: "idx_club_archived_name")
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "idx_club_name_trgm")
 }
 
 model Event {
-  id                          String         @id @default(uuid())
-  clubId                      String         @map("club_id")
-  name                        String
-  description                 String         @db.Text
-  eventType                   String         @map("event_type")
-  fee                         Float          @default(0)
-  registrationLimit           Int            @map("registration_limit")
-  registrationDeadline        DateTime?      @map("registration_deadline")
-  eventDate                   DateTime       @map("event_date")
-  qrUrl                       String?        @map("qr_url") @db.Text
-  bannerUrl                   String?        @map("banner_url") @db.Text
-  venue                       String?
-  teamSizeLimit               Int?           @map("team_size_limit")
-  minTeamSize                 Int?           @map("min_team_size")
-  eventEndDate                DateTime?      @map("event_end_date")
-  upiId                       String?        @map("upi_id")
-  isPublished                 Boolean        @default(true) @map("is_published")
-  registrationClosedManually  Boolean        @default(false) @map("registration_closed_manually")
-  isArchived                  Boolean        @default(false) @map("is_archived")
-  club                        Club           @relation(fields: [clubId], references: [id], onDelete: Cascade, map: "fk_event_club")
-  notifications               Notification[]
-  registrations               Registration[]
-  teams                       Team[]
+  id                         String         @id @default(uuid())
+  clubId                     String         @map("club_id")
+  name                       String
+  description                String         @db.Text
+  eventType                  String         @map("event_type")
+  fee                        Float          @default(0)
+  /// Price for active members of the host club; null = members pay the normal fee.
+  memberFee                  Float?         @map("member_fee")
+  registrationLimit          Int            @map("registration_limit")
+  registrationDeadline       DateTime?      @map("registration_deadline")
+  registrationOpensAt        DateTime?      @map("registration_opens_at")
+  eventDate                  DateTime       @map("event_date")
+  qrUrl                      String?        @map("qr_url") @db.Text
+  bannerUrl                  String?        @map("banner_url") @db.Text
+  venue                      String?
+  teamSizeLimit              Int?           @map("team_size_limit")
+  minTeamSize                Int?           @map("min_team_size")
+  eventEndDate               DateTime?      @map("event_end_date")
+  upiId                      String?        @map("upi_id")
+  isPublished                Boolean        @default(true) @map("is_published")
+  registrationClosedManually Boolean        @default(false) @map("registration_closed_manually")
+  isArchived                 Boolean        @default(false) @map("is_archived")
+  /// Registrations per status. Maintained by a database trigger on "Registration" so lists, capacity
+  /// checks and dashboards read them directly instead of counting. Active seats = pending + confirmed.
+  pendingCount               Int            @default(0) @map("pending_count")
+  confirmedCount             Int            @default(0) @map("confirmed_count")
+  rejectedCount              Int            @default(0) @map("rejected_count")
+  /// Volunteer tasks (total / done). Maintained by a database trigger on "EventTask".
+  taskCount                  Int            @default(0) @map("task_count")
+  taskDoneCount              Int            @default(0) @map("task_done_count")
+  club                       Club           @relation(fields: [clubId], references: [id], onDelete: Cascade, map: "fk_event_club")
+  notifications              Notification[]
+  registrations              Registration[]
+  teams                      Team[]
+  tasks                      EventTask[]
 
-  @@index([clubId], map: "idx_event_club")
-  @@index([isPublished], map: "idx_event_published")
-  @@index([isArchived], map: "idx_event_archived")
+  // Public catalogue: published, not archived, ordered/filtered by date.
+  @@index([isPublished, isArchived, eventDate], map: "idx_event_public")
+  // One club's events (also the foreign-key index for club -> events).
+  @@index([clubId, isArchived, eventDate], map: "idx_event_club_date")
+  @@index([eventDate], map: "idx_event_date")
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "idx_event_name_trgm")
+  @@index([venue(ops: raw("gin_trgm_ops"))], type: Gin, map: "idx_event_venue_trgm")
 }
 
 model Team {
@@ -79,10 +131,13 @@ model Team {
   teamName      String         @map("team_name")
   passkey       String?        @unique(map: "team_passkey_key")
   leaderId      String         @map("leader_id")
+  /// Pending + confirmed members. Maintained by a database trigger on "Registration".
+  memberCount   Int            @default(0) @map("member_count")
   registrations Registration[]
   event         Event          @relation(fields: [eventId], references: [id], onDelete: Cascade, map: "fk_team_event")
 
   @@index([eventId], map: "idx_team_event")
+  @@index([leaderId], map: "idx_team_leader")
 }
 
 model Registration {
@@ -95,14 +150,27 @@ model Registration {
   createdAt       DateTime           @default(now()) @map("created_at")
   transactionId   String?            @map("transaction_id")
   checkedInAt     DateTime?          @map("checked_in_at")
+  /// The event's club, copied in by a trigger on insert so club-scoped lists and counts need no join.
+  clubId          String?            @map("club_id")
+  /// What this student was asked to pay, fixed at registration (member price or normal fee).
+  feeCharged      Float              @default(0) @map("fee_charged")
+  isMemberPrice   Boolean            @default(false) @map("is_member_price")
   event           Event              @relation(fields: [eventId], references: [id], onDelete: Cascade, map: "fk_registration_event")
   profile         Profile            @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_registration_profile")
   team            Team?              @relation(fields: [teamId], references: [id], onDelete: Cascade, map: "fk_registration_team")
 
   @@unique([eventId, userId], map: "unique_event_user_registration")
-  @@index([eventId], map: "idx_registration_event")
-  @@index([userId], map: "idx_registration_profile")
-  @@index([teamId], map: "idx_registration_team")
+  // Per-event review lists and counts, newest first.
+  @@index([eventId, status, createdAt], map: "idx_registration_event_status")
+  // A student's tickets / "my registrations", and the profile counters.
+  @@index([userId, status, createdAt], map: "idx_registration_user_status")
+  // Team roster and member counts.
+  @@index([teamId, status], map: "idx_registration_team_status")
+  // Club-wide and admin lists filtered by status.
+  @@index([clubId, status, createdAt], map: "idx_registration_club_status")
+  @@index([status, createdAt], map: "idx_registration_status_created")
+  // Duplicate-payment-reference check.
+  @@index([transactionId], map: "idx_registration_txn")
 }
 
 model Notification {
@@ -115,8 +183,12 @@ model Notification {
   createdAt DateTime @default(now()) @map("created_at")
   eventId   String?  @map("event_id")
   event     Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade, map: "fk_notification_event")
+  user      Profile  @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_notification_user")
 
   @@index([eventId], map: "idx_notification_event")
+  // The bell: a user's newest notifications, and their unread ones.
+  @@index([userId, createdAt], map: "idx_notification_user_created")
+  @@index([userId, isRead], map: "idx_notification_user_read")
 }
 
 model RegistrationKey {
@@ -126,9 +198,17 @@ model RegistrationKey {
   usedByClubId String?   @map("used_by_club_id")
   createdAt    DateTime  @default(now()) @map("created_at")
   usedAt       DateTime? @map("used_at")
+  expiresAt    DateTime? @map("expires_at")
+  createdById  String?   @map("created_by_id")
   usedByClub   Club?     @relation(fields: [usedByClubId], references: [id], map: "fk_registrationkey_club")
+  createdBy    Profile?  @relation("KeyCreator", fields: [createdById], references: [id], onDelete: SetNull, map: "fk_registrationkey_creator")
 
   @@index([usedByClubId], map: "idx_registrationkey_club")
+  @@index([createdById], map: "idx_registrationkey_creator")
+  // Key list by status (available / used / expired) and newest first.
+  @@index([isUsed, expiresAt], map: "idx_registrationkey_status")
+  @@index([createdAt], map: "idx_registrationkey_created")
+  @@index([code(ops: raw("gin_trgm_ops"))], type: Gin, map: "idx_registrationkey_code_trgm")
 }
 
 enum RegistrationStatus {
@@ -137,13 +217,11 @@ enum RegistrationStatus {
   REJECTED
 }
 
+/// Exactly three application roles, all served by the single website:
+/// SUPER_ADMIN -> /admin, CLUB_HEAD -> /club (own club only), STUDENT -> public + student pages.
 enum Role {
   STUDENT
-  MEMBER
-  VOLUNTEER
-  TREASURER
   CLUB_HEAD
-  ADMIN
   SUPER_ADMIN
 }
 
@@ -173,6 +251,93 @@ model LedgerEntry {
   @@index([category], map: "idx_ledger_category")
   @@index([eventId], map: "idx_ledger_event")
   @@index([clubId], map: "idx_ledger_club")
+  // Club summaries and reports over a date range (summaries group by category/type).
+  @@index([clubId, createdAt], map: "idx_ledger_club_created")
+  // Declared here (it was previously created only by scripts/apply_database_constraints.ts).
+  @@index([createdAt], map: "idx_ledger_created_at")
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAYMENT_SUBMITTED
+  PAID
+  CANCELLED
+  REJECTED
+}
+
+model Product {
+  id                    String           @id @default(uuid())
+  clubId                String?          @map("club_id")
+  name                  String
+  description           String           @default("") @db.Text
+  imageUrl              String?          @map("image_url") @db.Text
+  pricePaise            Int              @map("price_paise")
+  /// Percentage off for active members of the host club (0 = none).
+  memberDiscountPercent Int              @default(0) @map("member_discount_percent")
+  isPublished           Boolean          @default(false) @map("is_published")
+  isArchived            Boolean          @default(false) @map("is_archived")
+  createdAt             DateTime         @default(now()) @map("created_at")
+  updatedAt             DateTime         @updatedAt @map("updated_at")
+  /// Sum of stock over active variants. Maintained by a database trigger on "ProductVariant", so the
+  /// catalogue can show "in stock" / filter sold-out items without reading variants.
+  totalStock            Int              @default(0) @map("total_stock")
+  club                  Club?            @relation(fields: [clubId], references: [id], onDelete: SetNull, map: "fk_product_club")
+  variants              ProductVariant[]
+  orders                Order[]
+
+  // Public catalogue (newest first) and a club's own products.
+  @@index([isPublished, isArchived, createdAt], map: "idx_product_visibility")
+  @@index([clubId, isArchived, createdAt], map: "idx_product_club_state")
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "idx_product_name_trgm")
+}
+
+model ProductVariant {
+  id                 String  @id @default(uuid())
+  productId          String  @map("product_id")
+  label              String
+  stock              Int     @default(0)
+  pricePaiseOverride Int?    @map("price_paise_override")
+  isActive           Boolean @default(true) @map("is_active")
+  product            Product @relation(fields: [productId], references: [id], onDelete: Cascade, map: "fk_variant_product")
+  orders             Order[]
+
+  @@unique([productId, label], map: "unique_variant_label")
+}
+
+/// Orders are financial records: product/variant/user links are nullable and
+/// snapshot fields preserve history if the catalogue or account is deleted.
+model Order {
+  id             String          @id @default(uuid())
+  userId         String?         @map("user_id")
+  clubId         String?         @map("club_id")
+  productId      String?         @map("product_id")
+  variantId      String?         @map("variant_id")
+  buyerName      String          @map("buyer_name")
+  buyerEmail     String          @map("buyer_email")
+  productName    String          @map("product_name")
+  variantLabel   String          @map("variant_label")
+  unitPricePaise Int             @map("unit_price_paise")
+  quantity       Int
+  totalPaise     Int             @map("total_paise")
+  isMemberPrice  Boolean         @default(false) @map("is_member_price")
+  status         OrderStatus     @default(PENDING_PAYMENT)
+  transactionId  String?         @unique(map: "order_transaction_id_key") @map("transaction_id")
+  verifiedById   String?         @map("verified_by_id")
+  paidAt         DateTime?       @map("paid_at")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  user           Profile?        @relation(fields: [userId], references: [id], onDelete: SetNull, map: "fk_order_user")
+  club           Club?           @relation(fields: [clubId], references: [id], onDelete: SetNull, map: "fk_order_club")
+  product        Product?        @relation(fields: [productId], references: [id], onDelete: SetNull, map: "fk_order_product")
+  variant        ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull, map: "fk_order_variant")
+
+  // A student's order history, a club's order queue, and the admin view, all newest first.
+  @@index([userId, createdAt], map: "idx_order_user_created")
+  @@index([clubId, status, createdAt], map: "idx_order_club_status")
+  @@index([status, createdAt], map: "idx_order_status_created")
+  // Foreign-key lookups (SET NULL on delete must not scan the table).
+  @@index([productId], map: "idx_order_product")
+  @@index([variantId], map: "idx_order_variant")
 }
 
 model LedgerHead {
@@ -210,9 +375,11 @@ model ExpenseClaim {
   claimant Profile  @relation("ClaimantExpenses", fields: [claimantId], references: [id], onDelete: Cascade)
   approver Profile? @relation("ApproverExpenses", fields: [approverId], references: [id])
 
-  @@index([claimantId], map: "idx_expense_claimant")
-  @@index([status], map: "idx_expense_status")
-  @@index([clubId], map: "idx_expense_club")
+  // A claimant's own claims, and the club approval queue (flagged first is a sort, status is the filter).
+  @@index([claimantId, createdAt], map: "idx_expense_claimant")
+  @@index([clubId, status, createdAt], map: "idx_expense_club_status")
+  // Declared here (it was previously created only by scripts/apply_database_constraints.ts).
+  @@index([createdAt], map: "idx_expense_created_at")
 }
 
 model AuditLog {
@@ -226,7 +393,93 @@ model AuditLog {
 
   actor Profile? @relation(fields: [actorId], references: [id])
 
+  // The admin audit list is always newest first, optionally narrowed by record type, action or actor.
+  @@index([createdAt], map: "idx_audit_created")
+  @@index([entityType, createdAt], map: "idx_audit_entity_type_created")
+  @@index([action, createdAt], map: "idx_audit_action_created")
+  @@index([actorId, createdAt], map: "idx_audit_actor_created")
+  // History of one record.
   @@index([entityType, entityId], map: "idx_audit_entity")
-  @@index([actorId], map: "idx_audit_actor")
 }
 
+enum MembershipStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+}
+
+/// One row per dues payment (history is kept). A member is "active" while a row is ACTIVE and its
+/// end date is in the future, so expiry needs no background job. A renewal starts when the current
+/// period ends. At most one PENDING row per student and club (enforced by a database trigger).
+model Membership {
+  id              String           @id @default(uuid())
+  userId          String           @map("user_id")
+  clubId          String           @map("club_id")
+  status          MembershipStatus @default(PENDING)
+  startDate       DateTime?        @map("start_date")
+  endDate         DateTime?        @map("end_date")
+  duesPaidPaise   Int              @map("dues_paid_paise")
+  paymentProofUrl String?          @map("payment_proof_url") @db.Text
+  transactionId   String?          @unique(map: "membership_transaction_id_key") @map("transaction_id")
+  verifiedById    String?          @map("verified_by_id")
+  verifiedAt      DateTime?        @map("verified_at")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  user            Profile          @relation("MemberOf", fields: [userId], references: [id], onDelete: Cascade, map: "fk_membership_user")
+  club            Club             @relation(fields: [clubId], references: [id], onDelete: Cascade, map: "fk_membership_club")
+  verifiedBy      Profile?         @relation("MembershipVerifier", fields: [verifiedById], references: [id], onDelete: SetNull, map: "fk_membership_verifier")
+
+  // "Is this student an active member?" (checkout, scanner) and a student's own memberships.
+  @@index([userId, clubId, status, endDate], map: "idx_membership_user_club")
+  // A club's member list and verification queue.
+  @@index([clubId, status, endDate], map: "idx_membership_club_status")
+  @@index([verifiedById], map: "idx_membership_verifier")
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+model EventTask {
+  id           String     @id @default(uuid())
+  eventId      String     @map("event_id")
+  title        String
+  description  String     @default("") @db.Text
+  assignedToId String?    @map("assigned_to_id")
+  createdById  String?    @map("created_by_id")
+  dueDate      DateTime?  @map("due_date")
+  status       TaskStatus @default(TODO)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  event        Event      @relation(fields: [eventId], references: [id], onDelete: Cascade, map: "fk_task_event")
+  assignedTo   Profile?   @relation("TaskAssignee", fields: [assignedToId], references: [id], onDelete: SetNull, map: "fk_task_assignee")
+  createdBy    Profile?   @relation("TaskCreator", fields: [createdById], references: [id], onDelete: SetNull, map: "fk_task_creator")
+
+  // The board for one event, and "my tasks".
+  @@index([eventId, status, createdAt], map: "idx_task_event_status")
+  @@index([assignedToId, status], map: "idx_task_assignee")
+  @@index([createdById], map: "idx_task_creator")
+}
+
+enum AnnouncementCategory {
+  MEETING
+  DEADLINE
+  GENERAL
+}
+
+model Announcement {
+  id        String               @id @default(uuid())
+  clubId    String               @map("club_id")
+  authorId  String?              @map("author_id")
+  title     String
+  content   String               @db.Text
+  category  AnnouncementCategory @default(GENERAL)
+  createdAt DateTime             @default(now()) @map("created_at")
+  club      Club                 @relation(fields: [clubId], references: [id], onDelete: Cascade, map: "fk_announcement_club")
+  author    Profile?             @relation(fields: [authorId], references: [id], onDelete: SetNull, map: "fk_announcement_author")
+
+  // A club's timeline, newest first.
+  @@index([clubId, createdAt], map: "idx_announcement_club_created")
+  @@index([authorId], map: "idx_announcement_author")
+}

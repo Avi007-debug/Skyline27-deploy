@@ -1,4 +1,4 @@
-import { postLedger, verifyChain, GENESIS_HASH } from '../services/ledger';
+import { postLedger, verifyChain, GENESIS_HASH } from '../modules/finance/ledger.service';
 import prisma from '../config/db';
 
 async function runLedgerTests() {

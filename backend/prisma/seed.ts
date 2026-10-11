@@ -2,7 +2,7 @@ import { RegistrationStatus, Role, ExpenseStatus } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import prisma from '../config/db';
-import { postLedger, verifyChain, GENESIS_HASH } from '../services/ledger';
+import { postLedger, verifyChain, GENESIS_HASH } from '../modules/finance/ledger.service';
 
 dotenv.config();
 
@@ -35,6 +35,9 @@ async function main() {
     END $$;
   `).catch(() => {});
 
+  await prisma.order.deleteMany();
+  await prisma.productVariant.deleteMany();
+  await prisma.product.deleteMany();
   await prisma.notification.deleteMany();
   await prisma.registration.deleteMany();
   await prisma.team.deleteMany();
@@ -90,7 +93,7 @@ async function main() {
   });
 
   // 4. Create User Profiles with explicit Roles
-  console.log('👤 Creating role-based profiles (ADMIN, TREASURER, VOLUNTEER, MEMBER)...');
+  console.log('👤 Creating role-based profiles (SUPER_ADMIN, CLUB_HEAD, STUDENT)...');
   const gdgLead = await prisma.profile.create({
     data: {
       id: 'usr_gdg_lead_01',
@@ -103,14 +106,14 @@ async function main() {
       year: 3,
       sem: 6,
       clubId: gdgClub.id,
-      role: Role.ADMIN,
+      role: Role.CLUB_HEAD,
     },
   });
 
   const gdgTreasurer = await prisma.profile.create({
     data: {
       id: 'usr_gdg_treasurer_01',
-      fullName: 'Ananya Rao (GDG Treasurer)',
+      fullName: 'Ananya Rao (GDG Co-Head, Treasurer)',
       email: 'ananya.treasurer@college.edu',
       password: hashedPassword,
       usn: '1MS22CS015',
@@ -119,14 +122,14 @@ async function main() {
       year: 3,
       sem: 6,
       clubId: gdgClub.id,
-      role: Role.TREASURER,
+      role: Role.CLUB_HEAD,
     },
   });
 
   const gdgVolunteer = await prisma.profile.create({
     data: {
       id: 'usr_gdg_volunteer_01',
-      fullName: 'Karthik Verma (GDG Volunteer)',
+      fullName: 'Karthik Verma (Student, GDG Volunteer)',
       email: 'karthik.volunteer@college.edu',
       password: hashedPassword,
       usn: '1MS23CS088',
@@ -134,8 +137,7 @@ async function main() {
       phone: '+91 9876543230',
       year: 2,
       sem: 4,
-      clubId: gdgClub.id,
-      role: Role.VOLUNTEER,
+      role: Role.STUDENT,
     },
   });
 
@@ -150,7 +152,7 @@ async function main() {
       phone: '+91 9876543211',
       year: 2,
       sem: 4,
-      role: Role.MEMBER,
+      role: Role.STUDENT,
     },
   });
 
@@ -165,9 +167,28 @@ async function main() {
       phone: '+91 9876543212',
       year: 2,
       sem: 4,
-      role: Role.MEMBER,
+      role: Role.STUDENT,
     },
   });
+
+
+  // Platform owner + one head per remaining club (for role-scoping checks)
+  const superAdmin = await prisma.profile.create({
+    data: {
+      id: 'usr_super_admin_01',
+      fullName: 'Skyline Super Admin',
+      email: 'admin@skyline.local',
+      password: hashedPassword,
+      role: Role.SUPER_ADMIN,
+    },
+  });
+  const rotaractHead = await prisma.profile.create({
+    data: { id: 'usr_rotaract_head_01', fullName: 'Rotaract Head', email: 'rotaract.head@college.edu', password: hashedPassword, clubId: rotaractClub.id, role: Role.CLUB_HEAD },
+  });
+  const ieeeHead = await prisma.profile.create({
+    data: { id: 'usr_ieee_head_01', fullName: 'IEEE Head', email: 'ieee.head@college.edu', password: hashedPassword, clubId: ieeeClub.id, role: Role.CLUB_HEAD },
+  });
+  void superAdmin; void rotaractHead; void ieeeHead;
 
   // 5. Create Events
   console.log('📅 Creating events...');
@@ -176,7 +197,7 @@ async function main() {
       clubId: gdgClub.id,
       name: 'Cloud & GenAI DevFest 2026',
       description: 'Join GDG on Campus for an immersive hands-on day covering Google Cloud Platform, Vertex AI, Gemini APIs, and full-stack cloud deployments with live mentors and swag.',
-      eventType: 'TECHNICAL',
+      eventType: 'Team',
       fee: 150,
       registrationLimit: 120,
       registrationDeadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
@@ -196,14 +217,14 @@ async function main() {
       clubId: rotaractClub.id,
       name: 'Skyline Youth Impact Summit',
       description: 'An inspiring leadership conference featuring keynote entrepreneurs, social innovation challenges, and networking panels.',
-      eventType: 'WORKSHOP',
+      eventType: 'Solo',
       fee: 50,
       registrationLimit: 200,
       registrationDeadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
       eventDate: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000),
       venue: 'Main Seminar Hall',
-      teamSizeLimit: 1,
-      minTeamSize: 1,
+      teamSizeLimit: null,
+      minTeamSize: null,
       upiId: 'rotaract@okaxis',
       bannerUrl: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=1200&h=600&fit=crop',
       qrUrl: rotaractClub.qrUrl,
@@ -215,7 +236,7 @@ async function main() {
       clubId: ieeeClub.id,
       name: 'HackMatrix 24-Hour Hackathon',
       description: 'Build cutting-edge Web3, IoT, and AI solutions in a 24-hour sprint. Cash prizes worth ₹50,000 + internship opportunities for winners.',
-      eventType: 'HACKATHON',
+      eventType: 'Team',
       fee: 250,
       registrationLimit: 60,
       registrationDeadline: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000),
@@ -262,13 +283,48 @@ async function main() {
     },
   });
 
+
+  // 6b. Merchandise
+  console.log('🛍️ Creating merchandise...');
+  await prisma.product.create({
+    data: {
+      clubId: gdgClub.id,
+      name: 'GDG Developer Hoodie',
+      description: 'Navy blue heavyweight hoodie with the GDG on Campus crest.',
+      imageUrl: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800&h=800&fit=crop',
+      pricePaise: 45000,
+      isPublished: true,
+      variants: { create: [{ label: 'S', stock: 10 }, { label: 'M', stock: 15 }, { label: 'L', stock: 12 }, { label: 'XL', stock: 0 }] },
+    },
+  });
+  await prisma.product.create({
+    data: {
+      clubId: ieeeClub.id,
+      name: 'IEEE Sticker Pack',
+      description: 'Five vinyl stickers for your laptop.',
+      pricePaise: 5000,
+      isPublished: true,
+      variants: { create: [{ label: 'Standard', stock: 100 }] },
+    },
+  });
+  await prisma.product.create({
+    data: {
+      clubId: rotaractClub.id,
+      name: 'Rotaract Tote (draft)',
+      description: 'Unpublished example product.',
+      pricePaise: 20000,
+      isPublished: false,
+      variants: { create: [{ label: 'Standard', stock: 30 }] },
+    },
+  });
+
   // 7. Seed Expense Claims in all four lifecyle states
   console.log('🧾 Creating multi-state expense claims...');
   const reimbursedClaim = await prisma.expenseClaim.create({
     data: {
       id: 'claim_seed_reimbursed_01',
       clubId: gdgClub.id,
-      claimantId: gdgVolunteer.id,
+      claimantId: gdgLead.id,
       title: 'DevFest Stage Banners & Standees',
       vendor: 'PrintHub Digital Solutions',
       amountPaise: 12500, // ₹125.00
@@ -288,7 +344,7 @@ async function main() {
     data: {
       id: 'claim_seed_approved_01',
       clubId: gdgClub.id,
-      claimantId: gdgVolunteer.id,
+      claimantId: gdgLead.id,
       title: 'HDMI to Type-C Adapters (x2) for Workshop',
       vendor: 'Croma Electronics',
       amountPaise: 40000, // ₹400.00
@@ -307,7 +363,7 @@ async function main() {
     data: {
       id: 'claim_seed_submitted_01',
       clubId: gdgClub.id,
-      claimantId: gdgVolunteer.id,
+      claimantId: gdgLead.id,
       title: 'Volunteer Lanyards & Name Badges',
       vendor: 'Campus Print Corner',
       amountPaise: 25000, // ₹250.00
@@ -324,7 +380,7 @@ async function main() {
     data: {
       id: 'claim_seed_rejected_01',
       clubId: gdgClub.id,
-      claimantId: gdgVolunteer.id,
+      claimantId: gdgLead.id,
       title: 'Late Night Cab from Home to Campus',
       vendor: 'Uber India Technologies',
       amountPaise: 60000, // ₹600.00
@@ -450,7 +506,7 @@ async function main() {
         isRead: false,
       },
       {
-        userId: gdgVolunteer.id,
+        userId: gdgLead.id,
         type: 'CLAIM_STATUS_UPDATED',
         title: 'Expense Claim Reimbursed',
         body: 'Your claim for "DevFest Stage Banners" of ₹125.00 has been reimbursed by the Treasurer.',

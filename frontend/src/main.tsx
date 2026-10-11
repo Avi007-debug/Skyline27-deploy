@@ -1,9 +1,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import App from "./app/App.tsx";
-import { ThemeProvider } from "./app/theme.tsx";
-import { ErrorBoundary } from "./app/components/ErrorBoundary.tsx";
+import { App } from "./app/App";
+import { ThemeProvider } from "./shared/theme";
+import { AuthProvider } from "./shared/AuthProvider";
+import { ErrorBoundary } from "./club/components/ErrorBoundary";
 import "./styles/index.css";
 
 if (import.meta.env.PROD) {
@@ -18,9 +20,13 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ErrorBoundary>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <ThemeProvider>
-          <App />
-        </ThemeProvider>
+        <BrowserRouter>
+          <ThemeProvider>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </ThemeProvider>
+        </BrowserRouter>
       </GoogleOAuthProvider>
     </ErrorBoundary>
   </StrictMode>
