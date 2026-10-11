@@ -11,21 +11,26 @@ export function SplashDismisser() {
     if (dismissed.current) return;
     dismissed.current = true;
 
-    const el = document.getElementById('skyline-splash');
-    if (!el) return;
+    // Brief 450ms presentation so the user glimpses the unified platform emblem,
+    // then dismiss smoothly once React is mounted and painted
+    const timer = setTimeout(() => {
+      if (typeof (window as any).__dismissSkylineSplash === 'function') {
+        (window as any).__dismissSkylineSplash();
+      } else {
+        const el = document.getElementById('skyline-splash');
+        if (el) {
+          el.classList.add('splash-out');
+          el.style.pointerEvents = 'none';
+          setTimeout(() => {
+            try {
+              if (el.parentNode) el.parentNode.removeChild(el);
+            } catch (e) {}
+          }, 450);
+        }
+      }
+    }, 450);
 
-    // Give React one frame to paint before we start the exit
-    const raf = requestAnimationFrame(() => {
-      el.classList.add('splash-out');
-      const onEnd = () => {
-        el.remove();
-      };
-      el.addEventListener('transitionend', onEnd, { once: true });
-      // Safety net in case transitionend never fires
-      setTimeout(onEnd, 600);
-    });
-
-    return () => cancelAnimationFrame(raf);
+    return () => clearTimeout(timer);
   }, []);
 
   return null;
