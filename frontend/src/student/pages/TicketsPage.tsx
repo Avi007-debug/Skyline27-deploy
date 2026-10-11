@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Ticket, RefreshCw, Calendar, MapPin, Copy, Users, Check } from 'lucide-react';
 import { fetchUserTickets } from '@/student/api/registrations';
-import { TicketModel, isTicketUpcoming, isTicketConfirmed } from '@/student/types/event';
+import { TicketModel, isTicketUpcoming, isTicketConfirmed, ticketStage, TICKET_STAGE_LABEL } from '@/student/types/event';
 import { useSavedEventsStore } from '@/student/store/savedEventsStore';
 import { useEventsStore } from '@/student/store/eventsStore';
 import EventCard from '@/student/components/ui/EventCard';
@@ -119,8 +119,9 @@ export default function TicketsPage() {
               fontFamily: 'var(--font-sans)',
               fontWeight: 600,
               fontSize: 14,
-              background: activeTab === tab ? 'var(--color-crimson)' : 'transparent',
-              color: activeTab === tab ? '#fff' : 'var(--subtext)',
+              background: activeTab === tab ? 'var(--surface)' : 'transparent',
+              color: activeTab === tab ? 'var(--text)' : 'var(--subtext)',
+              boxShadow: activeTab === tab ? 'var(--sk-shadow)' : 'none',
               transition: 'all 0.2s ease',
               whiteSpace: 'nowrap',
               textAlign: 'center',
@@ -181,6 +182,7 @@ export default function TicketsPage() {
               key={ticket.id}
               ticket={ticket}
               onViewTicket={() => navigate(`/tickets/${ticket.id}`)}
+              onPay={() => navigate(`/events/${ticket.event?.id}/payment?registrationId=${ticket.id}`)}
             />
           ))}
         </div>
@@ -189,13 +191,17 @@ export default function TicketsPage() {
   );
 }
 
-function TicketCard({ ticket, onViewTicket }: { ticket: TicketModel; onViewTicket: () => void }) {
+function TicketCard({ ticket, onViewTicket, onPay }: { ticket: TicketModel; onViewTicket: () => void; onPay: () => void }) {
   const [copied, setCopied] = useState(false);
   const event = ticket.event;
   const confirmed = isTicketConfirmed(ticket);
+  const stage = ticketStage(ticket);
 
-  const dateStr = event?.eventDate?.toISOString() ?? event?.date ?? null;
-  const endDateStr = event?.eventEndDate?.toISOString() ?? null;
+  // Campus wall-clock times: keep them local, never convert through UTC.
+  const wall = (d?: Date | null) =>
+    d ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}T${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}` : null;
+  const dateStr = wall(event?.eventDate) ?? event?.date ?? null;
+  const endDateStr = wall(event?.eventEndDate);
 
   // Is live?
   const live = event?.eventDate
@@ -223,14 +229,14 @@ function TicketCard({ ticket, onViewTicket }: { ticket: TicketModel; onViewTicke
   return (
     <div
       style={{
-        background: '#121215',
-        border: '1px solid rgba(255,255,255,0.08)',
-        borderRadius: 20,
+        background: 'var(--surface)',
+        border: '1px solid var(--border)',
+        borderRadius: 'var(--sk-radius-lg)',
         overflow: 'hidden',
       }}
     >
       {/* Banner */}
-      <div style={{ height: 180, background: '#1a1b20', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ height: 180, background: 'var(--raised)', position: 'relative', overflow: 'hidden' }}>
         {event?.imageUrl ? (
           <img
             src={event.imageUrl}
@@ -245,13 +251,13 @@ function TicketCard({ ticket, onViewTicket }: { ticket: TicketModel; onViewTicke
             style={{
               width: '100%',
               height: '100%',
-              background: 'linear-gradient(135deg, #1c1d22 0%, #0d0e12 100%)',
+              background: 'var(--raised)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <Calendar size={40} style={{ opacity: 0.15, color: '#fff' }} />
+            <Calendar size={40} style={{ opacity: 0.15, color: 'var(--sk-faint)' }} />
           </div>
         )}
 
@@ -269,7 +275,7 @@ function TicketCard({ ticket, onViewTicket }: { ticket: TicketModel; onViewTicke
         >
           <span
             style={{
-              background: 'rgba(255,255,255,0.18)',
+              background: 'rgba(0,0,0,0.55)',
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)',
               color: '#fff',
@@ -288,11 +294,11 @@ function TicketCard({ ticket, onViewTicket }: { ticket: TicketModel; onViewTicke
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 5,
-                background: 'rgba(255,77,79,0.15)',
-                border: '1px solid rgba(255,77,79,0.4)',
+                background: 'var(--sk-brand-soft)',
+                border: '1px solid var(--sk-brand-soft)',
                 backdropFilter: 'blur(8px)',
                 WebkitBackdropFilter: 'blur(8px)',
-                color: '#ff4d4f',
+                color: 'var(--sk-brand)',
                 fontSize: 11,
                 fontWeight: 700,
                 padding: '4px 10px',
@@ -305,8 +311,8 @@ function TicketCard({ ticket, onViewTicket }: { ticket: TicketModel; onViewTicke
                   width: 6,
                   height: 6,
                   borderRadius: '50%',
-                  background: '#ff4d4f',
-                  boxShadow: '0 0 6px #ff4d4f',
+                  background: 'var(--sk-brand)',
+                  boxShadow: '0 0 6px var(--sk-brand)',
                 }}
               />
               LIVE NOW
@@ -323,47 +329,17 @@ function TicketCard({ ticket, onViewTicket }: { ticket: TicketModel; onViewTicke
             zIndex: 2,
           }}
         >
-          {confirmed ? (
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-                background: 'rgba(22, 163, 74, 0.18)',
-                border: '1.5px solid rgba(74, 222, 128, 0.45)',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                color: '#4ade80',
-                fontSize: 12,
-                fontWeight: 700,
-                padding: '5px 12px',
-                borderRadius: 999,
-                letterSpacing: '0.2px',
-              }}
-            >
-              <Check size={13} strokeWidth={3} />
-              Confirmed
-            </span>
-          ) : (
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-                background: 'rgba(245,158,11,0.15)',
-                border: '1.5px solid rgba(245,158,11,0.35)',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                color: '#f59e0b',
-                fontSize: 12,
-                fontWeight: 700,
-                padding: '5px 12px',
-                borderRadius: 999,
-              }}
-            >
-              Pending
-            </span>
-          )}
+          <span
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 999, fontSize: 12, fontWeight: 600,
+              background: 'var(--surface)',
+              color: stage === 'CONFIRMED' ? 'var(--sk-ok)' : stage === 'REJECTED' ? 'var(--sk-danger)' : 'var(--sk-warn)',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.12)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+            }}
+          >
+            {stage === 'CONFIRMED' && <Check size={13} strokeWidth={3} />}
+            {TICKET_STAGE_LABEL[stage]}
+          </span>
         </div>
       </div>
 
@@ -379,7 +355,7 @@ function TicketCard({ ticket, onViewTicket }: { ticket: TicketModel; onViewTicke
           style={{
             fontSize: 22,
             fontWeight: 800,
-            color: '#fff',
+            color: 'var(--text)',
             marginBottom: 12,
             letterSpacing: '-0.3px',
           }}
@@ -422,7 +398,7 @@ function TicketCard({ ticket, onViewTicket }: { ticket: TicketModel; onViewTicke
         )}
 
         {/* Divider */}
-        <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', marginBottom: 14 }} />
+        <div style={{ height: 1, background: 'var(--border)', marginBottom: 14 }} />
 
         {/* Team row */}
         {ticket.team ? (
@@ -443,7 +419,7 @@ function TicketCard({ ticket, onViewTicket }: { ticket: TicketModel; onViewTicke
                 <span
                   style={{
                     background: 'var(--color-crimson)',
-                    color: '#fff',
+                    color: '#ffffff',
                     fontSize: 11,
                     fontWeight: 700,
                     padding: '2px 10px',
@@ -462,11 +438,11 @@ function TicketCard({ ticket, onViewTicket }: { ticket: TicketModel; onViewTicke
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  background: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.12)',
+                  background: 'var(--raised)',
+                  border: '1px solid var(--border)',
                   borderRadius: 10,
                   padding: '6px 14px',
-                  color: '#fff',
+                  color: 'var(--text)',
                   fontSize: 13,
                   fontWeight: 600,
                   cursor: 'pointer',
@@ -483,7 +459,7 @@ function TicketCard({ ticket, onViewTicket }: { ticket: TicketModel; onViewTicke
         )}
 
         {/* Divider */}
-        <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', marginBottom: 14 }} />
+        <div style={{ height: 1, background: 'var(--border)', marginBottom: 14 }} />
 
         {/* Bottom row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -493,36 +469,22 @@ function TicketCard({ ticket, onViewTicket }: { ticket: TicketModel; onViewTicke
                 <p style={{ fontSize: 11, color: 'var(--subtext)', fontWeight: 500, marginBottom: 2 }}>
                   Team Members
                 </p>
-                <p style={{ fontSize: 15, fontWeight: 700, color: '#4ade80' }}>
+                <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--sk-ok)' }}>
                   {joinedCount} Joined
                 </p>
               </>
             )}
           </div>
 
-          <button
-            onClick={onViewTicket}
-            style={{
-              background: 'var(--color-crimson)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 50,
-              padding: '12px 28px',
-              fontSize: 15,
-              fontWeight: 700,
-              cursor: 'pointer',
-              fontFamily: 'var(--font-sans)',
-              transition: 'background 0.15s ease',
-            }}
-            onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLElement).style.background = '#c0303b')
-            }
-            onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLElement).style.background = 'var(--color-crimson)')
-            }
-          >
-            View Ticket
-          </button>
+          {stage === 'CONFIRMED' ? (
+            <button onClick={onViewTicket} className="btn-primary" style={{ borderRadius: 999 }}>View ticket</button>
+          ) : stage === 'PAYMENT_DUE' ? (
+            <button onClick={onPay} className="btn-primary" style={{ borderRadius: 999 }}>Complete payment</button>
+          ) : (
+            <button disabled aria-disabled className="btn-secondary" style={{ borderRadius: 999, cursor: 'not-allowed', opacity: 0.8 }}>
+              {stage === 'REJECTED' ? 'Not approved' : 'Awaiting approval'}
+            </button>
+          )}
         </div>
       </div>
     </div>

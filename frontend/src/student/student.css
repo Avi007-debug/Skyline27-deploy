@@ -2,17 +2,18 @@
    (--bg, --surface, --border, ...) never leak into the club dashboard or admin console. */
 
 .stu-root {
-  --color-crimson: #e63946;
-  --color-crimson-hover: #cc2f3c;
-  --color-crimson-dim: rgba(230, 57, 70, 0.12);
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Manrope', sans-serif;
+  --color-crimson: var(--sk-brand);
+  --color-crimson-hover: var(--sk-brand-hover);
+  --color-crimson-dim: var(--sk-brand-soft);
+  --font-sans: var(--sk-font);
 
-  /* light theme */
-  --bg: #f8f9fa;
-  --surface: #ffffff;
-  --border: rgba(0, 0, 0, 0.08);
-  --text: #000000;
-  --subtext: #6b7280;
+  /* both themes come from styles/tokens.css */
+  --bg: var(--sk-canvas);
+  --surface: var(--sk-surface);
+  --raised: var(--sk-raised);
+  --border: var(--sk-line);
+  --text: var(--sk-fg);
+  --subtext: var(--sk-muted);
 
   font-family: var(--font-sans);
   background: var(--bg);
@@ -22,35 +23,28 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-html.dark .stu-root {
-  --bg: #000000;
-  --surface: #141416;
-  --border: transparent;
-  --text: #ffffff;
-  --subtext: #a0a0a0;
-}
 
 .stu-root ::selection {
-  background: rgba(230, 57, 70, 0.25);
+  background: color-mix(in srgb, var(--sk-brand) 25%, transparent);
   color: var(--text);
 }
 
 .stu-root .spotlight-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  transition: box-shadow 0.2s ease;
+  border-radius: var(--sk-radius-lg);
+  box-shadow: var(--sk-shadow);
+  transition: border-color 0.15s ease;
 }
-.stu-root .spotlight-card:hover { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12); }
-html.dark .stu-root .spotlight-card:hover { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); }
+.stu-root .spotlight-card:hover { border-color: var(--sk-line-strong); }
 
 .stu-root .btn-primary {
   background: var(--color-crimson);
   color: #fff;
-  border-radius: 12px;
-  padding: 12px 24px;
+  border-radius: var(--sk-radius);
+  padding: 10px 18px;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   border: none;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.1s ease;
@@ -61,12 +55,12 @@ html.dark .stu-root .spotlight-card:hover { box-shadow: 0 8px 32px rgba(0, 0, 0,
 .stu-root .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
 .stu-root .btn-secondary {
-  background: var(--border);
+  background: var(--raised);
   color: var(--text);
-  border-radius: 12px;
-  padding: 12px 24px;
+  border-radius: var(--sk-radius);
+  padding: 10px 18px;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   border: none;
   cursor: pointer;
   transition: background 0.15s ease;
@@ -92,9 +86,9 @@ html.dark .stu-root .spotlight-card:hover { box-shadow: 0 8px 32px rgba(0, 0, 0,
 
 /* Badges */
 .stu-root .badge-live {
-  background: rgba(230, 57, 70, 0.15);
+  background: color-mix(in srgb, var(--sk-brand) 15%, transparent);
   color: var(--color-crimson);
-  border: 1px solid rgba(230, 57, 70, 0.3);
+  border: 1px solid color-mix(in srgb, var(--sk-brand) 30%, transparent);
   border-radius: 99px;
   padding: 2px 10px;
   font-size: 11px;
@@ -144,3 +138,31 @@ html.dark .stu-root .badge-upcoming { color: #4ade80; background: rgba(34, 197, 
 
 /* Used by inline `animation: 'spin ...'` styles across the site */
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Sidebar navigation (desktop) */
+.stu-root .stu-sidebar {
+  position: fixed; inset: 0 auto 0 0; width: 220px; z-index: 100;
+  display: flex; flex-direction: column; gap: 4px; padding: 20px 12px 16px;
+  background: var(--surface); border-right: 1px solid var(--border);
+}
+.stu-root .stu-brand {
+  display: flex; align-items: center; gap: 10px; height: 36px; padding: 0 8px; margin-bottom: 12px;
+  background: none; border: none; cursor: pointer; color: var(--text); font: 600 15px/1 var(--font-sans); letter-spacing: -0.01em;
+}
+.stu-root .stu-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.stu-root .stu-nav-item {
+  position: relative; display: flex; align-items: center; gap: 10px; width: 100%; height: 34px; padding: 0 10px;
+  border: none; border-radius: var(--sk-radius); background: transparent; cursor: pointer; text-align: left;
+  color: var(--subtext); font: 500 14px/1 var(--font-sans); transition: background 0.12s, color 0.12s;
+}
+.stu-root .stu-nav-item:hover { background: var(--raised); color: var(--text); }
+.stu-root .stu-nav-item[aria-current='page'] { background: var(--raised); color: var(--text); font-weight: 600; }
+.stu-root .stu-nav-item[aria-current='page']::before {
+  content: ''; position: absolute; left: -12px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--sk-brand);
+}
+.stu-root .stu-nav-item:focus-visible, .stu-root .stu-brand:focus-visible { outline: 2px solid var(--sk-brand); outline-offset: 1px; }
+.stu-root .stu-nav-badge {
+  margin-left: auto; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 99px;
+  display: inline-grid; place-items: center; background: var(--sk-brand); color: #fff; font: 600 11px/1 var(--font-sans);
+}
+.stu-root .stu-sidebar-foot { border-top: 1px solid var(--border); padding-top: 8px; }

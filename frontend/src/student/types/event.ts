@@ -247,3 +247,24 @@ export function isTicketConfirmed(ticket: TicketModel): boolean {
 export function ticketHasPaid(ticket: TicketModel): boolean {
   return !!(ticket.transactionId?.trim()) || !!(ticket.paymentProofUrl?.trim());
 }
+
+/**
+ * Where a registration stands, from the student's point of view. Only CONFIRMED tickets
+ * are usable at the door; everything else must say clearly what is happening.
+ */
+export type TicketStage = 'CONFIRMED' | 'PAYMENT_DUE' | 'AWAITING_APPROVAL' | 'REJECTED';
+
+export function ticketStage(ticket: TicketModel): TicketStage {
+  const status = ticket.status.toUpperCase();
+  if (status === 'CONFIRMED') return 'CONFIRMED';
+  if (status === 'REJECTED' || status === 'CANCELLED') return 'REJECTED';
+  const price = ticket.event?.price ?? 0;
+  return price > 0 && !ticketHasPaid(ticket) ? 'PAYMENT_DUE' : 'AWAITING_APPROVAL';
+}
+
+export const TICKET_STAGE_LABEL: Record<TicketStage, string> = {
+  CONFIRMED: 'Confirmed',
+  PAYMENT_DUE: 'Payment due',
+  AWAITING_APPROVAL: 'Pending approval',
+  REJECTED: 'Rejected',
+};

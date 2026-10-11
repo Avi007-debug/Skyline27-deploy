@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { BadgeCheck, Check, Clock, Search, Settings2, UserCheck, X } from "lucide-react";
 import { request, sanitizeErrorMessage } from "../api";
 
-const FM = "'JetBrains Mono', monospace";
-const FB = "'Manrope', sans-serif";
+const FM = "var(--sk-font)";
+const FB = "var(--sk-font)";
 
 type State = "" | "pending" | "active" | "expiring" | "expired" | "rejected";
 interface Row {
@@ -27,10 +27,10 @@ interface Props { clubId?: string; getToken: () => Promise<string | null>; isDar
  * to this club.
  */
 export default function MembersManager({ getToken, isDark }: Props) {
-  const text = isDark ? "#fff" : "#1e1b26";
-  const sub = isDark ? "#94a3b8" : "#64748b";
-  const card = { background: isDark ? "rgba(255,255,255,0.015)" : "#ffffff", border: isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.08)" } as const;
-  const field = { background: isDark ? "rgba(255,255,255,0.03)" : "#e9ecf2", border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.1)", color: text } as const;
+  const text = "var(--sk-fg)";
+  const sub = "var(--sk-muted)";
+  const card = { background: "var(--sk-surface)", border: "1px solid var(--sk-line)" } as const;
+  const field = { background: "var(--sk-raised)", border: "1px solid var(--sk-line)", color: text } as const;
 
   const [state, setState] = useState<State>("pending");
   const [page, setPage] = useState(1);
@@ -129,17 +129,17 @@ export default function MembersManager({ getToken, isDark }: Props) {
   return (
     <div className="p-4 sm:p-8 space-y-6" style={{ fontFamily: FB }}>
       <div>
-        <p className="text-[11px] tracking-[0.5em] uppercase mb-1.5" style={{ color: sub, fontFamily: FM }}>Club membership</p>
+        <p className="text-[11px] tracking-normal mb-1.5" style={{ color: sub, fontFamily: FM }}>Club membership</p>
         <h1 className="text-2xl md:text-3xl font-semibold" style={{ color: text }}>Members</h1>
       </div>
 
       {notice && <div role="status" className="rounded-xl px-4 py-3 text-sm" style={{ background: "rgba(16,185,129,0.12)", color: "#10b981" }}>{notice}</div>}
-      {error && <div role="alert" className="rounded-xl px-4 py-3 text-sm" style={{ background: "rgba(240,61,78,0.12)", color: "#F03D4E" }}>{error}</div>}
+      {error && <div role="alert" className="rounded-xl px-4 py-3 text-sm" style={{ background: "color-mix(in srgb, var(--sk-danger) 12%, transparent)", color: "var(--sk-danger)" }}>{error}</div>}
 
       <div className="grid gap-3 sm:grid-cols-3">
         {stats.map(([label, value, Icon]) => (
-          <div key={label} className="rounded-2xl p-4 flex items-center gap-3" style={card}>
-            <Icon size={20} style={{ color: "#F03D4E" }} />
+          <div key={label} className="rounded-xl p-4 flex items-center gap-3" style={card}>
+            <Icon size={20} style={{ color: "var(--sk-brand)" }} />
             <div>
               <div className="text-2xl font-semibold" style={{ color: text }}>{value}</div>
               <div className="text-xs" style={{ color: sub }}>{label}</div>
@@ -148,7 +148,7 @@ export default function MembersManager({ getToken, isDark }: Props) {
         ))}
       </div>
 
-      <section className="rounded-2xl p-4 sm:p-5" style={card} aria-label="Membership dues">
+      <section className="rounded-xl p-4 sm:p-5" style={card} aria-label="Membership dues">
         <h2 className="flex items-center gap-2 text-sm font-semibold mb-3" style={{ color: text }}><Settings2 size={15} /> Dues</h2>
         <div className="flex flex-wrap items-end gap-3">
           <label className="text-xs" style={{ color: sub }}>
@@ -159,7 +159,7 @@ export default function MembersManager({ getToken, isDark }: Props) {
             Period (months)
             <input type="number" min={1} max={60} value={months} onChange={e => setMonths(e.target.value)} className="block mt-1 w-28 rounded-xl px-3 py-2 text-sm outline-none" style={field} />
           </label>
-          <button onClick={saveSettings} disabled={savingSettings} className="px-4 py-2 rounded-xl text-sm font-semibold text-white cursor-pointer disabled:opacity-60" style={{ background: "#F03D4E" }}>
+          <button onClick={saveSettings} disabled={savingSettings} className="px-4 py-2 rounded-xl text-sm font-semibold text-white cursor-pointer disabled:opacity-60" style={{ background: "var(--sk-brand)" }}>
             {savingSettings ? "Saving…" : "Save"}
           </button>
         </div>
@@ -171,7 +171,7 @@ export default function MembersManager({ getToken, isDark }: Props) {
       <div className="flex flex-wrap items-center gap-2">
         {STATE_TABS.map(([id, label]) => (
           <button key={label} onClick={() => { setState(id); setPage(1); }} className="px-4 py-2 rounded-full text-xs font-semibold cursor-pointer"
-            style={{ background: state === id ? "#F03D4E" : "transparent", color: state === id ? "#fff" : sub, border: state === id ? "1px solid #F03D4E" : isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.12)" }}>
+            style={{ background: state === id ? "var(--sk-fg)" : "var(--sk-surface)", color: state === id ? "var(--sk-canvas)" : sub, border: state === id ? "1px solid var(--sk-fg)" : "1px solid var(--sk-line)" }}>
             {label}
           </button>
         ))}
@@ -182,7 +182,7 @@ export default function MembersManager({ getToken, isDark }: Props) {
         </div>
       </div>
 
-      <div className="rounded-2xl overflow-x-auto" style={card}>
+      <div className="rounded-xl overflow-x-auto" style={card}>
         <table className="w-full text-sm" style={{ color: text, minWidth: 640 }}>
           <thead>
             <tr className="text-left text-xs" style={{ color: sub, fontFamily: FM }}>
@@ -193,7 +193,7 @@ export default function MembersManager({ getToken, isDark }: Props) {
             {loading && <tr><td colSpan={6} className="p-6 text-center" style={{ color: sub }}>Loading…</td></tr>}
             {!loading && rows.length === 0 && <tr><td colSpan={6} className="p-6 text-center" style={{ color: sub }}>{state === "pending" ? "No payments waiting for review." : "No members here yet."}</td></tr>}
             {!loading && rows.map(r => (
-              <tr key={r.id} style={{ borderTop: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.06)" }}>
+              <tr key={r.id} style={{ borderTop: "1px solid var(--sk-line)" }}>
                 <td className="p-3">
                   <div className="font-semibold">{r.user.fullName}</div>
                   <div className="text-xs" style={{ color: sub }}>{r.user.usn || r.user.email}</div>
@@ -213,7 +213,7 @@ export default function MembersManager({ getToken, isDark }: Props) {
                       <button disabled={busy === r.id} onClick={() => act(r.id, "verify")} aria-label={`Verify payment from ${r.user.fullName}`}
                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-white cursor-pointer disabled:opacity-60" style={{ background: "#10b981" }}><Check size={13} /> Verify</button>
                       <button disabled={busy === r.id} onClick={() => act(r.id, "reject")} aria-label={`Reject payment from ${r.user.fullName}`}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer disabled:opacity-60" style={{ background: "rgba(240,61,78,0.12)", color: "#F03D4E" }}><X size={13} /> Reject</button>
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer disabled:opacity-60" style={{ background: "color-mix(in srgb, var(--sk-danger) 12%, transparent)", color: "var(--sk-danger)" }}><X size={13} /> Reject</button>
                     </div>
                   )}
                 </td>

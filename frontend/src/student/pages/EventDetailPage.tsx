@@ -123,7 +123,7 @@ export default function EventDetailPage() {
     existingTicket && !existingTicket.paymentProofUrl && !existingTicket.transactionId && event.price > 0;
   const regState = event.registrationState ?? 'OPEN';
   const isDeadlinePassed = event.registrationDeadline ? new Date() > event.registrationDeadline : false;
-  const isClosed = regState !== 'OPEN';
+  const isClosed = regState !== 'OPEN' || isDeadlinePassed;
 
   const isTeam = (event.eventType ?? '').toLowerCase() === 'team';
 
@@ -153,19 +153,19 @@ export default function EventDetailPage() {
 
   // ── Bottom CTA state (mirrors Flutter) ───────────────────────────────────
   let btnLabel = 'Register Now';
-  let btnColor = 'var(--color-crimson, #e63946)';
+  let btnColor = 'var(--color-crimson, var(--sk-brand))';
   let btnTextColor = '#ffffff';
   let btnDisabled = isClosed || isRegistered || past;
 
   if (checkingRegistration) {
     btnLabel = '';
-    btnColor = '#27272a';
-    btnTextColor = '#71717a';
+    btnColor = 'var(--raised)';
+    btnTextColor = 'var(--sk-faint)';
     btnDisabled = true;
   } else if (isRegistered) {
     btnLabel = 'Already Registered';
-    btnColor = '#1a2e1a';
-    btnTextColor = '#4caf50';
+    btnColor = 'var(--sk-ok-soft)';
+    btnTextColor = 'var(--sk-ok)';
     btnDisabled = true;
   } else if (isPendingPayment) {
     btnLabel = 'Complete Payment';
@@ -174,25 +174,25 @@ export default function EventDetailPage() {
     btnDisabled = false;
   } else if (regState === 'SOLD_OUT' || full) {
     btnLabel = 'Registration Full';
-    btnColor = '#27272a';
-    btnTextColor = '#71717a';
+    btnColor = 'var(--raised)';
+    btnTextColor = 'var(--sk-faint)';
     btnDisabled = true;
   } else if (regState === 'UPCOMING') {
     btnLabel = event.registrationOpensAt ? `Opens ${formatDeadlineStr(event.registrationOpensAt)}` : 'Registration not open yet';
-    btnColor = '#27272a';
+    btnColor = 'var(--raised)';
     btnTextColor = '#a1a1aa';
     btnDisabled = true;
   } else if (past || isClosed) {
-    btnLabel = past || regState === 'ENDED' ? 'Event has ended' : 'Registration Closed';
-    btnColor = '#27272a';
-    btnTextColor = '#71717a';
+    btnLabel = past || regState === 'ENDED' ? 'Event has ended' : 'Registrations Closed';
+    btnColor = 'var(--raised)';
+    btnTextColor = 'var(--sk-faint)';
     btnDisabled = true;
   } else if (!isAuthenticated) {
     btnLabel = 'Sign in to Register';
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#000000', color: '#ffffff', paddingBottom: 110 }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', paddingBottom: 110 }}>
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
 
         {/* ── Full-width Poster ─────────────────────────────────────────── */}
@@ -201,7 +201,7 @@ export default function EventDetailPage() {
             position: 'relative',
             height: 320,
             width: '100%',
-            background: '#0a0a0a',
+            background: 'var(--raised)',
             overflow: 'hidden',
             cursor: event.imageUrl ? 'zoom-in' : 'default',
           }}
@@ -224,7 +224,7 @@ export default function EventDetailPage() {
               style={{
                 width: '100%',
                 height: '100%',
-                background: '#111111',
+                background: 'var(--raised)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -304,12 +304,12 @@ export default function EventDetailPage() {
                 style={{
                   padding: '7px 14px',
                   borderRadius: 20,
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  background: 'var(--raised)',
+                  border: '1px solid var(--border)',
                   backdropFilter: 'blur(10px)',
                   fontSize: 12,
                   fontWeight: 600,
-                  color: '#ffffff',
+                  color: 'var(--text)',
                   display: 'inline-block',
                 }}
               >
@@ -328,7 +328,7 @@ export default function EventDetailPage() {
                     background: 'transparent',
                     fontSize: 9,
                     fontWeight: 700,
-                    color: '#ef4444',
+                    color: 'var(--sk-brand)',
                     letterSpacing: '0.6px',
                     textTransform: 'uppercase',
                   }}
@@ -338,8 +338,8 @@ export default function EventDetailPage() {
                       width: 5,
                       height: 5,
                       borderRadius: '50%',
-                      background: '#ef4444',
-                      boxShadow: '0 0 4px 1px #ef4444',
+                      background: 'var(--sk-brand)',
+                      boxShadow: '0 0 4px 1px var(--sk-danger)',
                       animation: 'pulse-dot 1.2s infinite',
                     }}
                   />
@@ -353,22 +353,22 @@ export default function EventDetailPage() {
               style={{
                 padding: '6px 12px',
                 borderRadius: 14,
-                background: 'rgba(255, 255, 255, 0.1)',
+                background: 'var(--raised)',
                 fontSize: 13,
                 fontWeight: 600,
-                color: '#ffffff',
+                color: 'var(--text)',
                 display: 'inline-block',
               }}
             >
               {event.price > 0 ? 'Paid' : 'Free'}
             </span>
             {event.isMember && (event.normalPrice ?? 0) > event.price && (
-              <span style={{ marginLeft: 8, padding: '4px 12px', borderRadius: 14, background: 'rgba(22,163,74,0.25)', fontSize: 13, fontWeight: 700, color: '#bbf7d0', display: 'inline-block' }}>
+              <span style={{ marginLeft: 8, padding: '4px 12px', borderRadius: 14, background: 'var(--sk-ok-soft)', fontSize: 13, fontWeight: 700, color: 'var(--sk-ok)', display: 'inline-block' }}>
                 Member price {event.price > 0 ? `₹${event.price}` : 'Free'} <span style={{ textDecoration: 'line-through', opacity: 0.7, fontWeight: 500 }}>₹{event.normalPrice}</span>
               </span>
             )}
             {!event.isMember && event.memberFee != null && event.memberFee < (event.normalPrice ?? event.price) && (
-              <span style={{ marginLeft: 8, padding: '4px 12px', borderRadius: 14, background: 'rgba(255,255,255,0.1)', fontSize: 13, fontWeight: 600, color: '#ffffff', display: 'inline-block' }}>
+              <span style={{ marginLeft: 8, padding: '4px 12px', borderRadius: 14, background: 'var(--raised)', fontSize: 13, fontWeight: 600, color: 'var(--text)', display: 'inline-block' }}>
                 Members pay {event.memberFee > 0 ? `₹${event.memberFee}` : 'nothing'}
               </span>
             )}
@@ -379,7 +379,7 @@ export default function EventDetailPage() {
             style={{
               fontSize: 22,
               fontWeight: 700,
-              color: '#ffffff',
+              color: 'var(--text)',
               letterSpacing: '-0.5px',
               lineHeight: 1.3,
               marginBottom: 6,
@@ -392,7 +392,7 @@ export default function EventDetailPage() {
           <p
             style={{
               fontSize: 15,
-              color: '#a09b9b',
+              color: 'var(--subtext)',
               fontWeight: 500,
               marginBottom: 6,
             }}
@@ -407,7 +407,7 @@ export default function EventDetailPage() {
               style={{
                 fontSize: 14,
                 fontWeight: 600,
-                color: 'var(--color-crimson, #e63946)',
+                color: 'var(--color-crimson, var(--sk-brand))',
                 marginBottom: 6,
                 cursor: event.clubId ? 'pointer' : 'default',
               }}
@@ -431,7 +431,7 @@ export default function EventDetailPage() {
                 style={{
                   fontSize: 13,
                   fontWeight: 600,
-                  color: '#eab308',
+                  color: 'var(--sk-warn)',
                 }}
               >
                 {isDeadlinePassed ? 'Deadline passed: ' : 'Deadline: '}
@@ -442,7 +442,7 @@ export default function EventDetailPage() {
           {!event.registrationDeadline && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 28 }}>
               <Clock size={13} color="#a1a1aa" strokeWidth={2.5} />
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#a1a1aa' }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--subtext)' }}>
                 {regState === 'OPEN' ? 'Registration is open until the event starts or spots run out' : 'No fixed registration deadline'}
                 {event.spotsLeft !== null && event.spotsLeft !== undefined && regState === 'OPEN' ? ` · ${event.spotsLeft} spots left` : ''}
               </span>
@@ -452,8 +452,8 @@ export default function EventDetailPage() {
           {/* Date & Time card */}
           <div
             style={{
-              background: '#161414',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
+              background: 'var(--surface)',
+              border: '1px solid var(--border)',
               borderRadius: 24,
               padding: 16,
               display: 'flex',
@@ -467,7 +467,7 @@ export default function EventDetailPage() {
                 width: 44,
                 height: 44,
                 borderRadius: '50%',
-                background: '#1e1c1c',
+                background: 'var(--raised)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -481,7 +481,7 @@ export default function EventDetailPage() {
                 style={{
                   fontSize: 15,
                   fontWeight: 700,
-                  color: '#ffffff',
+                  color: 'var(--text)',
                   marginBottom: 4,
                 }}
               >
@@ -491,7 +491,7 @@ export default function EventDetailPage() {
                 style={{
                   fontSize: 13,
                   fontWeight: 500,
-                  color: '#a09b9b',
+                  color: 'var(--subtext)',
                   lineHeight: 1.4,
                 }}
               >
@@ -504,8 +504,8 @@ export default function EventDetailPage() {
           {isTeam && (
             <div
               style={{
-                background: '#161414',
-                border: '1px solid rgba(255, 255, 255, 0.05)',
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
                 borderRadius: 24,
                 padding: 16,
                 display: 'flex',
@@ -519,7 +519,7 @@ export default function EventDetailPage() {
                   width: 44,
                   height: 44,
                   borderRadius: '50%',
-                  background: '#1e1c1c',
+                  background: 'var(--raised)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -533,7 +533,7 @@ export default function EventDetailPage() {
                   style={{
                     fontSize: 15,
                     fontWeight: 700,
-                    color: '#ffffff',
+                    color: 'var(--text)',
                     marginBottom: 4,
                   }}
                 >
@@ -543,7 +543,7 @@ export default function EventDetailPage() {
                   style={{
                     fontSize: 13,
                     fontWeight: 500,
-                    color: '#a09b9b',
+                    color: 'var(--subtext)',
                   }}
                 >
                   Min {event.minTeamSize ?? 1} · Max {event.teamSizeLimit ?? 'No limit'} members per team
@@ -558,7 +558,7 @@ export default function EventDetailPage() {
               style={{
                 fontSize: 18,
                 fontWeight: 700,
-                color: '#ffffff',
+                color: 'var(--text)',
                 marginBottom: 12,
               }}
             >
@@ -567,7 +567,7 @@ export default function EventDetailPage() {
             <p
               style={{
                 fontSize: 16,
-                color: '#a09b9b',
+                color: 'var(--subtext)',
                 lineHeight: 1.6,
                 whiteSpace: 'pre-wrap',
               }}
@@ -585,8 +585,8 @@ export default function EventDetailPage() {
             bottom: 0,
             left: 0,
             right: 0,
-            background: '#000000',
-            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            background: 'var(--surface)',
+            borderTop: '1px solid var(--border)',
             padding: '14px 24px',
             paddingBottom: 'calc(14px + env(safe-area-inset-bottom, 0px))',
             display: 'flex',
@@ -611,13 +611,13 @@ export default function EventDetailPage() {
               height: 52,
               borderRadius: '50%',
               flexShrink: 0,
-              background: 'rgba(255, 255, 255, 0.08)',
+              background: 'var(--raised)',
               border: 'none',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: saved ? 'var(--color-crimson, #e63946)' : '#ffffff',
+              color: saved ? 'var(--color-crimson, var(--sk-brand))' : 'var(--text)',
               transition: 'transform 0.15s ease',
             }}
           >
@@ -658,7 +658,7 @@ export default function EventDetailPage() {
               alignItems: 'center',
               justifyContent: 'center',
               transition: 'all 0.15s ease',
-              boxShadow: btnDisabled ? 'none' : '0 4px 12px rgba(230, 57, 70, 0.25)',
+              boxShadow: btnDisabled ? 'none' : '0 4px 12px color-mix(in srgb, var(--sk-brand) 25%, transparent)',
             }}
           >
             {checkingRegistration ? (

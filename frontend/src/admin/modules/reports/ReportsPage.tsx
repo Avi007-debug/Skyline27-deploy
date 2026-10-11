@@ -117,7 +117,7 @@ export function ReportsPage() {
 function Tile({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div className="ad-card p-5">
-      <div className="text-[11px] font-semibold uppercase tracking-wider text-ad-faint">{label}</div>
+      <div className="text-[11px] font-semibold tracking-normal text-ad-faint">{label}</div>
       <div className="mt-2 text-2xl font-extrabold">{value}</div>
       {sub && <div className="mt-1 text-xs text-ad-muted">{sub}</div>}
     </div>

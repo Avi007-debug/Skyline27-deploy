@@ -8,7 +8,7 @@ import {
   setEventPublished,
 } from "../api";
 
-const FB = "'Manrope', sans-serif";
+const FB = "var(--sk-font)";
 
 interface Props {
   event: any;
@@ -95,9 +95,9 @@ export default function EventControls({ event, isDark, getToken, onChanged, onGo
       className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer"
       style={{
         fontFamily: FB,
-        background: danger ? "rgba(240,61,78,0.08)" : isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-        border: danger ? "1px solid rgba(240,61,78,0.3)" : isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
-        color: danger ? "#F03D4E" : isDark ? "#e5e7eb" : "#334155",
+        background: danger ? "color-mix(in srgb, var(--sk-danger) 8%, transparent)" : "var(--sk-line)",
+        border: danger ? "1px solid color-mix(in srgb, var(--sk-danger) 30%, transparent)" : "1px solid var(--sk-line)",
+        color: danger ? "var(--sk-danger)" : isDark ? "#e5e7eb" : "#334155",
       }}
     >
       {icon} {label}
@@ -113,12 +113,12 @@ export default function EventControls({ event, isDark, getToken, onChanged, onGo
         {published ? btn("Unpublish", <EyeOff size={13} />, "unpublish") : btn("Publish", <Eye size={13} />, "publish")}
         {btn("Delete", <Archive size={13} />, "delete", true)}
         {closed && (
-          <span className="text-[10px] px-2 py-1 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20 font-bold uppercase tracking-wider">
+          <span className="text-[10px] px-2 py-1 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20 font-bold tracking-normal">
             Registration closed
           </span>
         )}
         {!published && (
-          <span className="text-[10px] px-2 py-1 rounded bg-slate-500/10 text-slate-400 border border-slate-500/20 font-bold uppercase tracking-wider">
+          <span className="text-[10px] px-2 py-1 rounded bg-slate-500/10 text-slate-400 border border-slate-500/20 font-bold tracking-normal">
             Draft · hidden
           </span>
         )}
@@ -127,15 +127,15 @@ export default function EventControls({ event, isDark, getToken, onChanged, onGo
 
       {copy && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-6" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)" }} role="dialog" aria-modal="true">
-          <div className="w-full max-w-md p-7 rounded-3xl" style={{ background: isDark ? "#0c0c0c" : "#f0f2f6", border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.12)" }}>
-            <h2 className="text-xl font-bold mb-2" style={{ color: isDark ? "#fff" : "#1e1b26", fontFamily: FB }}>{copy.title}</h2>
-            <p className="text-sm mb-5" style={{ color: isDark ? "#a1a1aa" : "#475569", fontFamily: FB }}>{copy.body}</p>
-            {error && <p role="alert" className="text-xs text-[#F03D4E] mb-4">{error}</p>}
+          <div className="w-full max-w-md p-7 rounded-xl" style={{ background: "var(--sk-surface)", border: "1px solid var(--sk-line)" }}>
+            <h2 className="text-xl font-bold mb-2" style={{ color: "var(--sk-fg)", fontFamily: FB }}>{copy.title}</h2>
+            <p className="text-sm mb-5" style={{ color: "var(--sk-muted)", fontFamily: FB }}>{copy.body}</p>
+            {error && <p role="alert" className="text-xs text-[color:var(--sk-danger)] mb-4">{error}</p>}
             <div className="flex justify-end gap-3">
               <button onClick={() => setPending(null)} disabled={busy} className="px-5 py-2 text-xs rounded-full font-semibold cursor-pointer" style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#e2e8f0", color: isDark ? "#fff" : "#334155" }}>
                 Cancel
               </button>
-              <button onClick={run} disabled={busy} className="px-5 py-2 text-xs rounded-full font-semibold text-white cursor-pointer disabled:opacity-50" style={{ background: "#F03D4E" }}>
+              <button onClick={run} disabled={busy} className="px-5 py-2 text-xs rounded-full font-semibold text-white cursor-pointer disabled:opacity-50" style={{ background: "var(--sk-brand)" }}>
                 {busy ? "Working…" : copy.confirm}
               </button>
             </div>

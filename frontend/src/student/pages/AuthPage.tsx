@@ -13,9 +13,9 @@ import { isProfileIncomplete } from '@/student/types/user';
 import { toast } from 'sonner';
 import { useTheme, ThemeToggle } from '@/shared/theme';
 
-const FC = "'Playfair Display', serif";
-const FM = "'JetBrains Mono', monospace";
-const FB = "'Manrope', sans-serif";
+const FC = "var(--sk-font)";
+const FM = "var(--sk-font)";
+const FB = "var(--sk-font)";
 
 const loginSchema = z.object({
   email: z.string().email('Enter a valid email address'),
@@ -126,7 +126,7 @@ export default function AuthPage() {
       transition={{ duration: 0.5 }}
       className="min-h-[100dvh] w-full flex items-center justify-center p-4 sm:p-6 relative overflow-x-hidden"
       style={{
-        background: isDark ? 'rgba(5,5,5,0.97)' : '#f0f2f6',
+        background: 'var(--sk-canvas)',
         backdropFilter: 'blur(10px)',
       }}
     >
@@ -134,9 +134,9 @@ export default function AuthPage() {
       <Link
         to="/"
         className="absolute top-6 left-6 sm:top-8 sm:left-8 flex items-center gap-2 text-sm transition-all duration-300 z-20 cursor-pointer"
-        style={{ color: isDark ? '#d1d5db' : '#1e1b26', fontFamily: FB }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = isDark ? '#eeeeee' : '#F03D4E')}
-        onMouseLeave={(e) => (e.currentTarget.style.color = isDark ? '#999999' : '#1e1b26')}
+        style={{ color: 'var(--sk-fg)', fontFamily: FB }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--sk-fg)')}
+        onMouseLeave={(e) => (e.currentTarget.style.color = isDark ? '#999999' : 'var(--sk-fg)')}
       >
         <ChevronLeft size={16} /> Back
       </Link>
@@ -152,8 +152,8 @@ export default function AuthPage() {
         <div
           className="flex gap-1 p-1 rounded-xl w-full relative"
           style={{
-            background: isDark ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.05)',
-            border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.08)',
+            background: 'var(--sk-surface)',
+            border: '1px solid var(--sk-line-strong)',
           }}
         >
           {[
@@ -176,7 +176,7 @@ export default function AuthPage() {
                   <motion.div
                     layoutId="activeStudentAuthTabPill"
                     className={`absolute inset-0 rounded-lg ${
-                      isDark ? 'bg-white shadow-sm' : 'bg-white shadow-sm border border-black/5'
+                      'bg-[color:var(--sk-surface)] shadow-sm border border-[color:var(--sk-line)]'
                     }`}
                     transition={{ type: "spring", stiffness: 220, damping: 24 }}
                   />
@@ -184,7 +184,7 @@ export default function AuthPage() {
                 <span
                   className={`relative z-10 transition-colors duration-300 font-semibold ${
                     active
-                      ? 'text-[#1e1b26]'
+                      ? 'text-[color:var(--sk-fg)]'
                       : isDark
                       ? 'text-[#aaaaaa] hover:text-white'
                       : 'text-slate-500 hover:text-slate-900'
@@ -199,10 +199,10 @@ export default function AuthPage() {
 
         {/* Glass Card */}
         <div
-          className="w-full p-8 md:p-10 rounded-3xl"
+          className="w-full p-8 md:p-10 rounded-xl"
           style={{
-            background: isDark ? 'rgba(255,255,255,0.015)' : '#f0f2f6',
-            border: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.08)',
+            background: 'var(--sk-surface)',
+            border: '1px solid var(--sk-line)',
             boxShadow: isDark ? 'none' : '0 20px 40px -15px rgba(0,0,0,0.06)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
@@ -219,13 +219,13 @@ export default function AuthPage() {
               <div className="text-center mb-8">
                 <h2
                   className="text-2xl font-bold mb-2"
-                  style={{ fontFamily: FC, color: isDark ? '#ffffff' : '#1e1b26' }}
+                  style={{ fontFamily: FC, color: 'var(--sk-fg)' }}
                 >
                   {isLogin ? 'Sign In as Student' : 'Register as Student'}
                 </h2>
                 <p
                   className="text-xs"
-                  style={{ fontFamily: FB, color: isDark ? '#d1d5db' : '#64748b' }}
+                  style={{ fontFamily: FB, color: 'var(--sk-muted)' }}
                 >
                   {isLogin
                     ? 'Access your student campus dashboard'
@@ -235,10 +235,10 @@ export default function AuthPage() {
 
               {serverError && (
                 <div
-                  className="p-3 mb-6 rounded-xl text-center text-xs text-[#F03D4E] font-medium"
+                  className="p-3 mb-6 rounded-xl text-center text-xs text-[color:var(--sk-brand)] font-medium"
                   style={{
-                    background: 'rgba(240,61,78,0.08)',
-                    border: '1px solid rgba(240,61,78,0.2)',
+                    background: 'color-mix(in srgb, var(--sk-brand) 8%, transparent)',
+                    border: '1px solid color-mix(in srgb, var(--sk-brand) 20%, transparent)',
                     fontFamily: FB,
                   }}
                 >
@@ -251,8 +251,8 @@ export default function AuthPage() {
                 <form noValidate onSubmit={handleLogin} className="space-y-6">
                   <div className="space-y-1.5">
                     <label
-                      className="text-[11px] uppercase tracking-widest block font-semibold"
-                      style={{ fontFamily: FM, color: isDark ? '#f3f4f6' : '#475569' }}
+                      className="text-[11px] tracking-normal block font-semibold"
+                      style={{ fontFamily: FM, color: 'var(--sk-muted)' }}
                     >
                       Email ID
                     </label>
@@ -263,16 +263,16 @@ export default function AuthPage() {
                       autoComplete="email"
                       className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
                       style={{
-                        background: isDark ? 'rgba(255,255,255,0.02)' : '#e4e7ee',
-                        border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.12)',
-                        color: isDark ? '#ffffff' : '#1e1b26',
+                        background: 'var(--sk-surface)',
+                        border: '1px solid var(--sk-line-strong)',
+                        color: 'var(--sk-fg)',
                         fontFamily: FB,
                       }}
-                      onFocus={(e) => (e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.3)' : '#F03D4E')}
-                      onBlur={(e) => (e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.12)')}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--sk-fg)')}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--sk-line)')}
                     />
                     {loginForm.formState.errors.email && (
-                      <p className="text-xs text-[#F03D4E] font-medium mt-1" style={{ fontFamily: FB }}>
+                      <p className="text-xs text-[color:var(--sk-brand)] font-medium mt-1" style={{ fontFamily: FB }}>
                         {loginForm.formState.errors.email.message}
                       </p>
                     )}
@@ -280,8 +280,8 @@ export default function AuthPage() {
 
                   <div className="space-y-1.5">
                     <label
-                      className="text-[11px] uppercase tracking-widest block font-semibold"
-                      style={{ fontFamily: FM, color: isDark ? '#f3f4f6' : '#475569' }}
+                      className="text-[11px] tracking-normal block font-semibold"
+                      style={{ fontFamily: FM, color: 'var(--sk-muted)' }}
                     >
                       Password
                     </label>
@@ -293,13 +293,13 @@ export default function AuthPage() {
                         autoComplete="current-password"
                         className="w-full rounded-xl pl-4 pr-12 py-3 text-sm outline-none transition-all"
                         style={{
-                          background: isDark ? 'rgba(255,255,255,0.02)' : '#e4e7ee',
-                          border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.12)',
-                          color: isDark ? '#ffffff' : '#1e1b26',
+                          background: 'var(--sk-surface)',
+                          border: '1px solid var(--sk-line-strong)',
+                          color: 'var(--sk-fg)',
                           fontFamily: FB,
                         }}
-                        onFocus={(e) => (e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.3)' : '#F03D4E')}
-                        onBlur={(e) => (e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.12)')}
+                        onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--sk-fg)')}
+                        onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--sk-line)')}
                       />
                       <button
                         type="button"
@@ -312,7 +312,7 @@ export default function AuthPage() {
                       </button>
                     </div>
                     {loginForm.formState.errors.password && (
-                      <p className="text-xs text-[#F03D4E] font-medium mt-1" style={{ fontFamily: FB }}>
+                      <p className="text-xs text-[color:var(--sk-brand)] font-medium mt-1" style={{ fontFamily: FB }}>
                         {loginForm.formState.errors.password.message}
                       </p>
                     )}
@@ -324,10 +324,10 @@ export default function AuthPage() {
                       className="text-[11px] transition-colors cursor-pointer underline-offset-2"
                       style={{
                         fontFamily: FB,
-                        color: isDark ? 'rgba(255,255,255,0.4)' : '#64748b',
+                        color: 'var(--sk-muted)',
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = '#F03D4E')}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = isDark ? 'rgba(255,255,255,0.4)' : '#64748b')}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--sk-fg)')}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--sk-muted)')}
                     >
                       Forgot password?
                     </Link>
@@ -338,11 +338,11 @@ export default function AuthPage() {
                     disabled={loginForm.formState.isSubmitting}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full flex items-center justify-center gap-2 py-3 bg-[#F03D4E] hover:bg-[#d63545] text-white text-sm font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-lg shadow-[#F03D4E]/20"
+                    className="w-full flex items-center justify-center gap-2 py-3 bg-[color:var(--sk-fg)] hover:opacity-90 text-[color:var(--sk-canvas)] text-sm font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 cursor-pointer"
                     style={{ fontFamily: FB }}
                   >
                     {loginForm.formState.isSubmitting ? (
-                      <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                      <div className="w-5 h-5 rounded-full border-2 border-[color:var(--sk-canvas)] border-t-transparent animate-spin" />
                     ) : (
                       <>
                         Continue <ArrowRight size={14} />
@@ -355,8 +355,8 @@ export default function AuthPage() {
                 <form noValidate onSubmit={handleSignup} className="space-y-4">
                   <div className="space-y-1.5">
                     <label
-                      className="text-[11px] uppercase tracking-widest block font-semibold"
-                      style={{ fontFamily: FM, color: isDark ? '#f3f4f6' : '#475569' }}
+                      className="text-[11px] tracking-normal block font-semibold"
+                      style={{ fontFamily: FM, color: 'var(--sk-muted)' }}
                     >
                       Full Name
                     </label>
@@ -367,16 +367,16 @@ export default function AuthPage() {
                       autoComplete="name"
                       className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
                       style={{
-                        background: isDark ? 'rgba(255,255,255,0.02)' : '#e4e7ee',
-                        border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.12)',
-                        color: isDark ? '#ffffff' : '#1e1b26',
+                        background: 'var(--sk-surface)',
+                        border: '1px solid var(--sk-line-strong)',
+                        color: 'var(--sk-fg)',
                         fontFamily: FB,
                       }}
-                      onFocus={(e) => (e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.3)' : '#F03D4E')}
-                      onBlur={(e) => (e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.12)')}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--sk-fg)')}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--sk-line)')}
                     />
                     {signupForm.formState.errors.name && (
-                      <p className="text-xs text-[#F03D4E] font-medium mt-1" style={{ fontFamily: FB }}>
+                      <p className="text-xs text-[color:var(--sk-brand)] font-medium mt-1" style={{ fontFamily: FB }}>
                         {signupForm.formState.errors.name.message}
                       </p>
                     )}
@@ -384,8 +384,8 @@ export default function AuthPage() {
 
                   <div className="space-y-1.5">
                     <label
-                      className="text-[11px] uppercase tracking-widest block font-semibold"
-                      style={{ fontFamily: FM, color: isDark ? '#f3f4f6' : '#475569' }}
+                      className="text-[11px] tracking-normal block font-semibold"
+                      style={{ fontFamily: FM, color: 'var(--sk-muted)' }}
                     >
                       Email ID
                     </label>
@@ -396,16 +396,16 @@ export default function AuthPage() {
                       autoComplete="email"
                       className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
                       style={{
-                        background: isDark ? 'rgba(255,255,255,0.02)' : '#e4e7ee',
-                        border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.12)',
-                        color: isDark ? '#ffffff' : '#1e1b26',
+                        background: 'var(--sk-surface)',
+                        border: '1px solid var(--sk-line-strong)',
+                        color: 'var(--sk-fg)',
                         fontFamily: FB,
                       }}
-                      onFocus={(e) => (e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.3)' : '#F03D4E')}
-                      onBlur={(e) => (e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.12)')}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--sk-fg)')}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--sk-line)')}
                     />
                     {signupForm.formState.errors.email && (
-                      <p className="text-xs text-[#F03D4E] font-medium mt-1" style={{ fontFamily: FB }}>
+                      <p className="text-xs text-[color:var(--sk-brand)] font-medium mt-1" style={{ fontFamily: FB }}>
                         {signupForm.formState.errors.email.message}
                       </p>
                     )}
@@ -413,8 +413,8 @@ export default function AuthPage() {
 
                   <div className="space-y-1.5">
                     <label
-                      className="text-[11px] uppercase tracking-widest block font-semibold"
-                      style={{ fontFamily: FM, color: isDark ? '#f3f4f6' : '#475569' }}
+                      className="text-[11px] tracking-normal block font-semibold"
+                      style={{ fontFamily: FM, color: 'var(--sk-muted)' }}
                     >
                       Password
                     </label>
@@ -426,13 +426,13 @@ export default function AuthPage() {
                         autoComplete="new-password"
                         className="w-full rounded-xl pl-4 pr-12 py-3 text-sm outline-none transition-all"
                         style={{
-                          background: isDark ? 'rgba(255,255,255,0.02)' : '#e4e7ee',
-                          border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.12)',
-                          color: isDark ? '#ffffff' : '#1e1b26',
+                          background: 'var(--sk-surface)',
+                          border: '1px solid var(--sk-line-strong)',
+                          color: 'var(--sk-fg)',
                           fontFamily: FB,
                         }}
-                        onFocus={(e) => (e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.3)' : '#F03D4E')}
-                        onBlur={(e) => (e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.12)')}
+                        onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--sk-fg)')}
+                        onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--sk-line)')}
                       />
                       <button
                         type="button"
@@ -445,7 +445,7 @@ export default function AuthPage() {
                       </button>
                     </div>
                     {signupForm.formState.errors.password && (
-                      <p className="text-xs text-[#F03D4E] font-medium mt-1" style={{ fontFamily: FB }}>
+                      <p className="text-xs text-[color:var(--sk-brand)] font-medium mt-1" style={{ fontFamily: FB }}>
                         {signupForm.formState.errors.password.message}
                       </p>
                     )}
@@ -453,8 +453,8 @@ export default function AuthPage() {
 
                   <div className="space-y-1.5">
                     <label
-                      className="text-[11px] uppercase tracking-widest block font-semibold"
-                      style={{ fontFamily: FM, color: isDark ? '#f3f4f6' : '#475569' }}
+                      className="text-[11px] tracking-normal block font-semibold"
+                      style={{ fontFamily: FM, color: 'var(--sk-muted)' }}
                     >
                       USN (Optional)
                     </label>
@@ -462,18 +462,18 @@ export default function AuthPage() {
                       {...signupForm.register('usn')}
                       type="text"
                       placeholder="e.g. 1AB23CD456"
-                      className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all uppercase tracking-wider"
+                      className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all tracking-normal"
                       style={{
-                        background: isDark ? 'rgba(255,255,255,0.02)' : '#e4e7ee',
-                        border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.12)',
-                        color: isDark ? '#ffffff' : '#1e1b26',
+                        background: 'var(--sk-surface)',
+                        border: '1px solid var(--sk-line-strong)',
+                        color: 'var(--sk-fg)',
                         fontFamily: FM,
                       }}
-                      onFocus={(e) => (e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.3)' : '#F03D4E')}
-                      onBlur={(e) => (e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.12)')}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--sk-fg)')}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--sk-line)')}
                     />
                     {signupForm.formState.errors.usn && (
-                      <p className="text-xs text-[#F03D4E] font-medium mt-1" style={{ fontFamily: FB }}>
+                      <p className="text-xs text-[color:var(--sk-brand)] font-medium mt-1" style={{ fontFamily: FB }}>
                         {signupForm.formState.errors.usn.message}
                       </p>
                     )}
@@ -482,8 +482,8 @@ export default function AuthPage() {
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <label
-                        className="text-[11px] uppercase tracking-widest block font-semibold"
-                        style={{ fontFamily: FM, color: isDark ? '#f3f4f6' : '#475569' }}
+                        className="text-[11px] tracking-normal block font-semibold"
+                        style={{ fontFamily: FM, color: 'var(--sk-muted)' }}
                       >
                         Branch
                       </label>
@@ -491,15 +491,15 @@ export default function AuthPage() {
                         {...signupForm.register('branch')}
                         className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all cursor-pointer"
                         style={{
-                          background: isDark ? '#141418' : '#e4e7ee',
-                          border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.12)',
-                          color: isDark ? '#ffffff' : '#1e1b26',
+                          background: isDark ? '#141418' : 'var(--sk-raised)',
+                          border: '1px solid var(--sk-line)',
+                          color: 'var(--sk-fg)',
                           fontFamily: FB,
                         }}
                       >
-                        <option value="" style={{ background: isDark ? '#141418' : '#fff', color: isDark ? '#fff' : '#1e1b26' }}>Select</option>
+                        <option value="" style={{ background: isDark ? '#141418' : 'var(--sk-surface)', color: 'var(--sk-fg)' }}>Select</option>
                         {BRANCHES.map((b) => (
-                          <option key={b} value={b} style={{ background: isDark ? '#141418' : '#fff', color: isDark ? '#fff' : '#1e1b26' }}>
+                          <option key={b} value={b} style={{ background: isDark ? '#141418' : 'var(--sk-surface)', color: 'var(--sk-fg)' }}>
                             {b}
                           </option>
                         ))}
@@ -508,8 +508,8 @@ export default function AuthPage() {
 
                     <div className="space-y-1.5">
                       <label
-                        className="text-[11px] uppercase tracking-widest block font-semibold"
-                        style={{ fontFamily: FM, color: isDark ? '#f3f4f6' : '#475569' }}
+                        className="text-[11px] tracking-normal block font-semibold"
+                        style={{ fontFamily: FM, color: 'var(--sk-muted)' }}
                       >
                         Phone
                       </label>
@@ -519,20 +519,20 @@ export default function AuthPage() {
                         placeholder="10-digit number"
                         className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
                         style={{
-                          background: isDark ? 'rgba(255,255,255,0.02)' : '#e4e7ee',
-                          border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.12)',
-                          color: isDark ? '#ffffff' : '#1e1b26',
+                          background: 'var(--sk-surface)',
+                          border: '1px solid var(--sk-line-strong)',
+                          color: 'var(--sk-fg)',
                           fontFamily: FB,
                         }}
-                        onFocus={(e) => (e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.3)' : '#F03D4E')}
-                        onBlur={(e) => (e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.12)')}
+                        onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--sk-fg)')}
+                        onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--sk-line)')}
                       />
                     </div>
                   </div>
 
-                  <p className="text-[11px] leading-relaxed" style={{ fontFamily: FB, color: isDark ? 'rgba(255,255,255,0.5)' : '#64748b' }}>
+                  <p className="text-[11px] leading-relaxed" style={{ fontFamily: FB, color: 'var(--sk-muted)' }}>
                     By signing up you agree to our{' '}
-                    <Link to="/privacy" className="text-[#F03D4E] hover:underline">
+                    <Link to="/privacy" className="text-[color:var(--sk-fg)] underline underline-offset-2">
                       Privacy Policy
                     </Link>
                     .
@@ -543,11 +543,11 @@ export default function AuthPage() {
                     disabled={signupForm.formState.isSubmitting}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full flex items-center justify-center gap-2 py-3 bg-[#F03D4E] hover:bg-[#d63545] text-white text-sm font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-lg shadow-[#F03D4E]/20"
+                    className="w-full flex items-center justify-center gap-2 py-3 bg-[color:var(--sk-fg)] hover:opacity-90 text-[color:var(--sk-canvas)] text-sm font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 cursor-pointer"
                     style={{ fontFamily: FB }}
                   >
                     {signupForm.formState.isSubmitting ? (
-                      <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                      <div className="w-5 h-5 rounded-full border-2 border-[color:var(--sk-canvas)] border-t-transparent animate-spin" />
                     ) : (
                       <>
                         Create Account <ArrowRight size={14} />
@@ -558,7 +558,7 @@ export default function AuthPage() {
               )}
 
               {/* Bottom Mode Switch */}
-              <p className="text-center text-xs mt-6" style={{ fontFamily: FB, color: isDark ? '#999999' : '#64748b' }}>
+              <p className="text-center text-xs mt-6" style={{ fontFamily: FB, color: 'var(--sk-muted)' }}>
                 {isLogin ? "Don't have a student account? " : 'Already have an account? '}
                 <button
                   type="button"
@@ -566,7 +566,7 @@ export default function AuthPage() {
                     setIsLogin(!isLogin);
                     setServerError(null);
                   }}
-                  className="text-[#F03D4E] hover:underline font-semibold ml-1 cursor-pointer"
+                  className="text-[color:var(--sk-fg)] underline underline-offset-2 hover:opacity-80 font-semibold ml-1 cursor-pointer"
                 >
                   {isLogin ? 'Sign Up' : 'Sign In'}
                 </button>

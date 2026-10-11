@@ -40,6 +40,7 @@ model Profile {
   assignedTasks           EventTask[]       @relation("TaskAssignee")
   createdTasks            EventTask[]       @relation("TaskCreator")
   announcements           Announcement[]
+  savedEvents             SavedEvent[]
 
   // Admin user list: filter by role/status, sorted by name; club-head lookups by club.
   @@index([clubId, role], map: "idx_profile_club_role")
@@ -115,6 +116,7 @@ model Event {
   registrations              Registration[]
   teams                      Team[]
   tasks                      EventTask[]
+  savedBy                    SavedEvent[]
 
   // Public catalogue: published, not archived, ordered/filtered by date.
   @@index([isPublished, isArchived, eventDate], map: "idx_event_public")
@@ -482,4 +484,16 @@ model Announcement {
   // A club's timeline, newest first.
   @@index([clubId, createdAt], map: "idx_announcement_club_created")
   @@index([authorId], map: "idx_announcement_author")
+}
+
+/// A student's bookmarked events (kept on the server so they follow the account across devices).
+model SavedEvent {
+  userId    String   @map("user_id")
+  eventId   String   @map("event_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      Profile  @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_saved_user")
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade, map: "fk_saved_event")
+
+  @@id([userId, eventId], map: "pk_saved_event")
+  @@index([eventId], map: "idx_saved_event")
 }

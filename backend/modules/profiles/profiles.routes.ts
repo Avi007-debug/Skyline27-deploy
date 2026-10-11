@@ -27,6 +27,41 @@ function assertSelfOrAdmin(req: Request): string {
   throw notFound('Profile not found');
 }
 
+// ─── Saved (bookmarked) events: stored per account so they follow the student across devices ───
+
+router.get('/me/saved', requireUser, async (req: Request, res: Response): Promise<any> => {
+  const user = currentUser(req);
+  const rows = await prisma.savedEvent.findMany({ where: { userId: user.id }, select: { eventId: true }, orderBy: { createdAt: 'desc' } });
+  return res.status(200).json({ eventIds: rows.map(r => r.eventId) });
+});
+
+/** Merge bookmarks made before signing in (stored in the browser) into the account. */
+router.post('/me/saved/sync', requireUser, async (req: Request, res: Response): Promise<any> => {
+  const user = currentUser(req);
+  const ids = Array.isArray(req.body?.eventIds) ? [...new Set((req.body.eventIds as unknown[]).map(String))].slice(0, 500) : [];
+  if (ids.length) {
+    const existing = await prisma.event.findMany({ where: { id: { in: ids } }, select: { id: true } });
+    await prisma.savedEvent.createMany({ data: existing.map(e => ({ userId: user.id, eventId: e.id })), skipDuplicates: true });
+  }
+  const rows = await prisma.savedEvent.findMany({ where: { userId: user.id }, select: { eventId: true }, orderBy: { createdAt: 'desc' } });
+  return res.status(200).json({ eventIds: rows.map(r => r.eventId) });
+});
+
+router.put('/me/saved/:eventId', requireUser, async (req: Request, res: Response): Promise<any> => {
+  const user = currentUser(req);
+  const eventId = str(req.params.eventId);
+  const event = await prisma.event.findUnique({ where: { id: eventId }, select: { id: true } });
+  if (!event) throw notFound('Event not found.');
+  await prisma.savedEvent.upsert({ where: { userId_eventId: { userId: user.id, eventId } }, create: { userId: user.id, eventId }, update: {} });
+  return res.status(200).json({ saved: true });
+});
+
+router.delete('/me/saved/:eventId', requireUser, async (req: Request, res: Response): Promise<any> => {
+  const user = currentUser(req);
+  await prisma.savedEvent.deleteMany({ where: { userId: user.id, eventId: str(req.params.eventId) } });
+  return res.status(200).json({ saved: false });
+});
+
 router.get('/me', requireUser, async (req: Request, res: Response): Promise<any> => {
   const user = currentUser(req);
   const profile = await prisma.profile.findUnique({ where: { id: user.id }, include: { club: { select: { id: true, name: true, logoUrl: true } } } });

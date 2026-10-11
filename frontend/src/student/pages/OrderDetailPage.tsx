@@ -90,7 +90,7 @@ export default function OrderDetailPage() {
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 18, padding: 20 }}>
           <h2 style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)', marginBottom: 12 }}>Pay {formatPaise(order.totalPaise)} via UPI</h2>
           {order.payment?.upiId && <p style={{ color: 'var(--subtext)', fontSize: 14, marginBottom: 10 }}>UPI ID: <strong style={{ color: 'var(--text)' }}>{order.payment.upiId}</strong></p>}
-          {order.payment?.qrUrl && <img src={order.payment.qrUrl} alt="UPI QR code" style={{ width: 200, maxWidth: '100%', borderRadius: 12, background: '#fff', padding: 8, marginBottom: 12 }} />}
+          {order.payment?.qrUrl && <img src={order.payment.qrUrl} alt="UPI QR code" style={{ width: 200, maxWidth: '100%', borderRadius: 12, background: 'var(--sk-surface)', padding: 8, marginBottom: 12 }} />}
           {!order.payment?.upiId && !order.payment?.qrUrl && <p style={{ color: 'var(--subtext)', fontSize: 14 }}>This club has not published payment details. Contact the club to pay.</p>}
           <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--subtext)', margin: '14px 0 6px' }}>UPI TRANSACTION REFERENCE</label>
           <input value={reference} onChange={(e) => setReference(e.target.value)} placeholder="e.g. 412345678901" className="input-field" />

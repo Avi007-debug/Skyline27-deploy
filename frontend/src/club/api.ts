@@ -263,6 +263,10 @@ export async function createClub(data: {
   }, token);
 }
 
+export async function fetchClubProfile(clubId: string, token?: string) {
+  return request(`/clubs/${clubId}/profile`, {}, token);
+}
+
 export async function updateClub(clubId: string, data: {
   name?: string;
   email?: string;

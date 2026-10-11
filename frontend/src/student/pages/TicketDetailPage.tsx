@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { fetchUserTickets } from '@/student/api/registrations';
-import { TicketModel, ticketHasPaid } from '@/student/types/event';
+import { TicketModel, ticketHasPaid, ticketStage, TICKET_STAGE_LABEL } from '@/student/types/event';
 import { PageLoader } from '@/student/components/ui/LoadingSpinner';
 import { toast } from 'sonner';
 
@@ -129,6 +129,7 @@ export default function TicketDetailPage() {
   const price = event?.price ?? 0;
   const hasPaid = ticketHasPaid(ticket);
   const isPendingPayment = !hasPaid && price > 0;
+  const stage = ticketStage(ticket);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(qrCodeString);
@@ -296,8 +297,8 @@ export default function TicketDetailPage() {
                     fontFamily: 'monospace',
                     padding: '2px 6px',
                     borderRadius: 6,
-                    background: 'rgba(230, 57, 70, 0.15)',
-                    color: 'var(--color-crimson, #e63946)',
+                    background: 'color-mix(in srgb, var(--sk-brand) 15%, transparent)',
+                    color: 'var(--color-crimson, var(--sk-brand))',
                   }}
                 >
                   {ticket.team.passkey || 'Pending'}
@@ -320,7 +321,7 @@ export default function TicketDetailPage() {
                     style={{
                       fontSize: 11,
                       fontWeight: 700,
-                      color: 'var(--color-crimson, #e63946)',
+                      color: 'var(--color-crimson, var(--sk-brand))',
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
                       marginBottom: 8,
@@ -352,8 +353,8 @@ export default function TicketDetailPage() {
                               fontWeight: 700,
                               padding: '1px 6px',
                               borderRadius: 4,
-                              background: 'rgba(230, 57, 70, 0.15)',
-                              color: 'var(--color-crimson, #e63946)',
+                              background: 'color-mix(in srgb, var(--sk-brand) 15%, transparent)',
+                              color: 'var(--color-crimson, var(--sk-brand))',
                             }}
                           >
                             Leader
@@ -419,11 +420,31 @@ export default function TicketDetailPage() {
             alignItems: 'center',
           }}
         >
+          {stage !== 'CONFIRMED' ? (
+            <div role="status" style={{ width: '100%', textAlign: 'center', padding: '8px 4px' }}>
+              <span style={{
+                display: 'inline-block', padding: '4px 12px', borderRadius: 999, fontSize: 13, fontWeight: 600, marginBottom: 12,
+                background: stage === 'REJECTED' ? 'var(--sk-danger-soft)' : 'var(--sk-warn-soft)',
+                color: stage === 'REJECTED' ? 'var(--sk-danger)' : 'var(--sk-warn)',
+              }}>{TICKET_STAGE_LABEL[stage]}</span>
+              <p style={{ fontSize: 14, color: 'var(--subtext)', lineHeight: 1.5, margin: '0 auto', maxWidth: 360 }}>
+                {stage === 'PAYMENT_DUE' && 'Pay the registration fee and submit the transaction reference. Your ticket appears here once the club approves it.'}
+                {stage === 'AWAITING_APPROVAL' && 'The club is checking your registration. Your ticket and QR code appear here as soon as it is approved.'}
+                {stage === 'REJECTED' && 'The club did not approve this registration. If you think this is a mistake, contact the club or register again.'}
+              </p>
+              {stage === 'PAYMENT_DUE' && event?.id && (
+                <button className="btn-primary" style={{ marginTop: 16 }} onClick={() => navigate(`/events/${event.id}/payment?registrationId=${ticket.id}`)}>
+                  Complete payment
+                </button>
+              )}
+            </div>
+          ) : (
+          <>
           {/* Real QR Code SVG Box */}
           <div
             style={{
               padding: 16,
-              background: '#ffffff',
+              background: 'var(--sk-surface)',
               borderRadius: 16,
               display: 'inline-flex',
               alignItems: 'center',
@@ -486,7 +507,7 @@ export default function TicketDetailPage() {
               style={{
                 fontSize: 11,
                 fontWeight: 700,
-                color: 'var(--color-crimson, #e63946)',
+                color: 'var(--color-crimson, var(--sk-brand))',
                 fontFamily: 'monospace',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -499,7 +520,7 @@ export default function TicketDetailPage() {
             {copied ? (
               <Check size={12} color="#22c55e" strokeWidth={2.5} />
             ) : (
-              <Copy size={12} color="var(--color-crimson, #e63946)" strokeWidth={2} />
+              <Copy size={12} color="var(--color-crimson, var(--sk-brand))" strokeWidth={2} />
             )}
           </div>
 
@@ -521,12 +542,14 @@ export default function TicketDetailPage() {
               style={{
                 fontSize: 18,
                 fontWeight: 800,
-                color: 'var(--color-crimson, #e63946)',
+                color: 'var(--color-crimson, var(--sk-brand))',
               }}
             >
               {price > 0 ? `₹${price}` : 'Free'}
             </span>
           </div>
+          </>
+          )}
         </div>
       </div>
 

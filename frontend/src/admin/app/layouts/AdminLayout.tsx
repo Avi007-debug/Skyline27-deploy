@@ -32,10 +32,10 @@ export function AdminLayout() {
   const sidebar = (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 px-5 py-5">
-        <img src={logo} alt="" className="h-9 w-9 rounded-xl object-cover" />
+        <img src={logo} alt="" className="h-7 w-7 rounded-lg object-cover" />
         <div>
-          <div className="text-sm font-extrabold leading-tight">SkylineOS</div>
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-ad-brand">Super Admin</div>
+          <div className="text-sm font-semibold leading-tight">SkylineOS</div>
+          <div className="text-xs text-ad-faint">Admin console</div>
         </div>
       </div>
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 pb-4" aria-label="Main">
@@ -44,9 +44,9 @@ export function AdminLayout() {
             key={to}
             to={to}
             end={'end' in rest}
-            className={({ isActive }) => `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${isActive ? 'bg-ad-brand text-white' : 'text-ad-muted hover:bg-ad-raised hover:text-ad-fg'}`}
+            className={({ isActive }) => `relative flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-sm transition-colors ${isActive ? 'bg-ad-raised font-semibold text-ad-fg before:absolute before:-left-3 before:top-2 before:bottom-2 before:w-[3px] before:rounded-r before:bg-ad-brand' : 'font-medium text-ad-muted hover:bg-ad-raised hover:text-ad-fg'}`}
           >
-            <Icon size={17} aria-hidden /> {label}
+            <Icon size={16} strokeWidth={1.9} aria-hidden /> {label}
           </NavLink>
         ))}
       </nav>

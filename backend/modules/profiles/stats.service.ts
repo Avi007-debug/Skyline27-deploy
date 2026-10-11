@@ -29,7 +29,13 @@ export async function studentStats(userId: string) {
       select: { clubId: true },
     }),
   ]);
-  const orders = await prisma.order.count({ where: { userId, status: { in: ['PAID', 'PAYMENT_SUBMITTED', 'PENDING_PAYMENT'] } } });
+  const [orders, saved, memberships] = await Promise.all([
+    prisma.order.count({ where: { userId, status: { in: ['PAID', 'PAYMENT_SUBMITTED', 'PENDING_PAYMENT'] } } }),
+    prisma.savedEvent.count({ where: { userId } }),
+    prisma.membership.findMany({ where: { userId, status: 'ACTIVE', endDate: { gt: new Date() } }, select: { clubId: true }, distinct: ['clubId'] }),
+  ]);
+  // Clubs the student is involved with: active memberships plus clubs whose events they registered for.
+  const clubIds = new Set([...clubs.map(c => c.clubId), ...memberships.map(m => m.clubId)]);
 
   return {
     role: 'STUDENT' as const,
@@ -40,7 +46,9 @@ export async function studentStats(userId: string) {
     pendingCount: pending,
     upcomingRegistrationsCount: upcoming,
     attendedCount: attended,
-    clubsCount: clubs.length,
+    clubsCount: clubIds.size,
+    memberOfCount: memberships.length,
+    savedCount: saved,
     ordersCount: orders,
   };
 }

@@ -82,6 +82,11 @@ router.put('/:id/status', async (req: Request, res: Response): Promise<any> => {
 
   const updated = await prisma.$transaction(async tx => {
     const u = await tx.registration.update({ where: { id: reg.id }, data: { status, ...(status !== 'CONFIRMED' ? { checkedInAt: null } : {}) } });
+    // Rejecting a team leader retires the team's join code (same rule as the club's reject action).
+    if (status === 'REJECTED' && reg.teamId) {
+      const team = await tx.team.findUnique({ where: { id: reg.teamId }, select: { leaderId: true } });
+      if (team?.leaderId === reg.userId) await tx.team.update({ where: { id: reg.teamId }, data: { passkey: null } });
+    }
     if (status === 'CONFIRMED' && reg.feeCharged > 0 && reg.transactionId) {
       // Idempotent: (refType, refId, type) is unique in the ledger.
       await postLedger(

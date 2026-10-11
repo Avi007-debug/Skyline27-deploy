@@ -73,6 +73,19 @@ tests/                  npm test
 - **Money**: server-side prices only, snapshotted on the order; ledger writes are idempotent on `(refType, refId, type)`.
 - **Event times are floating wall-clock values** (what the clients already assume). Set `CAMPUS_UTC_OFFSET_MINUTES` so server-side deadlines match campus time.
 
+## Design system
+
+All three areas (student site, club dashboard, admin console) share one set of tokens in
+`frontend/src/styles/tokens.css`, defined for light and dark (`--sk-canvas`, `--sk-surface`, `--sk-raised`,
+`--sk-line`, `--sk-fg`, `--sk-muted`, `--sk-faint`, `--sk-brand`, status colours, radius, shadow, font).
+The student (`--bg`, `--surface`, ...), admin (`--ad-*`) and shadcn/club (`--background`, ...) variables are aliases of these.
+
+Light palette: Radix Colors "Sand" (warm off-white, no pure #fff surfaces). Dark: neutral near-black.
+Rules: Inter is the only typeface; brand red is for primary actions, focus and the current-page marker only
+(selected chips and tabs are neutral); 8px radius for controls, 12px for cards; borders rather than glows;
+no decorative backgrounds. In Tailwind classes write colours as `text-[color:var(--sk-fg)]` (the bare
+`text-[var(--x)]` form is ambiguous in Tailwind v4 and is not applied as a colour).
+
 ## Database
 
 See `docs/DATABASE.md`: stored counters kept correct by triggers, composite and trigram indexes, integrity rules, and how to write queries against them.

@@ -96,15 +96,16 @@ export default function ProfilePage() {
   const userId = useAuthStore((s) => s.userId);
   const { savedIds } = useSavedEventsStore();
 
-  const [stats, setStats] = useState<ProfileStats>({ registrationsCount: 0, confirmedCount: 0, upcomingRegistrationsCount: 0, clubsCount: 0, ordersCount: 0 });
+  const [stats, setStats] = useState<ProfileStats>({ registrationsCount: 0, confirmedCount: 0, upcomingRegistrationsCount: 0, clubsCount: 0, savedCount: 0, ordersCount: 0 });
   const [showEditModal, setShowEditModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
+  // Counts come from the server; refresh when bookmarks change so the numbers stay true.
   useEffect(() => {
     if (userId) {
       fetchProfileStats(userId).then(setStats).catch(() => {});
     }
-  }, [userId]);
+  }, [userId, savedIds.size]);
 
   const { signOut } = useAuth();
   const handleLogout = () => {
@@ -170,7 +171,7 @@ export default function ProfilePage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 28 }}>
         {[
           { icon: <Ticket size={22} color="var(--color-crimson)" strokeWidth={1.8} />, label: 'Registered', value: stats.registrationsCount },
-          { icon: <Bookmark size={22} color="var(--color-crimson)" strokeWidth={1.8} />, label: 'Saved', value: savedIds.size },
+          { icon: <Bookmark size={22} color="var(--color-crimson)" strokeWidth={1.8} />, label: 'Saved', value: stats.savedCount },
           { icon: <Users size={22} color="var(--color-crimson)" strokeWidth={1.8} />, label: 'Clubs', value: stats.clubsCount },
         ].map(({ icon, label, value }) => (
           <div
@@ -297,7 +298,7 @@ function SignOutBtn({ onLogout }: { onLogout: () => void }) {
           justifyContent: 'center',
           gap: 10,
           padding: '16px 0',
-          background: hovered ? 'rgba(230,57,70,0.08)' : 'transparent',
+          background: hovered ? 'color-mix(in srgb, var(--sk-brand) 8%, transparent)' : 'transparent',
           border: 'none',
           cursor: 'pointer',
           color: 'var(--color-crimson)',
@@ -685,7 +686,7 @@ function EditProfileModal({
               height: 52,
               borderRadius: 16,
               border: 'none',
-              background: hasChanges && !isLoading ? 'var(--color-crimson)' : 'rgba(255,255,255,0.08)',
+              background: hasChanges && !isLoading ? 'var(--color-crimson)' : 'var(--raised)',
               color: hasChanges && !isLoading ? '#FFFFFF' : 'rgba(255,255,255,0.38)',
               fontSize: 16,
               fontWeight: 700,

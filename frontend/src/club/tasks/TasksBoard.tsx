@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, ClipboardList, Plus, Trash2, User } from "lucide-react";
 import { request, sanitizeErrorMessage } from "../api";
 
-const FM = "'JetBrains Mono', monospace";
-const FB = "'Manrope', sans-serif";
+const FM = "var(--sk-font)";
+const FB = "var(--sk-font)";
 
 type Status = "TODO" | "IN_PROGRESS" | "DONE";
 interface Task {
@@ -19,7 +19,7 @@ const COLUMNS: Array<{ id: Status; label: string }> = [
   { id: "DONE", label: "Done" },
 ];
 const ORDER: Status[] = ["TODO", "IN_PROGRESS", "DONE"];
-const HEALTH_COLOR: Record<Progress["health"], string> = { NO_TASKS: "#94a3b8", COMPLETE: "#10b981", BEHIND: "#F03D4E", ON_TRACK: "#10b981" };
+const HEALTH_COLOR: Record<Progress["health"], string> = { NO_TASKS: "#94a3b8", COMPLETE: "#10b981", BEHIND: "var(--sk-brand)", ON_TRACK: "#10b981" };
 
 interface Props { eventId: string; getToken: () => Promise<string | null>; isDark: boolean }
 
@@ -28,10 +28,10 @@ interface Props { eventId: string; getToken: () => Promise<string | null>; isDar
  * Tasks can be assigned to the club's active members; the server enforces who can see and change what.
  */
 export default function TasksBoard({ eventId, getToken, isDark }: Props) {
-  const text = isDark ? "#fff" : "#1e1b26";
-  const sub = isDark ? "#94a3b8" : "#64748b";
-  const card = { background: isDark ? "rgba(255,255,255,0.015)" : "#ffffff", border: isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.08)" } as const;
-  const field = { background: isDark ? "rgba(255,255,255,0.03)" : "#e9ecf2", border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.1)", color: text } as const;
+  const text = "var(--sk-fg)";
+  const sub = "var(--sk-muted)";
+  const card = { background: "var(--sk-surface)", border: "1px solid var(--sk-line)" } as const;
+  const field = { background: "var(--sk-raised)", border: "1px solid var(--sk-line)", color: text } as const;
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [progress, setProgress] = useState<Progress | null>(null);
@@ -127,21 +127,21 @@ export default function TasksBoard({ eventId, getToken, isDark }: Props) {
             </p>
           )}
         </div>
-        <button onClick={() => setAdding(a => !a)} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white cursor-pointer" style={{ background: "#F03D4E" }}>
+        <button onClick={() => setAdding(a => !a)} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white cursor-pointer" style={{ background: "var(--sk-brand)" }}>
           <Plus size={14} /> {adding ? "Close" : "Add task"}
         </button>
       </div>
 
       {progress && progress.total > 0 && (
-        <div className="h-2 rounded-full overflow-hidden" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)" }} role="progressbar" aria-valuenow={progress.percent} aria-valuemin={0} aria-valuemax={100} aria-label="Tasks completed">
+        <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--sk-line)" }} role="progressbar" aria-valuenow={progress.percent} aria-valuemin={0} aria-valuemax={100} aria-label="Tasks completed">
           <div style={{ width: `${progress.percent}%`, height: "100%", background: HEALTH_COLOR[progress.health], transition: "width .3s" }} />
         </div>
       )}
 
-      {error && <div role="alert" className="rounded-xl px-4 py-3 text-sm" style={{ background: "rgba(240,61,78,0.12)", color: "#F03D4E" }}>{error}</div>}
+      {error && <div role="alert" className="rounded-xl px-4 py-3 text-sm" style={{ background: "color-mix(in srgb, var(--sk-danger) 12%, transparent)", color: "var(--sk-danger)" }}>{error}</div>}
 
       {adding && (
-        <div className="rounded-2xl p-4 space-y-3" style={card}>
+        <div className="rounded-xl p-4 space-y-3" style={card}>
           <input value={title} onChange={e => setTitle(e.target.value)} maxLength={120} placeholder="Task (e.g. Bake 60 cookies)" aria-label="Task title" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none" style={field} />
           <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2} placeholder="Details (optional)" aria-label="Task details" className="w-full rounded-xl px-3 py-2.5 text-sm outline-none resize-y" style={field} />
           <div className="flex flex-wrap gap-3">
@@ -150,7 +150,7 @@ export default function TasksBoard({ eventId, getToken, isDark }: Props) {
               {assignees.map(a => <option key={a.id} value={a.id}>{a.fullName}</option>)}
             </select>
             <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} aria-label="Due date" className="rounded-xl px-3 py-2.5 text-sm outline-none" style={field} />
-            <button onClick={create} disabled={!title.trim() || saving} className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white cursor-pointer disabled:opacity-50" style={{ background: "#F03D4E" }}>{saving ? "Adding…" : "Add"}</button>
+            <button onClick={create} disabled={!title.trim() || saving} className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white cursor-pointer disabled:opacity-50" style={{ background: "var(--sk-brand)" }}>{saving ? "Adding…" : "Add"}</button>
           </div>
           {assignees.length === 0 && <p className="text-xs" style={{ color: sub }}>Only active club members can be assigned. Members appear here once their dues are verified.</p>}
         </div>
@@ -163,19 +163,19 @@ export default function TasksBoard({ eventId, getToken, isDark }: Props) {
           {COLUMNS.map(col => {
             const list = tasks.filter(t => t.status === col.id);
             return (
-              <div key={col.id} className="rounded-2xl p-3 space-y-3" style={card} aria-label={`${col.label} tasks`}>
+              <div key={col.id} className="rounded-xl p-3 space-y-3" style={card} aria-label={`${col.label} tasks`}>
                 <div className="flex items-center justify-between px-1">
-                  <span className="text-[11px] tracking-[0.2em] uppercase font-semibold" style={{ color: sub, fontFamily: FM }}>{col.label}</span>
+                  <span className="text-[11px] tracking-normal font-semibold" style={{ color: sub, fontFamily: FM }}>{col.label}</span>
                   <span className="text-xs" style={{ color: sub }}>{list.length}</span>
                 </div>
                 {list.length === 0 && <p className="text-xs px-1 py-3" style={{ color: sub }}>Nothing here.</p>}
                 {list.map(t => {
                   const overdue = t.status !== "DONE" && t.dueDate && new Date(t.dueDate).getTime() < now;
                   return (
-                    <article key={t.id} className="rounded-xl p-3 space-y-2" style={{ background: isDark ? "rgba(255,255,255,0.03)" : "#f4f5f9", border: overdue ? "1px solid rgba(240,61,78,0.5)" : "1px solid transparent" }}>
+                    <article key={t.id} className="rounded-xl p-3 space-y-2" style={{ background: isDark ? "rgba(255,255,255,0.03)" : "#f4f5f9", border: overdue ? "1px solid color-mix(in srgb, var(--sk-brand) 50%, transparent)" : "1px solid transparent" }}>
                       <div className="flex items-start justify-between gap-2">
                         <h3 className="text-sm font-semibold min-w-0" style={{ color: text, overflowWrap: "anywhere" }}>{t.title}</h3>
-                        <button onClick={() => remove(t)} aria-label={`Delete task ${t.title}`} className="p-1 rounded cursor-pointer shrink-0" style={{ color: "#F03D4E" }}><Trash2 size={13} /></button>
+                        <button onClick={() => remove(t)} aria-label={`Delete task ${t.title}`} className="p-1 rounded cursor-pointer shrink-0" style={{ color: "var(--sk-danger)" }}><Trash2 size={13} /></button>
                       </div>
                       {t.description && <p className="text-xs" style={{ color: sub, overflowWrap: "anywhere" }}>{t.description}</p>}
                       <div className="flex flex-wrap items-center gap-2 text-xs" style={{ color: sub }}>
@@ -185,7 +185,7 @@ export default function TasksBoard({ eventId, getToken, isDark }: Props) {
                           {t.assignedTo && !assignees.some(a => a.id === t.assignedTo!.id) && <option value={t.assignedTo.id}>{t.assignedTo.fullName}</option>}
                           {assignees.map(a => <option key={a.id} value={a.id}>{a.fullName}</option>)}
                         </select>
-                        {t.dueDate && <span style={{ color: overdue ? "#F03D4E" : sub, fontWeight: overdue ? 700 : 400 }}>{overdue ? "Overdue · " : "Due "}{new Date(t.dueDate).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>}
+                        {t.dueDate && <span style={{ color: overdue ? "var(--sk-brand)" : sub, fontWeight: overdue ? 700 : 400 }}>{overdue ? "Overdue · " : "Due "}{new Date(t.dueDate).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>}
                       </div>
                       <div className="flex gap-2">
                         <button disabled={t.status === "TODO"} onClick={() => move(t, -1)} aria-label={`Move ${t.title} back`} className="p-1.5 rounded-lg cursor-pointer disabled:opacity-30" style={field}><ChevronLeft size={14} /></button>

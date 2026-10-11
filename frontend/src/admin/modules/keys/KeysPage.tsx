@@ -96,12 +96,12 @@ export function KeysPage() {
         {formError && <p role="alert" className="mt-3 text-sm text-ad-brand">{formError}</p>}
 
         {created && (
-          <div role="status" className="mt-5 rounded-2xl border border-ad-brand/40 bg-ad-brand/10 p-5">
-            <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-ad-brand">
+          <div role="status" className="mt-5 rounded-xl border border-ad-brand/40 bg-ad-brand/10 p-5">
+            <div className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-normal text-ad-brand">
               <KeyRound size={14} /> New key — share it with the club
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <code data-testid="generated-key" className="select-all break-all font-mono text-2xl font-bold tracking-wider">{created.code}</code>
+              <code data-testid="generated-key" className="select-all break-all font-mono text-2xl font-bold tracking-normal">{created.code}</code>
               <CopyButton text={created.code} label="Copy key" />
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-ad-muted">

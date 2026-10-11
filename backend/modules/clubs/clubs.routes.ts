@@ -162,6 +162,16 @@ router.put('/:id', requireClubManager, async (req: Request, res: Response): Prom
   return res.status(200).json({ club: safe });
 });
 
+/** The club's own profile, including its sign-in email (not part of the public list). */
+router.get('/:id/profile', requireClubManager, async (req: Request, res: Response): Promise<any> => {
+  const user = currentUser(req);
+  const id = str(req.params.id);
+  assertClubAccess(user, id);
+  const club = await prisma.club.findUnique({ where: { id }, select: clubSelect });
+  if (!club) throw notFound('Club not found.');
+  return res.status(200).json({ club });
+});
+
 router.get('/:id/dashboard-stats', requireClubManager, async (req: Request, res: Response): Promise<any> => {
   const id = str(req.params.id);
   assertClubAccess(currentUser(req), id);

@@ -11,7 +11,7 @@ export const ORDER_STATUS: Record<OrderStatus, { label: string; color: string }>
   PAYMENT_SUBMITTED: { label: 'Verifying payment', color: '#3b82f6' },
   PAID: { label: 'Paid', color: '#22c55e' },
   CANCELLED: { label: 'Cancelled', color: '#71717a' },
-  REJECTED: { label: 'Rejected', color: '#ef4444' },
+  REJECTED: { label: 'Rejected', color: 'var(--sk-danger)' },
 };
 
 const FILTERS: Array<{ label: string; status: string }> = [
@@ -62,10 +62,10 @@ export default function OrdersPage() {
             key={f.label}
             onClick={() => { setStatus(f.status); setPage(1); }}
             style={{
-              padding: '7px 18px', borderRadius: 99, border: '1.5px solid', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'var(--font-sans)',
-              borderColor: status === f.status ? 'var(--color-crimson)' : 'var(--border)',
-              background: status === f.status ? 'var(--color-crimson)' : 'transparent',
-              color: status === f.status ? '#fff' : 'var(--subtext)',
+              padding: '6px 14px', borderRadius: 99, border: '1px solid', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'var(--font-sans)',
+              borderColor: status === f.status ? 'var(--text)' : 'var(--border)',
+              background: status === f.status ? 'var(--text)' : 'var(--surface)',
+              color: status === f.status ? 'var(--bg)' : 'var(--subtext)',
             }}
           >
             {f.label}

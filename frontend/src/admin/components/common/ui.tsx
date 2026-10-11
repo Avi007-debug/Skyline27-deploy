@@ -55,7 +55,7 @@ export function Badge({ tone = 'neutral', children }: { tone?: Tone; children: R
 export function StatCard({ label, value, sub, to }: { label: string; value: ReactNode; sub?: ReactNode; to?: string }) {
   const body = (
     <div className="ad-card h-full p-5 transition-colors hover:border-ad-faint">
-      <div className="text-[11px] font-semibold uppercase tracking-wider text-ad-faint">{label}</div>
+      <div className="text-[11px] font-semibold tracking-normal text-ad-faint">{label}</div>
       <div className="mt-2 text-3xl font-extrabold tracking-tight">{value}</div>
       {sub && <div className="mt-1 text-xs text-ad-muted">{sub}</div>}
     </div>

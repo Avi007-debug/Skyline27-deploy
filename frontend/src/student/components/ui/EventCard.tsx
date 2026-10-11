@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router';
-import { Calendar, Clock, Bookmark } from 'lucide-react';
+import { Bookmark, Calendar, MapPin } from 'lucide-react';
 import { EventModel, isEventLive, isEventPast, isEventFull, getEventStartDate } from '@/student/types/event';
 import { formatEventHeaderDate, formatDeadline } from '@/student/utils/dateUtils';
 import { useSavedEventsStore } from '@/student/store/savedEventsStore';
@@ -9,6 +9,7 @@ interface EventCardProps {
   compact?: boolean;
 }
 
+/** Event tile used in lists. Colours come from the design tokens, so it reads in both themes. */
 export default function EventCard({ event, compact = false }: EventCardProps) {
   const navigate = useNavigate();
   const { isSaved, toggle } = useSavedEventsStore();
@@ -17,328 +18,116 @@ export default function EventCard({ event, compact = false }: EventCardProps) {
   const past = isEventPast(event);
   const full = isEventFull(event);
 
-  const dateStr = event.eventDate?.toISOString() ?? event.date ?? null;
-  const endDateStr = event.eventEndDate?.toISOString() ?? null;
+  // Event times are campus wall-clock values: format them as local wall-clock strings, never via UTC.
+  const wall = (d?: Date | null) =>
+    d ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}T${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}` : null;
+  const dateStr = wall(event.eventDate) ?? event.date ?? null;
+  const endDateStr = wall(event.eventEndDate);
+  const start = getEventStartDate(event);
+  const day = start ? start.getDate() : null;
+  const month = start ? start.toLocaleString('en-US', { month: 'short' }) : null;
 
-  const startDate = getEventStartDate(event);
-  const startDay = startDate ? String(startDate.getDate()).padStart(2, '0') : null;
-  const startMonth = startDate
-    ? startDate.toLocaleString('en-US', { month: 'short' }).toUpperCase()
+  const deadline = event.registrationDeadline
+    ? event.registrationDeadline instanceof Date ? event.registrationDeadline : new Date(event.registrationDeadline)
     : null;
+  const deadlineSoon = deadline && !isNaN(deadline.getTime()) && deadline.getTime() - Date.now() < 3 * 86400000 && deadline.getTime() > Date.now();
+  const memberDeal = event.isMember && (event.normalPrice ?? 0) > event.price;
+  const memberOffer = !event.isMember && event.memberFee != null && event.memberFee < (event.normalPrice ?? event.price);
 
-  const deadlineDate = event.registrationDeadline
-    ? (event.registrationDeadline instanceof Date ? event.registrationDeadline : new Date(event.registrationDeadline))
-    : null;
+  const status = live ? { text: 'Happening now', tone: 'var(--sk-ok)' } : full && !past ? { text: 'Full', tone: 'var(--sk-muted)' } : past ? { text: 'Ended', tone: 'var(--sk-faint)' } : null;
 
   return (
-    <div
+    <article
       className="spotlight-card"
       onClick={() => navigate(`/events/${event.id}`)}
-      style={{
-        cursor: 'pointer',
-        overflow: 'hidden',
-        borderRadius: 20,
-        background: '#121215',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-        opacity: past ? 0.75 : 1,
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
-      }}
+      style={{ cursor: 'pointer', overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%', opacity: past ? 0.7 : 1 }}
     >
-      {/* Banner image */}
-      <div
-        style={{
-          height: compact ? 150 : 180,
-          background: '#16171b',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
+      <div style={{ position: 'relative', aspectRatio: compact ? '16 / 9' : '16 / 9', background: 'var(--raised)' }}>
         {event.imageUrl ? (
           <img
             src={event.imageUrl}
-            alt={event.title}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
+            alt=""
+            loading="lazy"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
           />
         ) : (
-          <div
-            style={{
-              width: '100%',
-              height: '100%',
-              background: 'linear-gradient(135deg, #1c1d22 0%, #121316 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Calendar size={36} style={{ opacity: 0.18, color: '#ffffff' }} />
+          <div style={{ width: '100%', height: '100%', display: 'grid', placeItems: 'center', color: 'var(--sk-faint)' }}>
+            <Calendar size={28} />
           </div>
         )}
-
-        {/* Top left badges: Club/SkylineOS text pill + Live badge */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 12,
-            left: 12,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            zIndex: 2,
-          }}
-        >
-          {/* SkylineOS / Club text pill */}
-          <span
+        {day && month && (
+          <div
+            aria-hidden
             style={{
-              background: 'rgba(255, 255, 255, 0.16)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              color: '#ffffff',
-              fontSize: 12,
-              fontWeight: 600,
-              padding: '4px 12px',
-              borderRadius: 999,
-              letterSpacing: '0.2px',
+              position: 'absolute', top: 10, left: 10, minWidth: 44, padding: '5px 8px', borderRadius: 8,
+              background: 'var(--surface)', color: 'var(--text)', textAlign: 'center', lineHeight: 1.05,
+              boxShadow: '0 1px 2px rgba(0,0,0,0.12)',
             }}
           >
-            {event.clubName || 'SkylineOS'}
-          </span>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--sk-brand)' }}>{month}</div>
+            <div style={{ fontSize: 17, fontWeight: 700 }}>{day}</div>
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); toggle(event.id); }}
+          aria-label={saved ? 'Remove bookmark' : 'Bookmark event'}
+          aria-pressed={saved}
+          style={{
+            position: 'absolute', top: 10, right: 10, width: 32, height: 32, borderRadius: 8, border: 'none',
+            display: 'grid', placeItems: 'center', cursor: 'pointer',
+            background: 'var(--surface)', color: saved ? 'var(--sk-brand)' : 'var(--subtext)', boxShadow: '0 1px 2px rgba(0,0,0,0.12)',
+          }}
+        >
+          <Bookmark size={15} fill={saved ? 'currentColor' : 'none'} />
+        </button>
+      </div>
 
-          {/* LIVE status badge */}
-          {live && (
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-                background: 'rgba(0, 0, 0, 0.45)',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                color: '#ff4d4f',
-                fontSize: 11,
-                fontWeight: 700,
-                padding: '4px 10px',
-                borderRadius: 999,
-                letterSpacing: '0.5px',
-              }}
-            >
-              <span
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  background: '#ff4d4f',
-                  display: 'inline-block',
-                  boxShadow: '0 0 6px #ff4d4f',
-                }}
-              />
-              LIVE
+      <div style={{ padding: compact ? 14 : 16, display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--subtext)', minWidth: 0 }}>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.clubName || 'SkylineOS'}</span>
+          {(event.eventType || event.category) && <span aria-hidden>·</span>}
+          {(event.eventType || event.category) && <span style={{ flexShrink: 0 }}>{event.eventType || event.category}</span>}
+          {status && (
+            <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 5, color: status.tone, fontWeight: 600, flexShrink: 0 }}>
+              {live && <span style={{ width: 6, height: 6, borderRadius: 99, background: 'currentColor' }} />}
+              {status.text}
             </span>
           )}
         </div>
 
-        {/* Top right date box */}
-        {startDay && startMonth && (
-          <div
-            style={{
-              position: 'absolute',
-              top: 12,
-              right: 12,
-              background: 'rgba(30, 30, 36, 0.8)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: 14,
-              padding: '6px 12px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minWidth: 46,
-              zIndex: 2,
-            }}
-          >
-            <span
-              style={{
-                fontSize: 16,
-                fontWeight: 800,
-                color: '#ffffff',
-                lineHeight: 1.1,
-              }}
-            >
-              {startDay}
-            </span>
-            <span
-              style={{
-                fontSize: 10,
-                fontWeight: 700,
-                color: 'rgba(255, 255, 255, 0.7)',
-                letterSpacing: '0.5px',
-                textTransform: 'uppercase',
-                marginTop: 1,
-              }}
-            >
-              {startMonth}
-            </span>
-          </div>
-        )}
-
-        {/* Full badge */}
-        {full && !past && (
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              background: 'rgba(0,0,0,0.7)',
-              color: '#fff',
-              textAlign: 'center',
-              fontSize: 11,
-              fontWeight: 700,
-              padding: '3px 0',
-              backdropFilter: 'blur(4px)',
-            }}
-          >
-            FULL
-          </div>
-        )}
-      </div>
-
-      {/* Content */}
-      <div style={{ padding: compact ? '14px 14px' : '16px' }}>
-        {/* Event Type / Category */}
-        <p
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            color: 'var(--color-crimson)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.6px',
-            marginBottom: 4,
-          }}
-        >
-          {event.eventType || event.category || 'EVENT'}
-        </p>
-
-        {/* Title */}
         <h3
           style={{
-            fontSize: compact ? 17 : 18,
-            fontWeight: 800,
-            color: '#ffffff',
-            marginBottom: 8,
-            lineHeight: 1.25,
-            display: '-webkit-box',
-            WebkitLineClamp: 1,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
+            fontSize: 16, fontWeight: 600, color: 'var(--text)', lineHeight: 1.3, letterSpacing: '-0.01em',
+            display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', margin: 0,
+            minHeight: '2.6em', // always reserve two lines so every card is the same height
           }}
         >
           {event.title}
         </h3>
 
-        {/* Deadline or Date info */}
-        {deadlineDate && !isNaN(deadlineDate.getTime()) ? (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              color: '#f59e0b',
-              fontSize: 12,
-              fontWeight: 500,
-              marginBottom: 10,
-            }}
-          >
-            <Clock size={13} color="#f59e0b" />
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              Deadline: {formatDeadline(deadlineDate)}
-            </span>
-          </div>
-        ) : dateStr ? (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              color: 'var(--subtext)',
-              fontSize: 12,
-              marginBottom: 10,
-            }}
-          >
-            <Calendar size={13} />
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {formatEventHeaderDate(dateStr, endDateStr)}
-            </span>
-          </div>
-        ) : null}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--subtext)', minWidth: 0 }}>
+          <Calendar size={13} style={{ flexShrink: 0 }} />
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{dateStr ? formatEventHeaderDate(dateStr, endDateStr) : 'Date to be announced'}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--subtext)', minWidth: 0 }}>
+          <MapPin size={13} style={{ flexShrink: 0 }} />
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{event.venue && event.venue !== 'TBD' && event.venue !== 'No Venue' ? event.venue : 'Venue to be announced'}</span>
+        </div>
 
-        {/* Footer */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingTop: 8,
-          }}
-        >
-          <span style={{ fontSize: 13, color: 'rgba(255, 255, 255, 0.65)', fontWeight: 500 }}>
-            {event.registrationCount ?? 0}{' '}
-            {(event.registrationCount ?? 0) === 1 ? 'registration' : 'registrations'}
+        <div style={{ marginTop: 'auto', paddingTop: 10, display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, borderTop: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>
+            {event.price > 0 ? `₹${event.price}` : 'Free'}
+            {memberDeal && <span style={{ marginLeft: 6, fontSize: 12, fontWeight: 400, color: 'var(--sk-faint)', textDecoration: 'line-through' }}>₹{event.normalPrice}</span>}
+            {memberDeal && <span style={{ marginLeft: 6, fontSize: 12, fontWeight: 500, color: 'var(--sk-ok)' }}>Member price</span>}
+            {memberOffer && <span style={{ marginLeft: 6, fontSize: 12, fontWeight: 400, color: 'var(--subtext)' }}>Members {event.memberFee! > 0 ? `₹${event.memberFee}` : 'free'}</span>}
           </span>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span
-              style={{
-                fontSize: 15,
-                fontWeight: 700,
-                color: '#ffffff',
-              }}
-            >
-              {event.price > 0 ? `₹${event.price}` : 'Free'}
-              {event.isMember && (event.normalPrice ?? 0) > event.price && (
-                <span style={{ marginLeft: 6, fontSize: 12, fontWeight: 500, textDecoration: 'line-through', opacity: 0.7 }}>₹{event.normalPrice}</span>
-              )}
-              {!event.isMember && event.memberFee != null && event.memberFee < (event.normalPrice ?? event.price) && (
-                <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 600, opacity: 0.85 }}>
-                  · Members {event.memberFee > 0 ? `₹${event.memberFee}` : 'free'}
-                </span>
-              )}
-            </span>
-
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggle(event.id);
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: saved ? 'var(--color-crimson)' : 'rgba(255, 255, 255, 0.7)',
-                transition: 'color 0.15s ease',
-              }}
-              aria-label={saved ? 'Remove bookmark' : 'Bookmark event'}
-            >
-              <Bookmark size={18} fill={saved ? 'var(--color-crimson)' : 'none'} />
-            </button>
-          </div>
+          <span style={{ fontSize: 12, color: deadlineSoon ? 'var(--sk-warn)' : 'var(--sk-faint)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {deadline && !isNaN(deadline.getTime()) && !past ? `Closes ${formatDeadline(deadline)}` : `${event.registrationCount ?? 0} going`}
+          </span>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

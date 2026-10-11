@@ -186,7 +186,7 @@ export default function RegisterPage() {
                 flex: 1,
                 borderRadius: 24,
                 border: 'none',
-                background: mode === 'create-team' ? 'var(--color-crimson, #e63946)' : 'transparent',
+                background: mode === 'create-team' ? 'var(--color-crimson, var(--sk-brand))' : 'transparent',
                 color: mode === 'create-team' ? '#ffffff' : '#9ca3af',
                 fontSize: 14,
                 fontWeight: 700,
@@ -202,7 +202,7 @@ export default function RegisterPage() {
                 flex: 1,
                 borderRadius: 24,
                 border: 'none',
-                background: mode === 'join-team' ? 'var(--color-crimson, #e63946)' : 'transparent',
+                background: mode === 'join-team' ? 'var(--color-crimson, var(--sk-brand))' : 'transparent',
                 color: mode === 'join-team' ? '#ffffff' : '#9ca3af',
                 fontSize: 14,
                 fontWeight: 700,
@@ -280,7 +280,7 @@ export default function RegisterPage() {
                 marginBottom: 16,
               }}
             >
-              <Info size={18} color="var(--color-crimson, #e63946)" style={{ flexShrink: 0, marginTop: 2 }} />
+              <Info size={18} color="var(--color-crimson, var(--sk-brand))" style={{ flexShrink: 0, marginTop: 2 }} />
               <p style={{ fontSize: 13, color: '#A09B9B', lineHeight: 1.5 }}>
                 A unique passkey will be generated after you submit. Share it with your teammates.
                 {event.teamSizeLimit ? ` Team size limit is ${event.teamSizeLimit} members.` : ''}
@@ -336,7 +336,7 @@ export default function RegisterPage() {
             width: '100%',
             height: 52,
             borderRadius: 30,
-            background: 'var(--color-crimson, #e63946)',
+            background: 'var(--color-crimson, var(--sk-brand))',
             border: 'none',
             color: '#ffffff',
             fontSize: 16,
@@ -349,7 +349,7 @@ export default function RegisterPage() {
             marginTop: 32,
             transition: 'opacity 0.15s ease',
             opacity: isSubmitting ? 0.7 : 1,
-            boxShadow: '0 4px 14px rgba(230, 57, 70, 0.3)',
+            boxShadow: '0 4px 14px color-mix(in srgb, var(--sk-brand) 30%, transparent)',
           }}
         >
           {isSubmitting ? (
@@ -400,8 +400,8 @@ export default function RegisterPage() {
                 gap: 12,
                 padding: '14px 24px',
                 borderRadius: 16,
-                background: 'rgba(230, 57, 70, 0.12)',
-                border: '1px solid rgba(230, 57, 70, 0.3)',
+                background: 'color-mix(in srgb, var(--sk-brand) 12%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--sk-brand) 30%, transparent)',
                 cursor: 'pointer',
                 marginBottom: 8,
               }}
@@ -411,7 +411,7 @@ export default function RegisterPage() {
                   fontSize: 28,
                   fontWeight: 800,
                   letterSpacing: '4px',
-                  color: 'var(--color-crimson, #e63946)',
+                  color: 'var(--color-crimson, var(--sk-brand))',
                   fontFamily: 'monospace',
                 }}
               >
@@ -420,7 +420,7 @@ export default function RegisterPage() {
               {copied ? (
                 <Check size={20} color="#22c55e" strokeWidth={2.5} />
               ) : (
-                <Copy size={20} color="var(--color-crimson, #e63946)" strokeWidth={2} />
+                <Copy size={20} color="var(--color-crimson, var(--sk-brand))" strokeWidth={2} />
               )}
             </div>
 
@@ -440,7 +440,7 @@ export default function RegisterPage() {
                 width: '100%',
                 height: 48,
                 borderRadius: 24,
-                background: 'var(--color-crimson, #e63946)',
+                background: 'var(--color-crimson, var(--sk-brand))',
                 border: 'none',
                 color: '#ffffff',
                 fontSize: 15,

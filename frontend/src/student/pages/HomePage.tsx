@@ -84,9 +84,9 @@ export default function HomePage() {
       >
         <div>
           <p style={{ color: 'var(--subtext)', fontSize: 14, marginBottom: 2 }}>
-            {getGreeting()} 👋
+            {getGreeting()}
           </p>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.3px' }}>
+          <h1 style={{ fontSize: 24, fontWeight: 600, color: 'var(--text)', letterSpacing: '-0.02em' }}>
             {currentUser?.name ?? 'Explore'}
           </h1>
         </div>
@@ -172,14 +172,14 @@ export default function HomePage() {
             key={f}
             onClick={() => setActiveFilter(f)}
             style={{
-              padding: '8px 20px',
+              padding: '6px 14px',
               borderRadius: 99,
-              border: '1.5px solid',
-              borderColor: activeFilter === f ? 'var(--color-crimson)' : 'var(--border)',
-              background: activeFilter === f ? 'var(--color-crimson)' : 'var(--surface)',
-              color: activeFilter === f ? '#fff' : 'var(--subtext)',
+              border: '1px solid',
+              borderColor: activeFilter === f ? 'var(--text)' : 'var(--border)',
+              background: activeFilter === f ? 'var(--text)' : 'var(--surface)',
+              color: activeFilter === f ? 'var(--bg)' : 'var(--subtext)',
               fontFamily: 'var(--font-sans)',
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: 600,
               cursor: 'pointer',
               whiteSpace: 'nowrap',
@@ -286,7 +286,7 @@ export default function HomePage() {
             }}
           >
             {savedEvents.slice(0, 5).map((e) => (
-              <div key={e.id} style={{ minWidth: 240, maxWidth: 240, flexShrink: 0 }}>
+              <div key={e.id} style={{ minWidth: 280, maxWidth: 280, flexShrink: 0 }}>
                 <EventCard event={e} compact />
               </div>
             ))}

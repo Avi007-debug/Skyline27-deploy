@@ -24,12 +24,12 @@ const TYPES: Array<{ label: string; type: string }> = [
 ];
 
 const chip = (active: boolean, small = false): React.CSSProperties => ({
-  padding: small ? '5px 14px' : '7px 18px',
+  padding: small ? '4px 12px' : '6px 14px',
   borderRadius: 99,
-  border: '1.5px solid',
-  borderColor: active ? 'var(--color-crimson)' : 'var(--border)',
-  background: active ? (small ? 'var(--color-crimson-dim)' : 'var(--color-crimson)') : 'transparent',
-  color: active ? (small ? 'var(--color-crimson)' : '#fff') : 'var(--subtext)',
+  border: '1px solid',
+  borderColor: active ? 'var(--text)' : 'var(--border)',
+  background: active ? (small ? 'var(--raised)' : 'var(--text)') : 'var(--surface)',
+  color: active ? (small ? 'var(--text)' : 'var(--bg)') : 'var(--subtext)',
   fontFamily: 'var(--font-sans)',
   fontSize: small ? 12 : 13,
   fontWeight: 600,

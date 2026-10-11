@@ -60,13 +60,13 @@ export class ErrorBoundary extends Component<Props, State> {
               width: "56px",
               height: "56px",
               borderRadius: "16px",
-              background: "rgba(240, 61, 78, 0.12)",
-              border: "1px solid rgba(240, 61, 78, 0.3)",
+              background: "color-mix(in srgb, var(--sk-brand) 12%, transparent)",
+              border: "1px solid color-mix(in srgb, var(--sk-brand) 30%, transparent)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               margin: "0 auto 20px auto",
-              color: "#F03D4E",
+              color: "var(--sk-brand)",
               fontSize: "24px",
               fontWeight: "bold"
             }}>
@@ -81,7 +81,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <button
               onClick={this.handleReset}
               style={{
-                background: "#F03D4E",
+                background: "var(--sk-brand)",
                 color: "#ffffff",
                 border: "none",
                 borderRadius: "12px",
@@ -92,7 +92,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 transition: "background 0.2s ease"
               }}
               onMouseEnter={e => (e.currentTarget.style.background = "#d83544")}
-              onMouseLeave={e => (e.currentTarget.style.background = "#F03D4E")}
+              onMouseLeave={e => (e.currentTarget.style.background = "var(--sk-brand)")}
             >
               Reload Dashboard
             </button>

@@ -25,9 +25,9 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../../shared/theme';
 
-const FC = "'Playfair Display', serif";
-const FM = "'JetBrains Mono', monospace";
-const FB = "'Manrope', sans-serif";
+const FC = "var(--sk-font)";
+const FM = "var(--sk-font)";
+const FB = "var(--sk-font)";
 
 interface FinanceAppProps {
   clubId?: string;
@@ -285,11 +285,11 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
   return (
     <div className="p-4 sm:p-6 md:p-8 lg:p-10 space-y-6 sm:space-y-8 max-w-7xl mx-auto pb-28 md:pb-12 text-white">
       {/* Header */}
-      <div className="relative p-6 sm:p-8 rounded-3xl overflow-hidden" style={{ background: "rgba(255,255,255,0.018)", border: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="relative p-6 sm:p-8 rounded-xl overflow-hidden" style={{ background: "rgba(255,255,255,0.018)", border: "1px solid rgba(255,255,255,0.06)" }}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[10px] tracking-[0.4em] uppercase text-red-400 font-semibold" style={{ fontFamily: FM }}>FINANCE & TREASURY</span>
+              <span className="text-[10px] tracking-normal text-[color:var(--sk-danger)] font-semibold" style={{ fontFamily: FM }}>FINANCE & TREASURY</span>
               <span className="px-2 py-0.5 rounded-full text-[9px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">TAMPER-EVIDENT</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold" style={{ fontFamily: FC }}>Treasurer Control Center</h1>
@@ -307,7 +307,7 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
             </button>
             <button
               onClick={handleDownloadCSV}
-              className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#F03D4E] hover:bg-[#d63545] text-white flex items-center gap-2 shadow-lg transition-all cursor-pointer"
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-[color:var(--sk-brand)] hover:bg-[color:var(--sk-brand-hover)] text-white flex items-center gap-2 shadow-lg transition-all cursor-pointer"
               style={{ fontFamily: FB }}
             >
               <Download size={14} /> Export CSV
@@ -348,23 +348,23 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
         <div className="space-y-6">
           {/* KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5">
-              <span className="text-[10px] tracking-[0.2em] uppercase text-white/40 block mb-2" style={{ fontFamily: FM }}>Net Vault Balance</span>
+            <div className="p-5 rounded-xl bg-white/[0.02] border border-white/5">
+              <span className="text-[10px] tracking-normal text-white/40 block mb-2" style={{ fontFamily: FM }}>Net Vault Balance</span>
               <p className="text-2xl font-bold text-purple-400 font-mono">{formatINR(vault.netBalancePaise)}</p>
               <span className="text-[11px] text-white/40 mt-1 block">Live reconciled closing balance</span>
             </div>
-            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5">
-              <span className="text-[10px] tracking-[0.2em] uppercase text-white/40 block mb-2" style={{ fontFamily: FM }}>Total Income (Inflows)</span>
+            <div className="p-5 rounded-xl bg-white/[0.02] border border-white/5">
+              <span className="text-[10px] tracking-normal text-white/40 block mb-2" style={{ fontFamily: FM }}>Total Income (Inflows)</span>
               <p className="text-2xl font-bold text-emerald-400 font-mono">{formatINR(vault.totalIncomePaise)}</p>
               <span className="text-[11px] text-white/40 mt-1 block">Dues, tickets, merch & fundraisers</span>
             </div>
-            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5">
-              <span className="text-[10px] tracking-[0.2em] uppercase text-white/40 block mb-2" style={{ fontFamily: FM }}>Total Expenses (Outflows)</span>
-              <p className="text-2xl font-bold text-red-400 font-mono">{formatINR(vault.totalExpensePaise)}</p>
+            <div className="p-5 rounded-xl bg-white/[0.02] border border-white/5">
+              <span className="text-[10px] tracking-normal text-white/40 block mb-2" style={{ fontFamily: FM }}>Total Expenses (Outflows)</span>
+              <p className="text-2xl font-bold text-[color:var(--sk-danger)] font-mono">{formatINR(vault.totalExpensePaise)}</p>
               <span className="text-[11px] text-white/40 mt-1 block">Reimbursed club purchases</span>
             </div>
-            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5">
-              <span className="text-[10px] tracking-[0.2em] uppercase text-white/40 block mb-2" style={{ fontFamily: FM }}>Owed to Volunteers</span>
+            <div className="p-5 rounded-xl bg-white/[0.02] border border-white/5">
+              <span className="text-[10px] tracking-normal text-white/40 block mb-2" style={{ fontFamily: FM }}>Owed to Volunteers</span>
               <p className="text-2xl font-bold text-amber-400 font-mono">{formatINR(vault.owedToVolunteersPaise)}</p>
               <span className="text-[11px] text-white/40 mt-1 block">Approved claims pending payout</span>
             </div>
@@ -372,8 +372,8 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
 
           {/* Income & Expense Category Breakdown */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="p-6 rounded-3xl bg-white/[0.015] border border-white/5 space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white/80" style={{ fontFamily: FM }}>Revenue by Stream</h3>
+            <div className="p-6 rounded-xl bg-white/[0.015] border border-white/5 space-y-4">
+              <h3 className="text-sm font-bold tracking-normal text-white/80" style={{ fontFamily: FM }}>Revenue by Stream</h3>
               <div className="space-y-3">
                 {Object.entries(summaryData?.incomeByCategory || { DUES: 0, TICKET: 0, MERCH: 0, FUNDRAISER: 0 }).map(([cat, amt]) => (
                   <div key={cat} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/5">
@@ -384,13 +384,13 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
               </div>
             </div>
 
-            <div className="p-6 rounded-3xl bg-white/[0.015] border border-white/5 space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white/80" style={{ fontFamily: FM }}>Expenses by Category</h3>
+            <div className="p-6 rounded-xl bg-white/[0.015] border border-white/5 space-y-4">
+              <h3 className="text-sm font-bold tracking-normal text-white/80" style={{ fontFamily: FM }}>Expenses by Category</h3>
               <div className="space-y-3">
                 {Object.entries(summaryData?.expensesByCategory || { EXPENSE: 0 }).map(([cat, amt]) => (
                   <div key={cat} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/5">
                     <span className="text-xs font-semibold text-white/70" style={{ fontFamily: FB }}>{cat}</span>
-                    <span className="text-xs font-mono font-bold text-red-400">{formatINR(amt as number)}</span>
+                    <span className="text-xs font-mono font-bold text-[color:var(--sk-danger)]">{formatINR(amt as number)}</span>
                   </div>
                 ))}
               </div>
@@ -398,8 +398,8 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
           </div>
 
           {/* Per-Event Performance */}
-          <div className="p-6 rounded-3xl bg-white/[0.015] border border-white/5 space-y-4">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-white/80" style={{ fontFamily: FM }}>Per-Event Net Profit & Loss</h3>
+          <div className="p-6 rounded-xl bg-white/[0.015] border border-white/5 space-y-4">
+            <h3 className="text-sm font-bold tracking-normal text-white/80" style={{ fontFamily: FM }}>Per-Event Net Profit & Loss</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
@@ -417,8 +417,8 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
                       <td className="py-3 font-semibold text-white">{ev.name}</td>
                       <td className="py-3 text-white/50">{ev.date ? new Date(ev.date).toLocaleDateString() : 'TBD'}</td>
                       <td className="py-3 font-mono text-emerald-400">{formatINR(ev.incomePaise)}</td>
-                      <td className="py-3 font-mono text-red-400">{formatINR(ev.expensePaise)}</td>
-                      <td className="py-3 text-right font-mono font-bold" style={{ color: ev.netResultPaise >= 0 ? '#34d399' : '#f87171' }}>
+                      <td className="py-3 font-mono text-[color:var(--sk-danger)]">{formatINR(ev.expensePaise)}</td>
+                      <td className="py-3 text-right font-mono font-bold" style={{ color: ev.netResultPaise >= 0 ? '#34d399' : 'var(--sk-danger)' }}>
                         {formatINR(ev.netResultPaise)}
                       </td>
                     </tr>
@@ -437,7 +437,7 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
 
       {/* SUB-TAB 2: AUDITED LEDGER */}
       {subTab === 'ledger' && (
-        <div className="p-6 rounded-3xl bg-white/[0.015] border border-white/5 space-y-5">
+        <div className="p-6 rounded-xl bg-white/[0.015] border border-white/5 space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-lg font-bold" style={{ fontFamily: FC }}>Cryptographic Ledger Stream</h2>
@@ -490,14 +490,14 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
                     <td className="py-3.5 px-3 font-mono text-white/60">#{row.id}</td>
                     <td className="py-3.5 px-3">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold font-mono ${
-                        row.type === 'IN' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                        row.type === 'IN' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-[color:var(--sk-danger-soft)] text-[color:var(--sk-danger)] border border-[color:var(--sk-danger)]/30'
                       }`}>
                         {row.type === 'IN' ? <ArrowDownRight size={12} /> : <ArrowUpRight size={12} />}
                         {row.type}
                       </span>
                     </td>
                     <td className="py-3.5 px-3 font-mono font-semibold">{row.category}</td>
-                    <td className="py-3.5 px-3 font-mono font-bold" style={{ color: row.type === 'IN' ? '#34d399' : '#f87171' }}>
+                    <td className="py-3.5 px-3 font-mono font-bold" style={{ color: row.type === 'IN' ? '#34d399' : 'var(--sk-danger)' }}>
                       {row.type === 'IN' ? '+' : '-'}{formatINR(row.amountPaise)}
                     </td>
                     <td className="py-3.5 px-3 font-mono text-white/70">{row.refType} · {row.refId}</td>
@@ -540,7 +540,7 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
 
       {/* SUB-TAB 3: CLAIMS QUEUE */}
       {subTab === 'claims' && (
-        <div className="p-6 rounded-3xl bg-white/[0.015] border border-white/5 space-y-5">
+        <div className="p-6 rounded-xl bg-white/[0.015] border border-white/5 space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-lg font-bold" style={{ fontFamily: FC }}>Volunteer Expense Claims Queue</h2>
@@ -564,7 +564,7 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
 
           <div className="space-y-3">
             {claims.map((claim) => (
-              <div key={claim.id} className="p-4 sm:p-5 rounded-2xl bg-white/[0.01] border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div key={claim.id} className="p-4 sm:p-5 rounded-xl bg-white/[0.01] border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-1.5 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-bold text-sm text-white">{claim.title}</span>
@@ -572,10 +572,10 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
                       claim.status === 'SUBMITTED' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
                       claim.status === 'APPROVED' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
                       claim.status === 'REIMBURSED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                      'bg-red-500/10 text-red-400 border border-red-500/20'
+                      'bg-[color:var(--sk-danger-soft)] text-[color:var(--sk-danger)] border border-[color:var(--sk-danger)]/30'
                     }`}>{claim.status}</span>
                     {claim.mismatchFlag && (
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold font-mono bg-red-500/10 text-red-400 border border-red-500/20 flex items-center gap-1">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold font-mono bg-[color:var(--sk-danger-soft)] text-[color:var(--sk-danger)] border border-[color:var(--sk-danger)]/30 flex items-center gap-1">
                         <AlertTriangle size={10} /> MISMATCH DETECTED
                       </span>
                     )}
@@ -588,7 +588,7 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
                   </div>
 
                   {claim.decisionNote && (
-                    <div className="text-xs text-red-400 bg-red-500/5 p-2 rounded-lg border border-red-500/10">
+                    <div className="text-xs text-[color:var(--sk-danger)] bg-[color:var(--sk-danger-soft)] p-2 rounded-lg border border-[color:var(--sk-danger)]/30">
                       Reason: {claim.decisionNote}
                     </div>
                   )}
@@ -621,7 +621,7 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
                         <button
                           disabled={actionLoading}
                           onClick={() => { setRejectingClaimId(claim.id); setRejectionReason(''); }}
-                          className="px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs font-semibold cursor-pointer active:scale-95"
+                          className="px-3 py-2 rounded-xl bg-[color:var(--sk-danger-soft)] hover:bg-[color:var(--sk-danger-soft)] text-[color:var(--sk-danger)] border border-[color:var(--sk-danger)]/30 text-xs font-semibold cursor-pointer active:scale-95"
                         >Reject</button>
                       </>
                     )}
@@ -647,7 +647,7 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
 
       {/* SUB-TAB 4: SEMESTER REPORTS */}
       {subTab === 'reports' && (
-        <div className="p-6 rounded-3xl bg-white/[0.015] border border-white/5 space-y-6">
+        <div className="p-6 rounded-xl bg-white/[0.015] border border-white/5 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-lg font-bold" style={{ fontFamily: FC }}>Semester Financial Report</h2>
@@ -663,7 +663,7 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
               </button>
               <button
                 onClick={() => window.open(`${API_BASE}/finance/report/html`, '_blank')}
-                className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#F03D4E] hover:bg-[#d63545] text-white flex items-center gap-2 cursor-pointer"
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[color:var(--sk-brand)] hover:bg-[color:var(--sk-brand-hover)] text-white flex items-center gap-2 cursor-pointer"
               >
                 <ExternalLink size={14} /> Print / PDF View
               </button>
@@ -672,7 +672,7 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
 
           {reportData && (
             <div className="space-y-6 text-xs">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 rounded-2xl bg-white/[0.02] border border-white/5">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 rounded-xl bg-white/[0.02] border border-white/5">
                 <div>
                   <span className="text-white/40 block">Opening Balance</span>
                   <span className="text-base font-bold font-mono">{formatINR(reportData.vaultSummary.openingBalancePaise)}</span>
@@ -683,7 +683,7 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
                 </div>
                 <div>
                   <span className="text-white/40 block">Total Outflows</span>
-                  <span className="text-base font-bold font-mono text-red-400">-{formatINR(reportData.vaultSummary.totalExpensePaise)}</span>
+                  <span className="text-base font-bold font-mono text-[color:var(--sk-danger)]">-{formatINR(reportData.vaultSummary.totalExpensePaise)}</span>
                 </div>
                 <div>
                   <span className="text-white/40 block">Closing Balance</span>
@@ -691,8 +691,8 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
                 </div>
               </div>
 
-              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
-                <span className="font-bold uppercase tracking-wider text-white/70 block" style={{ fontFamily: FM }}>Detailed Revenue Sources</span>
+              <div className="p-5 rounded-xl bg-white/[0.02] border border-white/5 space-y-3">
+                <span className="font-bold tracking-normal text-white/70 block" style={{ fontFamily: FM }}>Detailed Revenue Sources</span>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div className="p-3 rounded-xl bg-white/5">
                     <span className="text-white/50 block text-[11px]">Membership Dues</span>
@@ -719,7 +719,7 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
 
       {/* SUB-TAB 5: AUDIT & INTEGRITY */}
       {subTab === 'audit' && (
-        <div className="p-6 rounded-3xl bg-white/[0.015] border border-white/5 space-y-6">
+        <div className="p-6 rounded-xl bg-white/[0.015] border border-white/5 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-lg font-bold" style={{ fontFamily: FC }}>Cryptographic Chain Audit Inspector</h2>
@@ -737,7 +737,7 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
           </div>
 
           {auditResult && (
-            <div className="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 space-y-4">
+            <div className="p-6 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-4">
               <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
                 <CheckCircle2 size={18} />
                 <span>CRYPTOGRAPHIC LEDGER INTEGRITY: VERIFIED INTACT</span>
@@ -759,7 +759,7 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
 
       {/* SUB-TAB 6: D6 MONEY FLOW VISUALIZATION */}
       {subTab === 'flow' && (
-        <div className="p-6 rounded-3xl bg-white/[0.015] border border-white/5 space-y-6">
+        <div className="p-6 rounded-xl bg-white/[0.015] border border-white/5 space-y-6">
           <div>
             <h2 className="text-lg font-bold" style={{ fontFamily: FC }}>Money-Flow Visualization (D6)</h2>
             <p className="text-xs text-white/50 mt-0.5">Interactive flow of dues, tickets, merchandise and fundraiser income through the vault.</p>
@@ -768,7 +768,7 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
             {/* Sources */}
             <div className="space-y-3">
-              <span className="text-xs uppercase tracking-wider text-white/40 font-mono block">1. Revenue Sources</span>
+              <span className="text-xs tracking-normal text-white/40 font-mono block">1. Revenue Sources</span>
               <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs">
                 <span className="text-white/60 block">Membership Dues</span>
                 <span className="font-mono font-bold text-emerald-400">{formatINR(summaryData?.incomeByCategory?.DUES || 0)}</span>
@@ -788,18 +788,18 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
             </div>
 
             {/* Central Vault */}
-            <div className="p-6 rounded-3xl bg-gradient-to-b from-purple-500/10 to-transparent border border-purple-500/20 text-center space-y-2">
-              <span className="text-[11px] uppercase tracking-widest text-purple-400 font-mono">Central Vault</span>
+            <div className="p-6 rounded-xl bg-gradient-to-b from-purple-500/10 to-transparent border border-purple-500/20 text-center space-y-2">
+              <span className="text-[11px] tracking-normal text-purple-400 font-mono">Central Vault</span>
               <div className="text-3xl font-mono font-bold text-white">{formatINR(vault.netBalancePaise)}</div>
               <p className="text-[11px] text-white/40">Reconciled Net Reserve</p>
             </div>
 
             {/* Outflows */}
             <div className="space-y-3">
-              <span className="text-xs uppercase tracking-wider text-white/40 font-mono block">2. Expenditures & Liabilities</span>
-              <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-xs">
+              <span className="text-xs tracking-normal text-white/40 font-mono block">2. Expenditures & Liabilities</span>
+              <div className="p-3.5 rounded-xl bg-[color:var(--sk-danger-soft)] border border-[color:var(--sk-danger)]/30 text-xs">
                 <span className="text-white/60 block">Reimbursed Expenses</span>
-                <span className="font-mono font-bold text-red-400">{formatINR(vault.totalExpensePaise)}</span>
+                <span className="font-mono font-bold text-[color:var(--sk-danger)]">{formatINR(vault.totalExpensePaise)}</span>
               </div>
               <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs">
                 <span className="text-white/60 block">Owed to Volunteers</span>
@@ -813,7 +813,7 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
       {/* Receipt Preview Modal */}
       {selectedReceipt && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#121212] border border-white/10 rounded-2xl p-5 max-w-lg w-full space-y-4">
+          <div className="bg-[#121212] border border-white/10 rounded-xl p-5 max-w-lg w-full space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold">Proof Receipt</h3>
               <button onClick={() => setSelectedReceipt(null)} className="text-white/50 hover:text-white cursor-pointer"><XCircle size={18} /></button>
@@ -828,22 +828,22 @@ export function FinanceApp({ clubId, getToken }: FinanceAppProps) {
       {/* Rejection Modal */}
       {rejectingClaimId && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#121212] border border-white/10 rounded-2xl p-5 max-w-md w-full space-y-4">
-            <h3 className="text-sm font-bold text-red-400">Reject Expense Claim</h3>
+          <div className="bg-[#121212] border border-white/10 rounded-xl p-5 max-w-md w-full space-y-4">
+            <h3 className="text-sm font-bold text-[color:var(--sk-danger)]">Reject Expense Claim</h3>
             <p className="text-xs text-white/60">A rejection reason is mandatory and will be logged in the audit trail.</p>
             <textarea
               rows={3}
               placeholder="e.g. Ineligible category or missing VAT receipt"
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs text-white outline-none focus:border-red-500/40"
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs text-white outline-none focus:border-[color:var(--sk-danger)]/30"
             />
             <div className="flex justify-end gap-2">
               <button onClick={() => setRejectingClaimId(null)} className="px-3 py-1.5 rounded-lg text-xs bg-white/5 text-white/60">Cancel</button>
               <button
                 disabled={!rejectionReason.trim() || actionLoading}
                 onClick={handleRejectClaim}
-                className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-red-500 text-white disabled:opacity-50"
+                className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-[color:var(--sk-danger)] text-white disabled:opacity-50"
               >Confirm Rejection</button>
             </div>
           </div>

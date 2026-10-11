@@ -18,6 +18,7 @@ const suites = [
   'merch.test.ts',
   'schema.test.ts',
   'membership.test.ts',
+  'student_fixes.test.ts',
   'ledger.test.ts',
   'expenses_finance.test.ts',
   'reports_audit.test.ts',

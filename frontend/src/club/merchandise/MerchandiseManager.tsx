@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Check, Package, Plus, Search, ShoppingBag, X } from "lucide-react";
 import { request, sanitizeErrorMessage } from "../api";
 
-const FM = "'JetBrains Mono', monospace";
-const FB = "'Manrope', sans-serif";
+const FM = "var(--sk-font)";
+const FB = "var(--sk-font)";
 
 interface Variant { id: string; label: string; stock: number }
 interface Product {
@@ -30,20 +30,20 @@ interface Props { clubId?: string; getToken: () => Promise<string | null>; isDar
  */
 export default function MerchandiseManager({ getToken, isDark }: Props) {
   const [tab, setTab] = useState<"products" | "orders">("products");
-  const card = { background: isDark ? "rgba(255,255,255,0.015)" : "#ffffff", border: isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.08)" } as const;
-  const text = isDark ? "#fff" : "#1e1b26";
-  const sub = isDark ? "#94a3b8" : "#64748b";
+  const card = { background: "var(--sk-surface)", border: "1px solid var(--sk-line)" } as const;
+  const text = "var(--sk-fg)";
+  const sub = "var(--sk-muted)";
 
   return (
     <div className="p-4 sm:p-8 space-y-6" style={{ fontFamily: FB }}>
       <div>
-        <p className="text-[11px] tracking-[0.5em] uppercase mb-1.5" style={{ color: sub, fontFamily: FM }}>Club store</p>
+        <p className="text-[11px] tracking-normal mb-1.5" style={{ color: sub, fontFamily: FM }}>Club store</p>
         <h1 className="text-2xl md:text-3xl font-semibold" style={{ color: text }}>Merchandise</h1>
       </div>
       <div className="flex gap-2">
         {([["products", "Products", ShoppingBag], ["orders", "Orders", Package]] as const).map(([id, label, Icon]) => (
           <button key={id} onClick={() => setTab(id)} className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold cursor-pointer"
-            style={{ background: tab === id ? "#F03D4E" : "transparent", color: tab === id ? "#fff" : sub, border: tab === id ? "1px solid #F03D4E" : isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.12)" }}>
+            style={{ background: tab === id ? "var(--sk-fg)" : "var(--sk-surface)", color: tab === id ? "var(--sk-canvas)" : sub, border: tab === id ? "1px solid var(--sk-fg)" : "1px solid var(--sk-line)" }}>
             <Icon size={13} /> {label}
           </button>
         ))}
@@ -113,7 +113,7 @@ function SearchBox({ value, onChange, placeholder, isDark }: { value: string; on
       <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" />
       <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} aria-label={placeholder}
         className="w-full rounded-xl pl-9 pr-3 py-2.5 text-sm outline-none"
-        style={{ background: isDark ? "rgba(255,255,255,0.03)" : "#e9ecf2", border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.1)", color: isDark ? "#fff" : "#1e1b26" }} />
+        style={{ background: "var(--sk-raised)", border: "1px solid var(--sk-line)", color: "var(--sk-fg)" }} />
     </div>
   );
 }
@@ -139,22 +139,22 @@ function Products({ getToken, card, text, sub, isDark }: PanelProps) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
         <SearchBox value={q.searchInput} onChange={q.setSearchInput} placeholder="Search products…" isDark={isDark} />
-        <select value={state} onChange={e => setState(e.target.value)} aria-label="State" className="rounded-xl px-3 py-2.5 text-sm" style={{ background: isDark ? "#111" : "#e9ecf2", color: text, border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.1)" }}>
+        <select value={state} onChange={e => setState(e.target.value)} aria-label="State" className="rounded-xl px-3 py-2.5 text-sm" style={{ background: isDark ? "#111" : "var(--sk-raised)", color: text, border: "1px solid var(--sk-line)" }}>
           <option value="">Live and drafts</option><option value="published">Published</option><option value="unpublished">Drafts</option><option value="archived">Archived</option>
         </select>
-        <button onClick={() => setCreating(true)} className="ml-auto flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white cursor-pointer" style={{ background: "#F03D4E" }}><Plus size={14} /> New product</button>
+        <button onClick={() => setCreating(true)} className="ml-auto flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white cursor-pointer" style={{ background: "var(--sk-brand)" }}><Plus size={14} /> New product</button>
       </div>
       {notice && <p role="status" className="text-xs text-emerald-500">{notice}</p>}
-      {(error || q.error) && <p role="alert" className="text-xs text-[#F03D4E]">{error || q.error}</p>}
+      {(error || q.error) && <p role="alert" className="text-xs text-[color:var(--sk-danger)]">{error || q.error}</p>}
 
       {q.loading && q.items.length === 0 ? <p style={{ color: sub }} className="text-sm">Loading…</p> : q.items.length === 0 ? (
-        <div className="rounded-2xl p-10 text-center text-sm" style={{ ...card, color: sub }}>{q.search || state ? "No products match." : "No products yet. Create your first one."}</div>
+        <div className="rounded-xl p-10 text-center text-sm" style={{ ...card, color: sub }}>{q.search || state ? "No products match." : "No products yet. Create your first one."}</div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3" aria-busy={q.loading}>
           {q.items.map(p => (
-            <article key={p.id} className="rounded-2xl p-5 flex flex-col gap-3" style={card}>
+            <article key={p.id} className="rounded-xl p-5 flex flex-col gap-3" style={card}>
               <div className="flex gap-3">
-                <div className="w-16 h-16 rounded-xl overflow-hidden flex items-center justify-center shrink-0" style={{ background: isDark ? "#161616" : "#e9ecf2" }}>
+                <div className="w-16 h-16 rounded-xl overflow-hidden flex items-center justify-center shrink-0" style={{ background: isDark ? "#161616" : "var(--sk-raised)" }}>
                   {p.imageUrl ? <img src={p.imageUrl} alt="" className="w-full h-full object-cover" /> : <ShoppingBag size={22} style={{ color: sub }} />}
                 </div>
                 <div className="min-w-0">
@@ -164,14 +164,14 @@ function Products({ getToken, card, text, sub, isDark }: PanelProps) {
                 </div>
               </div>
               <div className="flex flex-wrap gap-1.5">
-                {p.variants.map(v => <span key={v.id} className="text-[11px] px-2 py-0.5 rounded-md border" style={{ borderColor: v.stock === 0 ? "rgba(240,61,78,0.4)" : isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.15)", color: v.stock === 0 ? "#F03D4E" : sub, fontFamily: FM }}>{v.label}: {v.stock}</span>)}
+                {p.variants.map(v => <span key={v.id} className="text-[11px] px-2 py-0.5 rounded-md border" style={{ borderColor: v.stock === 0 ? "color-mix(in srgb, var(--sk-brand) 40%, transparent)" : "var(--sk-line)", color: v.stock === 0 ? "var(--sk-brand)" : sub, fontFamily: FM }}>{v.label}: {v.stock}</span>)}
               </div>
               <div className="flex flex-wrap gap-2 mt-auto">
-                <button onClick={() => setEditing(p)} className="px-3 py-1.5 rounded-lg text-xs border cursor-pointer" style={{ color: text, borderColor: isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.15)" }}>Edit / stock</button>
-                {p.isArchived ? <button onClick={() => act(p, "restore", "Product restored.")} className="px-3 py-1.5 rounded-lg text-xs border cursor-pointer" style={{ color: text, borderColor: isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.15)" }}>Restore</button> : (
+                <button onClick={() => setEditing(p)} className="px-3 py-1.5 rounded-lg text-xs border cursor-pointer" style={{ color: text, borderColor: "var(--sk-line)" }}>Edit / stock</button>
+                {p.isArchived ? <button onClick={() => act(p, "restore", "Product restored.")} className="px-3 py-1.5 rounded-lg text-xs border cursor-pointer" style={{ color: text, borderColor: "var(--sk-line)" }}>Restore</button> : (
                   <>
-                    <button onClick={() => act(p, p.isPublished ? "unpublish" : "publish", p.isPublished ? "Unpublished." : "Published.")} className="px-3 py-1.5 rounded-lg text-xs border cursor-pointer" style={{ color: text, borderColor: isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.15)" }}>{p.isPublished ? "Unpublish" : "Publish"}</button>
-                    <button onClick={() => { if (window.confirm(`Archive "${p.name}"? It disappears from the store; existing orders are kept.`)) act(p, "archive", "Archived."); }} className="px-3 py-1.5 rounded-lg text-xs border cursor-pointer text-[#F03D4E]" style={{ borderColor: "rgba(240,61,78,0.35)" }}>Archive</button>
+                    <button onClick={() => act(p, p.isPublished ? "unpublish" : "publish", p.isPublished ? "Unpublished." : "Published.")} className="px-3 py-1.5 rounded-lg text-xs border cursor-pointer" style={{ color: text, borderColor: "var(--sk-line)" }}>{p.isPublished ? "Unpublish" : "Publish"}</button>
+                    <button onClick={() => { if (window.confirm(`Archive "${p.name}"? It disappears from the store; existing orders are kept.`)) act(p, "archive", "Archived."); }} className="px-3 py-1.5 rounded-lg text-xs border cursor-pointer text-[color:var(--sk-danger)]" style={{ borderColor: "color-mix(in srgb, var(--sk-danger) 35%, transparent)" }}>Archive</button>
                   </>
                 )}
               </div>
@@ -191,7 +191,7 @@ function ProductForm({ product, getToken, isDark, onClose, onSaved }: { product:
   const [price, setPrice] = useState(product ? String(product.pricePaise / 100) : "0");
   const [discount, setDiscount] = useState(String(product?.memberDiscountPercent ?? 0));
   const [published, setPublished] = useState(false);
-  const [variants, setVariants] = useState<Array<{ id?: string; label: string; stock: string }>>(product ? product.variants.map(v => ({ id: v.id, label: v.label, stock: String(v.stock) })) : [{ label: "Standard", stock: "10" }]);
+  const [variants, setVariants] = useState<Array<{ id?: string; label: string; stock: string }>>(product ? product.variants.map(v => ({ id: v.id, label: v.label, stock: String(v.stock) })) : ["S", "M", "L", "XL"].map(label => ({ label, stock: "10" })));
   const [image, setImage] = useState<string | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -235,18 +235,29 @@ function ProductForm({ product, getToken, isDark, onClose, onSaved }: { product:
     } catch (e) { setError(sanitizeErrorMessage(e)); } finally { setBusy(false); }
   };
 
-  const input = { background: isDark ? "rgba(255,255,255,0.03)" : "#e9ecf2", border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.1)", color: isDark ? "#fff" : "#1e1b26" } as const;
+  const input = { background: "var(--sk-raised)", border: "1px solid var(--sk-line)", color: "var(--sk-fg)" } as const;
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)" }} role="dialog" aria-modal="true" aria-label={product ? "Edit product" : "New product"}>
-      <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 rounded-3xl space-y-4" style={{ background: isDark ? "#0c0c0c" : "#f0f2f6", border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.12)", color: isDark ? "#fff" : "#1e1b26", fontFamily: FB }}>
+      <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 rounded-xl space-y-4" style={{ background: "var(--sk-surface)", border: "1px solid var(--sk-line)", color: "var(--sk-fg)", fontFamily: FB }}>
         <div className="flex items-center justify-between"><h2 className="text-xl font-bold">{product ? "Edit product" : "New product"}</h2><button onClick={onClose} aria-label="Close" className="cursor-pointer"><X size={18} /></button></div>
         <label className="block text-xs font-semibold">Name<input className="mt-1 w-full rounded-xl px-3 py-2.5 text-sm" style={input} value={name} onChange={e => setName(e.target.value)} maxLength={120} /></label>
         <label className="block text-xs font-semibold">Description<textarea className="mt-1 w-full rounded-xl px-3 py-2.5 text-sm min-h-20" style={input} value={description} onChange={e => setDescription(e.target.value)} /></label>
         <label className="block text-xs font-semibold">Price (₹)<input type="number" min={0} step="0.01" className="mt-1 w-full rounded-xl px-3 py-2.5 text-sm" style={input} value={price} onChange={e => setPrice(e.target.value)} /></label>
         <label className="block text-xs font-semibold">Member discount (%)<input type="number" min={0} max={100} step="1" aria-label="Member discount percent" className="mt-1 w-full rounded-xl px-3 py-2.5 text-sm" style={input} value={discount} onChange={e => setDiscount(e.target.value)} /><span className="block mt-1 font-normal opacity-70">Active club members get this much off. 0 = no discount.</span></label>
         <div>
-          <span className="text-xs font-semibold">Sizes and stock</span>
-          <div className="space-y-2 mt-1">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs font-semibold">Sizes / options and stock</span>
+            {!product && (
+              <div className="flex gap-1.5" role="group" aria-label="Size presets">
+                {([["Clothing (S–XXL)", ["S", "M", "L", "XL", "XXL"]], ["One size", ["One size"]]] as const).map(([name, labels]) => (
+                  <button key={name} type="button" onClick={() => setVariants(labels.map(l => ({ label: l, stock: "10" })))}
+                    className="h-7 px-2.5 rounded-md text-xs border cursor-pointer" style={{ borderColor: "var(--sk-line-strong)" }}>{name}</button>
+                ))}
+              </div>
+            )}
+          </div>
+          <p className="mt-1 text-xs opacity-70">Students choose from these when buying. Add one row per size or option.</p>
+          <div className="space-y-2 mt-2">
             {variants.map((v, i) => (
               <div key={v.id ?? i} className="flex gap-2">
                 <input aria-label="Label" placeholder="e.g. M" className="flex-1 rounded-xl px-3 py-2 text-sm" style={input} value={v.label} onChange={e => setVariants(vs => vs.map((x, j) => j === i ? { ...x, label: e.target.value } : x))} />
@@ -255,7 +266,7 @@ function ProductForm({ product, getToken, isDark, onClose, onSaved }: { product:
               </div>
             ))}
           </div>
-          <button type="button" onClick={() => setVariants(vs => [...vs, { label: "", stock: "0" }])} className="mt-2 text-xs underline cursor-pointer">+ Add size</button>
+          <button type="button" onClick={() => setVariants(vs => [...vs, { label: "", stock: "0" }])} className="mt-2 h-8 px-3 rounded-md text-xs font-medium border cursor-pointer" style={{ borderColor: "var(--sk-line-strong)" }}>+ Add size / option</button>
         </div>
         <div className="flex items-center gap-3 text-xs">
           {(image ?? product?.imageUrl) && <img src={(image ?? product?.imageUrl) as string} alt="Preview" className="w-14 h-14 rounded-xl object-cover" />}
@@ -263,10 +274,10 @@ function ProductForm({ product, getToken, isDark, onClose, onSaved }: { product:
           {(image ?? product?.imageUrl) && <button type="button" onClick={() => setImage(null)} className="underline cursor-pointer">Remove</button>}
         </div>
         {!product && <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={published} onChange={e => setPublished(e.target.checked)} /> Publish immediately</label>}
-        {error && <p role="alert" className="text-xs text-[#F03D4E]">{error}</p>}
+        {error && <p role="alert" className="text-xs text-[color:var(--sk-danger)]">{error}</p>}
         <div className="flex justify-end gap-3">
           <button onClick={onClose} className="px-5 py-2 text-xs rounded-full font-semibold cursor-pointer" style={{ background: isDark ? "rgba(255,255,255,0.06)" : "#e2e8f0" }}>Cancel</button>
-          <button onClick={submit} disabled={busy} className="px-5 py-2 text-xs rounded-full font-semibold text-white disabled:opacity-50 cursor-pointer" style={{ background: "#F03D4E" }}>{busy ? "Saving…" : "Save"}</button>
+          <button onClick={submit} disabled={busy} className="px-5 py-2 text-xs rounded-full font-semibold text-white disabled:opacity-50 cursor-pointer" style={{ background: "var(--sk-brand)" }}>{busy ? "Saving…" : "Save"}</button>
         </div>
       </div>
     </div>
@@ -295,30 +306,30 @@ function Orders({ getToken, card, text, sub, isDark }: PanelProps) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
         <SearchBox value={q.searchInput} onChange={q.setSearchInput} placeholder="Search product, buyer or payment ref…" isDark={isDark} />
-        <select value={status} onChange={e => setStatus(e.target.value)} aria-label="Status" className="rounded-xl px-3 py-2.5 text-sm" style={{ background: isDark ? "#111" : "#e9ecf2", color: text, border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.1)" }}>
+        <select value={status} onChange={e => setStatus(e.target.value)} aria-label="Status" className="rounded-xl px-3 py-2.5 text-sm" style={{ background: isDark ? "#111" : "var(--sk-raised)", color: text, border: "1px solid var(--sk-line)" }}>
           <option value="">Any status</option>{Object.entries(STATUS_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
       </div>
       {summary && <p className="text-xs" style={{ color: sub }}><strong style={{ color: text }}>{summary.paidOrders}</strong> paid orders · gross sales <strong style={{ color: text }}>{rupees(summary.grossSalesPaise)}</strong> (revenue before costs, not profit)</p>}
       {notice && <p role="status" className="text-xs text-emerald-500">{notice}</p>}
-      {(error || q.error) && <p role="alert" className="text-xs text-[#F03D4E]">{error || q.error}</p>}
+      {(error || q.error) && <p role="alert" className="text-xs text-[color:var(--sk-danger)]">{error || q.error}</p>}
       {q.loading && q.items.length === 0 ? <p style={{ color: sub }} className="text-sm">Loading…</p> : q.items.length === 0 ? (
-        <div className="rounded-2xl p-10 text-center text-sm" style={{ ...card, color: sub }}>{q.search || status ? "No orders match." : "No orders yet."}</div>
+        <div className="rounded-xl p-10 text-center text-sm" style={{ ...card, color: sub }}>{q.search || status ? "No orders match." : "No orders yet."}</div>
       ) : (
-        <div className="rounded-2xl overflow-x-auto" style={card}>
+        <div className="rounded-xl overflow-x-auto" style={card}>
           <table className="w-full min-w-[640px] text-sm" aria-busy={q.loading}>
-            <thead><tr className="text-left text-[11px] uppercase tracking-wider" style={{ color: sub, fontFamily: FM }}><th className="p-4">Order</th><th className="p-4">Buyer</th><th className="p-4">Total</th><th className="p-4">Payment ref.</th><th className="p-4">Status</th><th className="p-4" /></tr></thead>
+            <thead><tr className="text-left text-[11px] tracking-normal" style={{ color: sub, fontFamily: FM }}><th className="p-4">Order</th><th className="p-4">Buyer</th><th className="p-4">Total</th><th className="p-4">Payment ref.</th><th className="p-4">Status</th><th className="p-4" /></tr></thead>
             <tbody>
               {q.items.map(o => (
-                <tr key={o.id} className="border-t" style={{ borderColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.06)", color: text }}>
+                <tr key={o.id} className="border-t" style={{ borderColor: "var(--sk-line)", color: text }}>
                   <td className="p-4"><div className="font-semibold">{o.productName}</div><div className="text-xs" style={{ color: sub }}>{o.variantLabel} × {o.quantity}</div></td>
                   <td className="p-4"><div>{o.buyerName}</div><div className="text-xs" style={{ color: sub }}>{o.buyerEmail}</div></td>
                   <td className="p-4">{o.totalPaise === 0 ? "Free" : rupees(o.totalPaise)}</td>
                   <td className="p-4 font-mono text-xs">{o.transactionId ?? "—"}</td>
                   <td className="p-4 text-xs">{STATUS_LABEL[o.status]}</td>
                   <td className="p-4 text-right whitespace-nowrap">
-                    {o.status === "PAYMENT_SUBMITTED" && <button onClick={() => act(o, "verify")} className="mr-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-white cursor-pointer inline-flex items-center gap-1" style={{ background: "#F03D4E" }}><Check size={12} /> Verify</button>}
-                    {(o.status === "PAYMENT_SUBMITTED" || o.status === "PENDING_PAYMENT") && <button onClick={() => act(o, "reject")} className="px-3 py-1.5 rounded-lg text-xs border cursor-pointer text-[#F03D4E]" style={{ borderColor: "rgba(240,61,78,0.35)" }}>Reject</button>}
+                    {o.status === "PAYMENT_SUBMITTED" && <button onClick={() => act(o, "verify")} className="mr-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-white cursor-pointer inline-flex items-center gap-1" style={{ background: "var(--sk-brand)" }}><Check size={12} /> Verify</button>}
+                    {(o.status === "PAYMENT_SUBMITTED" || o.status === "PENDING_PAYMENT") && <button onClick={() => act(o, "reject")} className="px-3 py-1.5 rounded-lg text-xs border cursor-pointer text-[color:var(--sk-danger)]" style={{ borderColor: "color-mix(in srgb, var(--sk-danger) 35%, transparent)" }}>Reject</button>}
                   </td>
                 </tr>
               ))}

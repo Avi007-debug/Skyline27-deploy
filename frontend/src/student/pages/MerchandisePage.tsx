@@ -10,7 +10,7 @@ import { ErrorState, EmptyState } from '@/student/components/ui/States';
 const PAGE_SIZE = 12;
 
 export const availabilityStyle = (a: Product['availability']): { label: string; color: string } =>
-  a === 'SOLD_OUT' ? { label: 'Sold out', color: '#ef4444' } : a === 'LOW_STOCK' ? { label: 'Low stock', color: '#f59e0b' } : { label: 'In stock', color: '#22c55e' };
+  a === 'SOLD_OUT' ? { label: 'Sold out', color: 'var(--sk-danger)' } : a === 'LOW_STOCK' ? { label: 'Low stock', color: '#f59e0b' } : { label: 'In stock', color: '#22c55e' };
 
 /** Public merchandise catalogue — browsable without an account; buying needs login. */
 export default function MerchandisePage() {

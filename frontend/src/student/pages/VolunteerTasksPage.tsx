@@ -82,7 +82,7 @@ export default function VolunteerTasksPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: s.color, marginBottom: 4 }}>
                       <s.Icon size={14} /> {s.label}
                       {t.dueDate && (
-                        <span style={{ color: overdue ? '#dc2626' : 'var(--subtext)', fontWeight: overdue ? 700 : 500 }}>
+                        <span style={{ color: overdue ? 'var(--sk-danger)' : 'var(--subtext)', fontWeight: overdue ? 700 : 500 }}>
                           · {overdue ? 'Overdue, was due' : 'Due'} {new Date(t.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                         </span>
                       )}

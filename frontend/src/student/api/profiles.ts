@@ -18,11 +18,12 @@ export interface ProfileStats {
   confirmedCount: number;
   upcomingRegistrationsCount: number;
   clubsCount: number;
+  savedCount: number;
   ordersCount: number;
 }
 
 export async function fetchProfileStats(userId: string): Promise<ProfileStats> {
-  const empty: ProfileStats = { registrationsCount: 0, confirmedCount: 0, upcomingRegistrationsCount: 0, clubsCount: 0, ordersCount: 0 };
+  const empty: ProfileStats = { registrationsCount: 0, confirmedCount: 0, upcomingRegistrationsCount: 0, clubsCount: 0, savedCount: 0, ordersCount: 0 };
   try {
     const res = await apiClient.get(`/profiles/${userId}/stats`);
     const d = res.data;
@@ -31,6 +32,7 @@ export async function fetchProfileStats(userId: string): Promise<ProfileStats> {
       confirmedCount: (d.confirmedCount ?? 0) as number,
       upcomingRegistrationsCount: (d.upcomingRegistrationsCount ?? 0) as number,
       clubsCount: (d.clubsCount ?? 0) as number,
+      savedCount: (d.savedCount ?? 0) as number,
       ordersCount: (d.ordersCount ?? 0) as number,
     };
   } catch {

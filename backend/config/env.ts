@@ -47,7 +47,8 @@ export const env = {
     from: process.env.SMTP_FROM || 'SkylineOS <no-reply@skylineos.app>',
   },
   /** Minutes the campus clock is ahead of UTC; see utils/time.ts. */
-  campusUtcOffsetMinutes: parseInt(process.env.CAMPUS_UTC_OFFSET_MINUTES || '0', 10) || 0,
+  // Campus wall clock vs UTC, in minutes. Defaults to India (UTC+5:30); set 0 if the campus is on UTC.
+  campusUtcOffsetMinutes: Number.isFinite(parseInt(process.env.CAMPUS_UTC_OFFSET_MINUTES ?? '', 10)) ? parseInt(process.env.CAMPUS_UTC_OFFSET_MINUTES as string, 10) : 330,
   cronSecret: process.env.CRON_SECRET || '',
   uploadSecret: process.env.UPLOAD_SECRET || '',
 };

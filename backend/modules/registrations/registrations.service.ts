@@ -97,7 +97,12 @@ export async function joinTeam(userId: string, eventId: string, passkey: string)
     if (event.teamSizeLimit && members >= event.teamSizeLimit) throw conflict('This team is already full.');
 
     const price = await priceFor(tx, event, userId);
-    return upsertRegistration(tx, eventId, userId, { ...price, teamId: team.id });
+    const joined = await upsertRegistration(tx, eventId, userId, { ...price, teamId: team.id });
+    // A full team's join code is retired, so nobody can keep trying to join it.
+    if (event.teamSizeLimit && members + 1 >= event.teamSizeLimit) {
+      await tx.team.update({ where: { id: team.id }, data: { passkey: null } });
+    }
+    return joined;
   });
 }
 

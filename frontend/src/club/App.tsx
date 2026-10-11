@@ -17,14 +17,14 @@ import AnnouncementsManager from "./announcements/AnnouncementsManager";
 import TasksBoard from "./tasks/TasksBoard";
 import { Html5Qrcode } from "html5-qrcode";
 import { useGoogleLogin } from "@react-oauth/google";
-import { fetchMe, syncProfile, fetchEvents, fetchClubs, fetchEventRegistrations, approveRegistration, rejectRegistration, createEvent, fetchAllRegistrationsForEvents, createClub, fetchClubDashboardStats, updateClub, fetchPublicStats, clubLogin, changePassword, updateEventDeadline, updateEvent, sanitizeErrorMessage, verifyRegistrationKey, checkClubEmail, googleAuth, verifyTicketQR, forgotPassword } from "./api";
+import { fetchClubProfile, fetchMe, syncProfile, fetchEvents, fetchClubs, fetchEventRegistrations, approveRegistration, rejectRegistration, createEvent, fetchAllRegistrationsForEvents, createClub, fetchClubDashboardStats, updateClub, fetchPublicStats, clubLogin, changePassword, updateEventDeadline, updateEvent, sanitizeErrorMessage, verifyRegistrationKey, checkClubEmail, googleAuth, verifyTicketQR, forgotPassword } from "./api";
 import confetti from "canvas-confetti";
 import { useTheme, ThemeToggle } from "../shared/theme";
 
-const FC = "'Playfair Display', serif";
-const F_LOGO = "'Cinzel', serif";
-const FM = "'JetBrains Mono', monospace";
-const FB = "'Manrope', sans-serif";
+const FC = "var(--sk-font)";
+const F_LOGO = "var(--sk-font)";
+const FM = "var(--sk-font)";
+const FB = "var(--sk-font)";
 
 export type AuthTab = "login" | "register";
 
@@ -95,7 +95,7 @@ function LiveDot() {
   return (
     <span className="relative flex h-2 w-2 items-center justify-center flex-shrink-0">
       <span
-        className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"
+        className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[color:var(--sk-danger)] opacity-75"
         style={{
           willChange: "transform, opacity",
           transform: "translateZ(0)",
@@ -103,7 +103,7 @@ function LiveDot() {
         }}
       />
       <span
-        className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500 shadow-[0_0_8px_#f03d4e]"
+        className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[color:var(--sk-danger)] shadow-[0_0_8px_var(--sk-brand)]"
         style={{ transform: "translateZ(0)" }}
       />
     </span>
@@ -114,7 +114,7 @@ function LiveTag({ size = "normal" }: { size?: "normal" | "large" }) {
   if (size === "large") {
     return (
       <span
-        className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.25em] uppercase text-red-400 px-1 py-0.5"
+        className="inline-flex items-center gap-2 text-[11px] font-bold tracking-normal text-[color:var(--sk-danger)] px-1 py-0.5"
         style={{ fontFamily: FM, transform: "translateZ(0)" }}
       >
         <LiveDot />
@@ -124,7 +124,7 @@ function LiveTag({ size = "normal" }: { size?: "normal" | "large" }) {
   }
   return (
     <span
-      className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-wider uppercase text-red-400 px-1 py-0.5"
+      className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-normal text-[color:var(--sk-danger)] px-1 py-0.5"
       style={{ fontFamily: FM, transform: "translateZ(0)" }}
     >
       <LiveDot />
@@ -353,9 +353,9 @@ function useEvents() {
 }
 
 const QUICK_ACTIONS = [
-  { id: "create",   icon: Plus,     label: "Create Event",        desc: "Launch a new event in minutes" },
-  { id: "settings", icon: Settings, label: "Update Club Profile", desc: "Edit club info, UPI ID & security" },
-  { id: "events",   icon: Users,    label: "Manage Teams",        desc: "Oversee team registrations per event" },
+  { id: "create",   icon: Plus,     label: "Create event",        desc: "Set up registration in a few steps" },
+  { id: "settings", icon: Settings, label: "Club profile",        desc: "Logo, UPI ID and sign-in details" },
+  { id: "members",  icon: Users,    label: "Members",             desc: "Verify dues and see who has joined" },
 ];
 const FEATURES = [
   { icon: Calendar, title: "Liquid Event Creation", desc: "Craft events with a fluid step-by-step builder. From concept to live in under two minutes."      },
@@ -383,27 +383,14 @@ function AuthInput({ label, type, placeholder, value, onChange }: {
   onChange: (v: string) => void;
 }) {
   return (
-    <div className="space-y-1.5">
-      <label className="text-[11px] tracking-[0.4em] uppercase block" style={{ color: "#f9fafb", fontFamily: FM }}>
-        {label}
-      </label>
+    <label className="block space-y-1.5">
+      <span className="block text-sm font-medium text-[color:var(--sk-fg)]">{label}</span>
       <input
         type={type} placeholder={placeholder} value={value}
         onChange={e => onChange(e.target.value)}
-        className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all duration-300"
-        style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", fontFamily: FB }}
-        onFocus={e => {
-          e.currentTarget.style.borderColor = "rgba(255,255,255,0.22)";
-          e.currentTarget.style.background  = "rgba(255,255,255,0.06)";
-          e.currentTarget.style.boxShadow   = "0 0 0 3px rgba(255,255,255,0.03), 0 0 20px rgba(255,255,255,0.03)";
-        }}
-        onBlur={e => {
-          e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
-          e.currentTarget.style.background  = "rgba(255,255,255,0.03)";
-          e.currentTarget.style.boxShadow   = "none";
-        }}
+        className="w-full h-10 rounded-lg px-3 text-sm outline-none transition-colors border border-[color:var(--sk-line-strong)] bg-[color:var(--sk-surface)] text-[color:var(--sk-fg)] placeholder:text-[color:var(--sk-faint)] focus:border-[color:var(--sk-fg)]"
       />
-    </div>
+    </label>
   );
 }
 
@@ -587,66 +574,66 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
         className="fixed inset-0 z-20 flex items-center justify-center p-6"
-        style={{ background: isDark ? "rgba(5,5,5,0.97)" : "#ffffff", backdropFilter: "blur(10px)" }}
+        style={{ background: "var(--sk-canvas)", backdropFilter: "blur(10px)" }}
       >
         <button onClick={onBack}
           className="absolute top-8 left-8 flex items-center gap-2 text-sm transition-all duration-300"
-          style={{ color: isDark ? "#999" : "#1e1b26", fontFamily: FB }}
-          onMouseEnter={e => (e.currentTarget.style.color = isDark ? "#eee" : "#F03D4E")}
-          onMouseLeave={e => (e.currentTarget.style.color = isDark ? "#999" : "#1e1b26")}
+          style={{ color: isDark ? "#999" : "var(--sk-fg)", fontFamily: FB }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--sk-fg)')}
+          onMouseLeave={e => (e.currentTarget.style.color = isDark ? "#999" : "var(--sk-fg)")}
         ><ChevronLeft size={14} /> Back</button>
 
         <div className="absolute top-8 right-8">
           <ThemeToggle />
         </div>
 
-        <div className="w-full max-w-md p-8 md:p-10 rounded-3xl" style={{
-          background: isDark ? "rgba(255,255,255,0.015)" : "#f0f2f6",
-          border: isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.08)",
+        <div className="w-full max-w-md p-8 md:p-10 rounded-xl" style={{
+          background: "var(--sk-surface)",
+          border: "1px solid var(--sk-line)",
           boxShadow: isDark ? "none" : "0 20px 40px -15px rgba(0,0,0,0.06)",
           backdropFilter: "blur(24px)"
         }}>
           <div className="flex flex-col items-center mb-8">
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5" style={{ background: "rgba(240,61,78,0.1)", border: "1px solid rgba(240,61,78,0.2)" }}>
-              <Key size={24} className="text-[#F03D4E]" />
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-5" style={{ background: "var(--sk-surface)", border: "1px solid var(--sk-line-strong)" }}>
+              <Key size={24} className="text-[color:var(--sk-fg)]" />
             </div>
-            <h2 className="text-2xl font-bold text-center" style={{ fontFamily: FC, color: isDark ? "#ffffff" : "#1e1b26" }}>Authorization Required</h2>
+            <h2 className="text-2xl font-bold text-center" style={{ fontFamily: FC, color: "var(--sk-fg)" }}>Authorization Required</h2>
           </div>
 
           <form noValidate onSubmit={handleVerifyKey} className="space-y-6">
             <div className="space-y-1.5">
-              <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Authorization Key</label>
+              <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Authorization Key</label>
               <input
                 type="text"
                 placeholder="SKYLINE-XXXX-XXXX"
                 autoFocus
-                className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all uppercase tracking-widest"
+                className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all tracking-normal"
                 style={{
-                  background: isDark ? "rgba(255,255,255,0.02)" : "#e4e7ee",
-                  border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.12)",
-                  color: isDark ? "#ffffff" : "#1e1b26",
+                  background: "var(--sk-surface)",
+                  border: "1px solid var(--sk-line-strong)",
+                  color: "var(--sk-fg)",
                   fontFamily: FM
                 }}
                 value={registrationKey}
                 onChange={e => { setRegistrationKey(e.target.value); if (error) setError(null); }}
-                onFocus={e => (e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.3)" : "#F03D4E")}
+                onFocus={e => (e.currentTarget.style.borderColor = "var(--sk-fg)")}
                 onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
               />
             </div>
 
             {error && (
-              <p className="text-xs text-[#F03D4E] font-medium" style={{ fontFamily: FB }}>{error}</p>
+              <p className="text-xs text-[color:var(--sk-danger)] font-medium" style={{ fontFamily: FB }}>{error}</p>
             )}
 
             <motion.button
               type="submit"
               disabled={verifyingKey}
               whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-              className="w-full flex items-center justify-center gap-2 py-3 bg-[#F03D4E] hover:bg-[#d63545] text-white text-sm font-semibold rounded-xl transition-all duration-300 disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 py-3 bg-[color:var(--sk-fg)] hover:opacity-90 text-[color:var(--sk-canvas)] text-sm font-semibold rounded-xl transition-all duration-300 disabled:opacity-50"
               style={{ fontFamily: FB }}
             >
               {verifyingKey ? (
-                <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                <div className="w-5 h-5 rounded-full border-2 border-[color:var(--sk-canvas)] border-t-transparent animate-spin" />
               ) : (
                 <><Shield size={14} /> Verify & Continue</>
               )}
@@ -680,13 +667,13 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
       className="fixed inset-0 z-20 flex items-center justify-center p-6"
-      style={{ background: isDark ? "rgba(5,5,5,0.97)" : "#f0f2f6", backdropFilter: "blur(10px)" }}
+      style={{ background: "var(--sk-canvas)", backdropFilter: "blur(10px)" }}
     >
       <button onClick={onBack}
         className="absolute top-8 left-8 flex items-center gap-2 text-sm transition-all duration-300"
-        style={{ color: isDark ? "#d1d5db" : "#1e1b26", fontFamily: FB }}
-        onMouseEnter={e => (e.currentTarget.style.color = isDark ? "#eeeeee" : "#F03D4E")}
-        onMouseLeave={e => (e.currentTarget.style.color = isDark ? "#999999" : "#1e1b26")}
+        style={{ color: "var(--sk-fg)", fontFamily: FB }}
+        onMouseEnter={e => (e.currentTarget.style.color = 'var(--sk-fg)')}
+        onMouseLeave={e => (e.currentTarget.style.color = isDark ? "#999999" : "var(--sk-fg)")}
       ><ChevronLeft size={14} /> Back</button>
 
       <div className="absolute top-8 right-8">
@@ -696,8 +683,8 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
       <div className="flex flex-col items-center gap-6 w-full max-w-md">
 
         <div className="flex gap-1 p-1 rounded-xl w-full relative" style={{
-          background: isDark ? "rgba(255,255,255,0.025)" : "rgba(0,0,0,0.05)",
-          border: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)"
+          background: "var(--sk-surface)",
+          border: "1px solid var(--sk-line-strong)"
         }}>
           {(["login", "register"] as AuthTab[]).map(t => (
             <button key={t} onClick={() => { setEmail(""); setPassword(""); setClubName(""); setError(null); setShowPassword(false); setRegistrationKey(""); setKeyVerified(false); onTabChange(t); }}
@@ -707,13 +694,13 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
               {tab === t && (
                 <motion.div
                   layoutId="activeAuthTabPill"
-                  className={`absolute inset-0 rounded-lg ${isDark ? "bg-white shadow-sm" : "bg-white shadow-sm border border-black/5"}`}
+                  className={`absolute inset-0 rounded-lg ${"bg-[color:var(--sk-surface)] shadow-sm border border-[color:var(--sk-line)]"}`}
                   transition={{ type: "spring", stiffness: 220, damping: 24 }}
                 />
               )}
               <span className={`relative z-10 transition-colors duration-300 font-semibold ${
                 tab === t
-                  ? (isDark ? "text-black" : "text-[#1e1b26]")
+                  ? (isDark ? "text-black" : "text-[color:var(--sk-fg)]")
                   : (isDark ? "text-[#aaaaaa]" : "text-slate-500 hover:text-slate-900")
               }`}>
                 {t === "login" ? "Sign In" : "Sign Up"}
@@ -722,9 +709,9 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
           ))}
         </div>
 
-        <div className="w-full p-8 md:p-10 rounded-3xl overflow-hidden" style={{
-          background: isDark ? "rgba(255,255,255,0.015)" : "#f0f2f6",
-          border: isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.08)",
+        <div className="w-full p-8 md:p-10 rounded-xl overflow-hidden" style={{
+          background: "var(--sk-surface)",
+          border: "1px solid var(--sk-line)",
           boxShadow: isDark ? "none" : "0 20px 40px -15px rgba(0,0,0,0.06)",
           backdropFilter: "blur(24px)"
         }}>
@@ -737,10 +724,10 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
               transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
             >
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: FC, color: isDark ? "#ffffff" : "#1e1b26" }}>
+                <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: FC, color: "var(--sk-fg)" }}>
                   {tab === "login" ? "Sign In to Club" : "Register Your Club"}
                 </h2>
-                <p className="text-xs" style={{ fontFamily: FB, color: isDark ? "#d1d5db" : "#64748b" }}>
+                <p className="text-xs" style={{ fontFamily: FB, color: "var(--sk-muted)" }}>
                   {tab === "login" ? "Access your club dashboard" : "Welcome! Please fill in the details to get started."}
                 </p>
               </div>
@@ -748,7 +735,7 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
               <form noValidate onSubmit={tab === "login" ? handleSignIn : handleSignUp} className="space-y-6">
                 {tab === "register" && (
                   <div className="space-y-1.5">
-                    <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Club Name</label>
+                    <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Club Name</label>
                     <input 
                       type="text" 
                       placeholder="Enter club name" 
@@ -762,7 +749,7 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
                 )}
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Email ID</label>
+                  <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Email ID</label>
                   <input 
                     type="email" 
                     placeholder="Enter email address" 
@@ -775,7 +762,7 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
                 </div>
 
                 <div className="space-y-1.5 relative">
-                  <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Password</label>
+                  <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Password</label>
                   <div className="relative">
                     <input 
                       type={showPassword ? "text" : "password"} 
@@ -803,7 +790,7 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
                     <button
                       type="button"
                       onClick={() => { setShowForgotModal(true); setForgotEmail(email); setForgotDone(false); setForgotError(null); }}
-                      className="text-[11px] text-white/40 hover:text-[#F03D4E] transition-colors cursor-pointer underline-offset-2"
+                      className="text-[11px] text-white/40 hover:text-[color:var(--sk-fg)] transition-colors cursor-pointer underline-offset-2"
                       style={{ fontFamily: FB }}
                     >
                       Forgot password?
@@ -812,27 +799,29 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
                 )}
 
                 {error && (
-                  <p className="text-xs text-[#F03D4E] text-center font-medium" style={{ fontFamily: FB }}>{error}</p>
+                  <p className="text-xs text-[color:var(--sk-danger)] text-center font-medium" style={{ fontFamily: FB }}>{error}</p>
                 )}
 
                 <motion.button 
                   type="submit"
                   disabled={loading}
                   whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                  className="w-full flex items-center justify-center gap-2 py-3 bg-[#F03D4E] hover:bg-[#d63545] text-white text-sm font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 py-3 bg-[color:var(--sk-fg)] hover:opacity-90 text-[color:var(--sk-canvas)] text-sm font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 cursor-pointer"
                   style={{ fontFamily: FB }}
                 >
                   {loading ? (
-                    <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                    <div className="w-5 h-5 rounded-full border-2 border-[color:var(--sk-canvas)] border-t-transparent animate-spin" />
                   ) : (
                     <>Continue <ArrowRight size={14} /></>
                   )}
                 </motion.button>
               </form>
 
+              {/* Google is for signing in only; registering a club is manual entry after the key check. */}
+              {tab === "login" && (<>
               <div className="flex items-center gap-4 my-6">
                 <div className={`h-[1px] flex-1 ${isDark ? "bg-white/10" : "bg-black/10"}`} />
-                <span className={`text-[11px] uppercase tracking-widest ${isDark ? "text-white/55" : "text-[#64748b]"}`} style={{ fontFamily: FM }}>or</span>
+                <span className={`text-[11px] tracking-normal ${isDark ? "text-white/55" : "text-[color:var(--sk-muted)]"}`} style={{ fontFamily: FM }}>or</span>
                 <div className={`h-[1px] flex-1 ${isDark ? "bg-white/10" : "bg-black/10"}`} />
               </div>
 
@@ -843,7 +832,7 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
                 className={`cursor-pointer w-full flex items-center justify-center gap-3 py-3 text-sm font-semibold rounded-xl transition-all duration-300 ${
                   isDark
                     ? "bg-white/5 border border-white/10 hover:bg-white/10 text-white"
-                    : "bg-white/70 border border-slate-300 hover:bg-black/5 text-[#1e1b26] shadow-sm"
+                    : "bg-[color:var(--sk-surface)]/70 border border-slate-300 hover:bg-black/5 text-[color:var(--sk-fg)] shadow-sm"
                 }`}
                 style={{ fontFamily: FB }}
               >
@@ -855,6 +844,7 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
                 </svg>
                 Continue with Google
               </motion.button>
+              </>)}
 
               {tab === "login" && (
                 <p className="text-center text-xs text-[#999999] mt-6" style={{ fontFamily: FB }}>
@@ -871,7 +861,7 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
                       setKeyVerified(false);
                       onTabChange("register");
                     }}
-                    className="text-[#F03D4E] hover:text-[#d63545] font-semibold transition-colors cursor-pointer underline underline-offset-2"
+                    className="text-[color:var(--sk-fg)] hover:opacity-80 font-semibold transition-opacity cursor-pointer underline underline-offset-2"
                   >
                     Sign Up
                   </button>
@@ -899,7 +889,7 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               transition={{ type: "spring", stiffness: 380, damping: 28 }}
-              className="w-full max-w-sm p-8 rounded-3xl relative"
+              className="w-full max-w-sm p-8 rounded-xl relative"
               style={{ background: "#0c0c12", border: "1px solid rgba(255,255,255,0.09)" }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -928,15 +918,15 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
               ) : (
                 <>
                   <div className="mb-6">
-                    <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-4">
-                      <Mail size={22} className="text-[#F03D4E]" />
+                    <div className="w-12 h-12 rounded-xl bg-[color:var(--sk-danger-soft)] border border-[color:var(--sk-danger)]/30 flex items-center justify-center mb-4">
+                      <Mail size={22} className="text-[color:var(--sk-fg)]" />
                     </div>
                     <h3 className="text-xl font-bold text-white mb-1" style={{ fontFamily: FC }}>Reset password</h3>
                     <p className="text-xs text-white/40" style={{ fontFamily: FB }}>Enter your email address to receive a secure reset link.</p>
                   </div>
                   <form onSubmit={handleForgotPassword} className="space-y-4">
                     <div>
-                      <label className="text-[10px] uppercase tracking-widest text-white/40 block mb-1.5" style={{ fontFamily: FM }}>Email address</label>
+                      <label className="text-[10px] tracking-normal text-white/40 block mb-1.5" style={{ fontFamily: FM }}>Email address</label>
                       <input
                         type="email"
                         value={forgotEmail}
@@ -945,20 +935,20 @@ export function AuthPage({ tab, onTabChange, onBack, onLocalSignIn, initialError
                         autoFocus
                         className="w-full px-4 py-2.5 rounded-xl text-sm text-white outline-none transition-all"
                         style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }}
-                        onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(240,61,78,0.5)")}
+                        onFocus={(e) => (e.currentTarget.style.borderColor = "color-mix(in srgb, var(--sk-brand) 50%, transparent)")}
                         onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)")}
                       />
                     </div>
-                    {forgotError && <p className="text-xs text-red-400" style={{ fontFamily: FB }}>{forgotError}</p>}
+                    {forgotError && <p className="text-xs text-[color:var(--sk-danger)]" style={{ fontFamily: FB }}>{forgotError}</p>}
                     <motion.button
                       type="submit"
                       disabled={forgotLoading}
                       whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                      className="w-full py-3 rounded-xl bg-[#F03D4E] hover:bg-[#d63545] text-white text-sm font-semibold transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                      className="w-full py-3 rounded-xl bg-[color:var(--sk-fg)] hover:opacity-90 text-[color:var(--sk-canvas)] text-sm font-semibold transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
                       style={{ fontFamily: FB }}
                     >
                       {forgotLoading
-                        ? <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                        ? <div className="w-4 h-4 rounded-full border-2 border-[color:var(--sk-canvas)] border-t-transparent animate-spin" />
                         : <><Mail size={14} /> Send Reset Link</>
                       }
                     </motion.button>
@@ -1121,16 +1111,16 @@ function TicketScannerModal({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.2 }}
-      className="rounded-2xl border border-[#F03D4E]/20 bg-[#F03D4E]/[0.03] overflow-hidden"
+      className="rounded-xl border border-[color:var(--sk-brand)]/20 bg-[color:var(--sk-brand)]/[0.03] overflow-hidden"
     >
       
       <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-200 dark:border-white/[0.06]">
         <div className="flex items-center gap-2.5">
-          <Camera size={16} className="text-[#F03D4E]" />
-          <span className="text-sm font-semibold text-[#1e1b26] dark:text-white" style={{ fontFamily: FB }}>
+          <Camera size={16} className="text-[color:var(--sk-brand)]" />
+          <span className="text-sm font-semibold text-[color:var(--sk-fg)] dark:text-white" style={{ fontFamily: FB }}>
             Scan Ticket QR
           </span>
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 font-bold uppercase tracking-wider" style={{ fontFamily: FM }}>
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 font-bold tracking-normal" style={{ fontFamily: FM }}>
             Live
           </span>
         </div>
@@ -1156,15 +1146,15 @@ function TicketScannerModal({
                   </svg>
                 </div>
                 <div>
-                  <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-amber-600 dark:text-amber-400" style={{ fontFamily: FM }}>
+                  <span className="text-[10px] tracking-normal font-bold text-amber-600 dark:text-amber-400" style={{ fontFamily: FM }}>
                     ALREADY CHECKED IN
                   </span>
-                  <p className="text-sm font-semibold text-[#1e1b26] dark:text-white mt-0.5" style={{ fontFamily: FB }}>
+                  <p className="text-sm font-semibold text-[color:var(--sk-fg)] dark:text-white mt-0.5" style={{ fontFamily: FB }}>
                     {alreadyCheckedIn}
                   </p>
                   {scanBadge && (
                     <span
-                      className={`inline-block mt-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold tracking-wider ${scanBadge.isMember ? "bg-emerald-600 text-white" : "bg-slate-500/20 text-slate-700 dark:text-slate-200 border border-slate-400/40"}`}
+                      className={`inline-block mt-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold tracking-normal ${scanBadge.isMember ? "bg-emerald-600 text-white" : "bg-slate-500/20 text-slate-700 dark:text-slate-200 border border-slate-400/40"}`}
                       style={{ fontFamily: FM }}
                       data-testid="member-badge"
                     >
@@ -1187,7 +1177,7 @@ function TicketScannerModal({
             
             <div className="flex-shrink-0 flex flex-col items-center mx-auto lg:mx-0">
               <div
-                className="relative rounded-2xl overflow-hidden bg-black border border-white/10 shadow-xl"
+                className="relative rounded-xl overflow-hidden bg-black border border-white/10 shadow-xl"
                 style={{ width: 280, height: 280 }}
               >
                 <div id="qr-reader-canvas" className="w-full h-full" />
@@ -1195,7 +1185,7 @@ function TicketScannerModal({
                 {/* Professional Viewfinder Overlay */}
                 <div className="absolute inset-0 pointer-events-none z-10 p-4">
                   {/* Subtle Laser Scanline */}
-                  <div className="absolute inset-x-4 h-[1.5px] bg-gradient-to-r from-transparent via-[#F03D4E] to-transparent shadow-[0_0_8px_#F03D4E] animate-scanlaser pointer-events-none opacity-80" />
+                  <div className="absolute inset-x-4 h-[1.5px] bg-gradient-to-r from-transparent via-[color:var(--sk-brand)] to-transparent shadow-[0_0_8px_var(--sk-brand)] animate-scanlaser pointer-events-none opacity-80" />
 
                   {/* Elegant Corner Guides */}
                   <div className="absolute top-4 left-4 w-5 h-5 border-t border-l border-white/40 rounded-tl" />
@@ -1206,7 +1196,7 @@ function TicketScannerModal({
 
                 {loading && (
                   <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
-                    <div className="w-7 h-7 border-2 border-[#F03D4E] border-t-transparent rounded-full animate-spin" />
+                    <div className="w-7 h-7 border-2 border-[color:var(--sk-brand)] border-t-transparent rounded-full animate-spin" />
                     <p className="text-xs text-white/80 font-medium" style={{ fontFamily: FB }}>Verifying Ticket...</p>
                   </div>
                 )}
@@ -1219,7 +1209,7 @@ function TicketScannerModal({
             {/* Manual Entry */}
             <div className="flex-1 flex flex-col justify-center gap-4 w-full text-center lg:text-left">
               <div className="space-y-1">
-                <p className="text-xs font-semibold text-slate-700 dark:text-white/60 uppercase tracking-wider" style={{ fontFamily: FM }}>
+                <p className="text-xs font-semibold text-slate-700 dark:text-white/60 tracking-normal" style={{ fontFamily: FM }}>
                   Or enter Ticket ID or Team Passkey
                 </p>
                 <p className="text-[11px] text-slate-500 dark:text-white/30" style={{ fontFamily: FB }}>
@@ -1235,29 +1225,29 @@ function TicketScannerModal({
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleProcessTicket(manualCode);
                   }}
-                  className="flex-1 rounded-xl px-4 py-2.5 text-xs text-[#1e1b26] dark:text-white bg-[#e4e7ee] dark:bg-white/5 border border-slate-300 dark:border-white/10 outline-none focus:border-[#F03D4E]/50 transition-all"
+                  className="flex-1 rounded-xl px-4 py-2.5 text-xs text-[color:var(--sk-fg)] dark:text-white bg-[color:var(--sk-raised)] dark:bg-white/5 border border-slate-300 dark:border-white/10 outline-none focus:border-[color:var(--sk-brand)]/50 transition-all"
                   style={{ fontFamily: FB }}
                 />
                 <button
                   onClick={() => handleProcessTicket(manualCode)}
                   disabled={loading || !manualCode.trim()}
-                  className="px-4 py-2.5 rounded-xl bg-[#F03D4E] text-white text-xs font-semibold hover:bg-[#d63545] transition-all disabled:opacity-40 cursor-pointer flex-shrink-0 shadow-sm"
+                  className="px-4 py-2.5 rounded-xl bg-[color:var(--sk-brand)] text-white text-xs font-semibold hover:bg-[color:var(--sk-brand-hover)] transition-all disabled:opacity-40 cursor-pointer flex-shrink-0 shadow-sm"
                   style={{ fontFamily: FB }}
                 >
                   Verify
                 </button>
               </div>
               {scanError && (
-                <div className="p-3.5 rounded-xl bg-[#F03D4E]/10 border border-[#F03D4E]/20 flex items-center justify-between gap-3 text-left">
+                <div className="p-3.5 rounded-xl bg-[color:var(--sk-brand)]/10 border border-[color:var(--sk-brand)]/20 flex items-center justify-between gap-3 text-left">
                   <div className="flex items-start gap-2.5 flex-1 min-w-0">
-                    <AlertTriangle size={16} className="text-[#F03D4E] shrink-0 mt-0.5" />
-                    <p className="text-xs text-red-600 dark:text-[#ff949d] font-medium leading-relaxed" style={{ fontFamily: FB }}>
+                    <AlertTriangle size={16} className="text-[color:var(--sk-brand)] shrink-0 mt-0.5" />
+                    <p className="text-xs text-[color:var(--sk-danger)] dark:text-[#ff949d] font-medium leading-relaxed" style={{ fontFamily: FB }}>
                       {scanError}
                     </p>
                   </div>
                   <button
                     onClick={() => { setScanError(null); setManualCode(""); }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F03D4E] text-white text-xs font-semibold hover:bg-[#d63545] transition-all cursor-pointer flex-shrink-0 shadow-sm"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[color:var(--sk-brand)] text-white text-xs font-semibold hover:bg-[color:var(--sk-brand-hover)] transition-all cursor-pointer flex-shrink-0 shadow-sm"
                     style={{ fontFamily: FB }}
                   >
                     <RotateCcw size={12} />
@@ -1278,16 +1268,16 @@ function TicketScannerModal({
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-emerald-700 dark:text-emerald-400" style={{ fontFamily: FM }}>
+                    <span className="text-[10px] tracking-normal font-bold text-emerald-700 dark:text-emerald-400" style={{ fontFamily: FM }}>
                       TICKET VERIFIED · {scanResult.status}
                     </span>
                   </div>
-                  <p className="text-sm font-semibold text-[#1e1b26] dark:text-white mt-0.5" style={{ fontFamily: FB }}>
+                  <p className="text-sm font-semibold text-[color:var(--sk-fg)] dark:text-white mt-0.5" style={{ fontFamily: FB }}>
                     {scanResult.event.title}
                   </p>
                   {scanBadge && (
                     <span
-                      className={`inline-block mt-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold tracking-wider ${scanBadge.isMember ? "bg-emerald-600 text-white" : "bg-slate-500/20 text-slate-700 dark:text-slate-200 border border-slate-400/40"}`}
+                      className={`inline-block mt-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold tracking-normal ${scanBadge.isMember ? "bg-emerald-600 text-white" : "bg-slate-500/20 text-slate-700 dark:text-slate-200 border border-slate-400/40"}`}
                       style={{ fontFamily: FM }}
                       data-testid="member-badge"
                     >
@@ -1309,31 +1299,31 @@ function TicketScannerModal({
             {scanResult.attendee && (
               <div className="p-5 rounded-xl bg-slate-100 dark:bg-white/[0.02] border border-slate-200 dark:border-white/10 space-y-3">
                 <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/5 pb-2.5">
-                  <span className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold" style={{ fontFamily: FM }}>
+                  <span className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold" style={{ fontFamily: FM }}>
                     Scanned Attendee Details
                   </span>
                   {scanResult.team && (
                     <span className="text-xs text-slate-600 dark:text-white/70 font-mono" style={{ fontFamily: FB }}>
-                      Team: <strong className="text-[#1e1b26] dark:text-white">{scanResult.team.name}</strong> (Passkey: <span className="text-emerald-700 dark:text-emerald-400 font-bold">{scanResult.team.passkey}</span>)
+                      Team: <strong className="text-[color:var(--sk-fg)] dark:text-white">{scanResult.team.name}</strong> (Passkey: <span className="text-emerald-700 dark:text-emerald-400 font-bold">{scanResult.team.passkey}</span>)
                     </span>
                   )}
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs text-slate-600 dark:text-[#94a3b8]" style={{ fontFamily: FB }}>
                   <div>
                     <span className="text-[10px] uppercase text-slate-500 dark:text-[#666] block mb-0.5" style={{ fontFamily: FM }}>Full Name</span>
-                    <span className="text-[#1e1b26] dark:text-white font-medium text-sm">{scanResult.attendee.name}</span>
+                    <span className="text-[color:var(--sk-fg)] dark:text-white font-medium text-sm">{scanResult.attendee.name}</span>
                   </div>
                   <div>
                     <span className="text-[10px] uppercase text-slate-500 dark:text-[#666] block mb-0.5" style={{ fontFamily: FM }}>USN</span>
-                    <span className="text-[#1e1b26] dark:text-white font-mono">{scanResult.attendee.usn || '—'}</span>
+                    <span className="text-[color:var(--sk-fg)] dark:text-white font-mono">{scanResult.attendee.usn || '—'}</span>
                   </div>
                   <div>
                     <span className="text-[10px] uppercase text-slate-500 dark:text-[#666] block mb-0.5" style={{ fontFamily: FM }}>Email</span>
-                    <span className="text-[#1e1b26] dark:text-white font-mono text-[11px]">{scanResult.attendee.email || '—'}</span>
+                    <span className="text-[color:var(--sk-fg)] dark:text-white font-mono text-[11px]">{scanResult.attendee.email || '—'}</span>
                   </div>
                   <div>
                     <span className="text-[10px] uppercase text-slate-500 dark:text-[#666] block mb-0.5" style={{ fontFamily: FM }}>Branch / Sem</span>
-                    <span className="text-[#1e1b26] dark:text-white">
+                    <span className="text-[color:var(--sk-fg)] dark:text-white">
                       {scanResult.attendee.branch || '—'}
                       {scanResult.attendee.sem ? `, Sem ${scanResult.attendee.sem}` : ''}
                     </span>
@@ -1346,7 +1336,7 @@ function TicketScannerModal({
             {scanResult.team && scanResult.team.members.length > 0 && (
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>
+                  <h4 className="text-xs font-semibold tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>
                     Team Roster ({scanResult.team.members.length} members checked-in)
                   </h4>
                 </div>
@@ -1364,10 +1354,10 @@ function TicketScannerModal({
                     <tbody className="divide-y divide-slate-200 dark:divide-white/5 text-slate-800 dark:text-white/80" style={{ fontFamily: FB }}>
                       {scanResult.team.members.map((member: any) => (
                         <tr key={member.id} className="hover:bg-slate-100/60 dark:hover:bg-white/[0.02] transition-colors">
-                          <td className="p-3 font-semibold text-[#1e1b26] dark:text-white flex items-center gap-2">
+                          <td className="p-3 font-semibold text-[color:var(--sk-fg)] dark:text-white flex items-center gap-2">
                             {member.name}
                             {member.isLeader && (
-                              <span className="text-[10px] text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 font-bold uppercase tracking-wider" style={{ fontFamily: FM }}>Leader</span>
+                              <span className="text-[10px] text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 font-bold tracking-normal" style={{ fontFamily: FM }}>Leader</span>
                             )}
                           </td>
                           <td className="p-3 font-mono text-slate-600 dark:text-[#94a3b8]">{member.usn || '—'}</td>
@@ -1605,36 +1595,36 @@ function EventsPage({
         {(showParticipants || showTeams || showApprovals) ? (
           <button onClick={() => { setShowParticipants(false); setShowTeams(false); setShowApprovals(false); }}
             className="flex items-center gap-2 text-sm transition-all duration-300 cursor-pointer"
-            style={{ color: isDark ? "#d1d5db" : "#1e1b26", fontFamily: FB }}
-            onMouseEnter={e => (e.currentTarget.style.color = isDark ? "#eeeeee" : "#F03D4E")}
-            onMouseLeave={e => (e.currentTarget.style.color = isDark ? "#999999" : "#1e1b26")}
+            style={{ color: "var(--sk-fg)", fontFamily: FB }}
+            onMouseEnter={e => (e.currentTarget.style.color = isDark ? "#eeeeee" : "var(--sk-brand)")}
+            onMouseLeave={e => (e.currentTarget.style.color = isDark ? "#999999" : "var(--sk-fg)")}
           ><ChevronLeft size={14} /> Return to Event</button>
         ) : (
           <button onClick={() => { setSelectedEventId(null); setShowTeams(false, false); }}
             className="flex items-center gap-2 text-sm transition-all duration-300 cursor-pointer"
-            style={{ color: isDark ? "#d1d5db" : "#1e1b26", fontFamily: FB }}
-            onMouseEnter={e => (e.currentTarget.style.color = isDark ? "#eeeeee" : "#F03D4E")}
-            onMouseLeave={e => (e.currentTarget.style.color = isDark ? "#999999" : "#1e1b26")}
+            style={{ color: "var(--sk-fg)", fontFamily: FB }}
+            onMouseEnter={e => (e.currentTarget.style.color = isDark ? "#eeeeee" : "var(--sk-brand)")}
+            onMouseLeave={e => (e.currentTarget.style.color = isDark ? "#999999" : "var(--sk-fg)")}
           ><ChevronLeft size={14} /> Back to Events</button>
         )}
 
         {showTeams ? (
           <div className="mt-4">
             <div className="flex items-center justify-between mb-8">
-              <h1 className="text-[13px] tracking-[0.4em] uppercase text-slate-900 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Manage Teams ({teamsList.length})</h1>
+              <h1 className="text-[13px] tracking-normal text-slate-900 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Manage Teams ({teamsList.length})</h1>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
               {teamsList.map(team => (
-                <div key={team.id} className="p-6 rounded-2xl flex flex-col" style={{
-                  background: isDark ? "rgba(255,255,255,0.015)" : "#ffffff",
-                  border: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)",
+                <div key={team.id} className="p-6 rounded-xl flex flex-col" style={{
+                  background: "var(--sk-surface)",
+                  border: "1px solid var(--sk-line)",
                   boxShadow: isDark ? "none" : "0 2px 10px rgba(0,0,0,0.02)"
                 }}>
                   <div className="flex justify-between items-start mb-5">
                     <div>
                       <h3 className="text-slate-900 dark:text-white font-semibold text-lg leading-tight" style={{ fontFamily: FC }}>{team.name}</h3>
-                      <p className="text-[11px] text-slate-500 dark:text-[#888] font-mono mt-1 tracking-wider">PASSKEY: {team.passkey || 'Pending Payment'}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-[#888] font-mono mt-1 tracking-normal">PASSKEY: {team.passkey || 'Pending Payment'}</p>
                     </div>
                     <span className="text-[11px] bg-black/5 dark:bg-white/5 border border-black/5 dark:border-transparent px-2 py-1 rounded text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>{team.members.length} MEMBERS</span>
                   </div>
@@ -1645,7 +1635,7 @@ function EventsPage({
                           <span className="text-xs text-slate-800 dark:text-[#ddd]" style={{ fontFamily: FB }}>{m.user?.name || m.user?.usn || 'Unknown'}</span>
                           <span className="text-[11px] text-slate-500 dark:text-[#94a3b8]" style={{ fontFamily: FM }}>{m.user?.usn || m.user?.email}</span>
                         </div>
-                        <span className="text-[11px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm" style={{ 
+                        <span className="text-[11px] tracking-normal px-1.5 py-0.5 rounded-sm" style={{ 
                           color: m.status?.toLowerCase() === 'confirmed' ? '#10b981' : '#f59e0b',
                           background: m.status?.toLowerCase() === 'confirmed' ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)',
                           fontFamily: FM
@@ -1664,7 +1654,7 @@ function EventsPage({
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-[13px] tracking-[0.4em] uppercase text-slate-900 dark:text-[#f3f4f6] mb-1" style={{ fontFamily: FM }}>Registration Approval</h1>
+                <h1 className="text-[13px] tracking-normal text-slate-900 dark:text-[#f3f4f6] mb-1" style={{ fontFamily: FM }}>Registration Approval</h1>
                 <p className="text-xs text-slate-500 dark:text-[#888]" style={{ fontFamily: FB }}>{pending.length} pending · {approved.length} approved · {rejected.length} rejected</p>
               </div>
             </div>
@@ -1678,23 +1668,23 @@ function EventsPage({
 
             {/* Pending requests table */}
             <div>
-              <p className="text-[11px] tracking-[0.4em] uppercase text-slate-900 dark:text-[#f3f4f6] mb-4" style={{ fontFamily: FM }}>Pending Requests ({pending.length})</p>
+              <p className="text-[11px] tracking-normal text-slate-900 dark:text-[#f3f4f6] mb-4" style={{ fontFamily: FM }}>Pending Requests ({pending.length})</p>
               {pending.length === 0 ? (
-                <div className="p-8 rounded-xl text-center text-xs text-slate-500 dark:text-[#94a3b8]" style={{ background: isDark ? "rgba(255,255,255,0.01)" : "#ffffff", border: isDark ? "1px dashed rgba(255,255,255,0.05)" : "1px dashed rgba(0,0,0,0.12)", fontFamily: FB }}>No pending requests — you're all caught up.</div>
+                <div className="p-8 rounded-xl text-center text-xs text-slate-500 dark:text-[#94a3b8]" style={{ background: "var(--sk-surface)", border: isDark ? "1px dashed rgba(255,255,255,0.05)" : "1px dashed rgba(0,0,0,0.12)", fontFamily: FB }}>No pending requests — you're all caught up.</div>
               ) : (
-                <div className="overflow-x-auto rounded-xl border border-black/5 dark:border-white/5 bg-white dark:bg-white/[0.005] shadow-sm dark:shadow-none">
+                <div className="overflow-x-auto rounded-xl border border-black/5 dark:border-white/5 bg-[color:var(--sk-surface)] dark:bg-white/[0.005] shadow-sm dark:shadow-none">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="border-b border-black/5 dark:border-white/5" style={{ background: isDark ? "rgba(255,255,255,0.01)" : "#f8fafc" }}>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Name</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Email</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Phone</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>USN</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Branch</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Team Name</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>UTR / Payment</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Date</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6] text-left" style={{ fontFamily: FM }}>Action</th>
+                      <tr className="border-b border-black/5 dark:border-white/5" style={{ background: "var(--sk-surface)" }}>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Name</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Email</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Phone</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>USN</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Branch</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Team Name</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>UTR / Payment</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Date</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] text-left" style={{ fontFamily: FM }}>Action</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-black/5 dark:divide-white/5">
@@ -1731,7 +1721,7 @@ function EventsPage({
                                     req.transaction_id ? (
                                       <span className="select-all text-emerald-700 dark:text-[#a3e635] bg-emerald-500/10 dark:bg-white/5 px-2 py-0.5 rounded border border-emerald-500/20 dark:border-white/5 text-[11px] truncate block" title={req.transaction_id}>{req.transaction_id}</span>
                                     ) : (
-                                      <span className="text-amber-600 dark:text-[#e59866] text-[10px] uppercase tracking-wider">Pending Upload</span>
+                                      <span className="text-amber-600 dark:text-[#e59866] text-[10px] tracking-normal">Pending Upload</span>
                                     )
                                   ) : (
                                     <span className="text-slate-500 dark:text-[#94a3b8] italic text-[11px]">Member</span>
@@ -1740,7 +1730,7 @@ function EventsPage({
                                   req.transaction_id ? (
                                     <span className="select-all text-emerald-700 dark:text-[#a3e635] bg-emerald-500/10 dark:bg-white/5 px-2 py-0.5 rounded border border-emerald-500/20 dark:border-white/5 text-[11px] truncate block" title={req.transaction_id}>{req.transaction_id}</span>
                                   ) : (
-                                    <span className="text-amber-600 dark:text-[#e59866] text-[10px] uppercase tracking-wider">Pending Upload</span>
+                                    <span className="text-amber-600 dark:text-[#e59866] text-[10px] tracking-normal">Pending Upload</span>
                                   )
                                 )}
                               </td>
@@ -1767,7 +1757,7 @@ function EventsPage({
                                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all flex items-center gap-1.5 ${
                                       isEventFinished 
                                         ? 'bg-black/5 dark:bg-white/5 text-black/30 dark:text-white/30 border-black/5 dark:border-white/5 cursor-not-allowed opacity-50' 
-                                        : 'bg-[#F03D4E]/10 hover:bg-[#F03D4E]/20 text-[#F03D4E] border-[#F03D4E]/20 hover:scale-105 cursor-pointer'
+                                        : 'bg-[color:var(--sk-brand)]/10 hover:bg-[color:var(--sk-brand)]/20 text-[color:var(--sk-brand)] border-[color:var(--sk-brand)]/20 hover:scale-105 cursor-pointer'
                                     }`}
                                     style={{ fontFamily: FB }}
                                   >
@@ -1786,23 +1776,23 @@ function EventsPage({
             </div>
 
             <div>
-              <p className="text-[11px] tracking-[0.4em] uppercase text-slate-900 dark:text-[#f3f4f6] mb-4" style={{ fontFamily: FM }}>Approved ({approved.length})</p>
+              <p className="text-[11px] tracking-normal text-slate-900 dark:text-[#f3f4f6] mb-4" style={{ fontFamily: FM }}>Approved ({approved.length})</p>
               {approved.length === 0 ? (
-                <div className="p-8 rounded-xl text-center text-xs text-slate-500 dark:text-[#94a3b8]" style={{ background: isDark ? "rgba(255,255,255,0.01)" : "#ffffff", border: isDark ? "1px dashed rgba(255,255,255,0.05)" : "1px dashed rgba(0,0,0,0.12)", fontFamily: FB }}>No approved registrations yet.</div>
+                <div className="p-8 rounded-xl text-center text-xs text-slate-500 dark:text-[#94a3b8]" style={{ background: "var(--sk-surface)", border: isDark ? "1px dashed rgba(255,255,255,0.05)" : "1px dashed rgba(0,0,0,0.12)", fontFamily: FB }}>No approved registrations yet.</div>
               ) : (
-                <div className="overflow-x-auto rounded-xl border border-black/5 dark:border-white/5 bg-white dark:bg-white/[0.005] shadow-sm dark:shadow-none">
+                <div className="overflow-x-auto rounded-xl border border-black/5 dark:border-white/5 bg-[color:var(--sk-surface)] dark:bg-white/[0.005] shadow-sm dark:shadow-none">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="border-b border-black/5 dark:border-white/5" style={{ background: isDark ? "rgba(255,255,255,0.01)" : "#f8fafc" }}>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Name</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Email</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Phone</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>USN</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Branch</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Team Name</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>UTR / Payment</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Date</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6] text-left" style={{ fontFamily: FM }}>Status</th>
+                      <tr className="border-b border-black/5 dark:border-white/5" style={{ background: "var(--sk-surface)" }}>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Name</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Email</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Phone</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>USN</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Branch</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Team Name</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>UTR / Payment</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Date</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] text-left" style={{ fontFamily: FM }}>Status</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-black/5 dark:divide-white/5">
@@ -1842,7 +1832,7 @@ function EventsPage({
                             </td>
                             <td className="p-4 text-[11px] text-slate-500 dark:text-[#888] font-mono whitespace-nowrap">{req.created_at ? formatDateTime12H(req.created_at, false) : '—'}</td>
                             <td className="p-4 text-center">
-                              <span className="text-[11px] text-green-600 dark:text-green-500 uppercase tracking-widest font-bold" style={{ fontFamily: FM }}>Approved</span>
+                              <span className="text-[11px] text-green-600 dark:text-green-500 tracking-normal font-bold" style={{ fontFamily: FM }}>Approved</span>
                             </td>
                           </tr>
                         );
@@ -1854,23 +1844,23 @@ function EventsPage({
             </div>
 
             <div>
-              <p className="text-[11px] tracking-[0.4em] uppercase text-slate-900 dark:text-[#f3f4f6] mb-4" style={{ fontFamily: FM }}>Rejected ({rejected.length})</p>
+              <p className="text-[11px] tracking-normal text-slate-900 dark:text-[#f3f4f6] mb-4" style={{ fontFamily: FM }}>Rejected ({rejected.length})</p>
               {rejected.length === 0 ? (
-                <div className="p-8 rounded-xl text-center text-xs text-slate-500 dark:text-[#94a3b8]" style={{ background: isDark ? "rgba(255,255,255,0.01)" : "#ffffff", border: isDark ? "1px dashed rgba(255,255,255,0.05)" : "1px dashed rgba(0,0,0,0.12)", fontFamily: FB }}>No rejected registrations.</div>
+                <div className="p-8 rounded-xl text-center text-xs text-slate-500 dark:text-[#94a3b8]" style={{ background: "var(--sk-surface)", border: isDark ? "1px dashed rgba(255,255,255,0.05)" : "1px dashed rgba(0,0,0,0.12)", fontFamily: FB }}>No rejected registrations.</div>
               ) : (
-                <div className="overflow-x-auto rounded-xl border border-black/5 dark:border-white/5 bg-white dark:bg-white/[0.005] shadow-sm dark:shadow-none">
+                <div className="overflow-x-auto rounded-xl border border-black/5 dark:border-white/5 bg-[color:var(--sk-surface)] dark:bg-white/[0.005] shadow-sm dark:shadow-none">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="border-b border-black/5 dark:border-white/5" style={{ background: isDark ? "rgba(255,255,255,0.01)" : "#f8fafc" }}>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Name</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Email</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Phone</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>USN</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Branch</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Team Name</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>UTR / Payment</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Date</th>
-                        <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6] text-left" style={{ fontFamily: FM }}>Status</th>
+                      <tr className="border-b border-black/5 dark:border-white/5" style={{ background: "var(--sk-surface)" }}>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Name</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Email</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Phone</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>USN</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Branch</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Team Name</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>UTR / Payment</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Date</th>
+                        <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] text-left" style={{ fontFamily: FM }}>Status</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-black/5 dark:divide-white/5">
@@ -1904,24 +1894,24 @@ function EventsPage({
                               ) : req.team ? (
                                 isLeader ? (
                                   req.transaction_id ? (
-                                    <span className="select-all text-red-600 dark:text-[#f87171] bg-red-500/10 dark:bg-white/5 px-2 py-0.5 rounded border border-red-500/20 dark:border-white/5 text-[11px] truncate block" title={req.transaction_id}>{req.transaction_id}</span>
+                                    <span className="select-all text-[color:var(--sk-danger)] dark:text-[var(--sk-danger)] bg-[color:var(--sk-danger-soft)] dark:bg-white/5 px-2 py-0.5 rounded border border-[color:var(--sk-danger)]/30 dark:border-white/5 text-[11px] truncate block" title={req.transaction_id}>{req.transaction_id}</span>
                                   ) : (
-                                    <span className="text-slate-400 dark:text-[#888] text-[10px] uppercase tracking-wider">—</span>
+                                    <span className="text-slate-400 dark:text-[#888] text-[10px] tracking-normal">—</span>
                                   )
                                 ) : (
                                   <span className="text-slate-500 dark:text-[#94a3b8] italic text-[11px]">Member</span>
                                 )
                               ) : (
                                 req.transaction_id ? (
-                                  <span className="select-all text-red-600 dark:text-[#f87171] bg-red-500/10 dark:bg-white/5 px-2 py-0.5 rounded border border-red-500/20 dark:border-white/5 text-[11px] truncate block" title={req.transaction_id}>{req.transaction_id}</span>
+                                  <span className="select-all text-[color:var(--sk-danger)] dark:text-[var(--sk-danger)] bg-[color:var(--sk-danger-soft)] dark:bg-white/5 px-2 py-0.5 rounded border border-[color:var(--sk-danger)]/30 dark:border-white/5 text-[11px] truncate block" title={req.transaction_id}>{req.transaction_id}</span>
                                 ) : (
-                                  <span className="text-slate-400 dark:text-[#888] text-[10px] uppercase tracking-wider">—</span>
+                                  <span className="text-slate-400 dark:text-[#888] text-[10px] tracking-normal">—</span>
                                 )
                               )}
                             </td>
                             <td className="p-4 text-[11px] text-slate-500 dark:text-[#888] font-mono whitespace-nowrap">{req.created_at ? formatDateTime12H(req.created_at, false) : '—'}</td>
                             <td className="p-4 text-center">
-                              <span className="text-[11px] text-[#F03D4E] uppercase tracking-widest font-bold" style={{ fontFamily: FM }}>Rejected</span>
+                              <span className="text-[11px] text-[color:var(--sk-danger)] tracking-normal font-bold" style={{ fontFamily: FM }}>Rejected</span>
                             </td>
                           </tr>
                         );
@@ -1966,7 +1956,7 @@ function EventsPage({
             <div className="mt-4 space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
                 <div>
-                  <h1 className="text-[13px] tracking-[0.4em] uppercase text-slate-900 dark:text-[#f3f4f6] mb-1" style={{ fontFamily: FM }}>Manage Attendees</h1>
+                  <h1 className="text-[13px] tracking-normal text-slate-900 dark:text-[#f3f4f6] mb-1" style={{ fontFamily: FM }}>Manage Attendees</h1>
                   <p className="text-xs text-slate-500 dark:text-[#888]" style={{ fontFamily: FB }}>
                     <span className="text-[#10b981] font-bold">{combinedAttendanceList.length} checked-in</span>
                   </p>
@@ -2024,8 +2014,8 @@ function EventsPage({
                         title={scanInfo.reason}
                         className={`text-xs px-4 py-2 rounded-lg border transition-all font-semibold flex items-center gap-2 ${
                           scanInfo.enabled
-                            ? "bg-[#F03D4E]/10 hover:bg-[#F03D4E]/20 text-[#F03D4E] border-[#F03D4E]/30 cursor-pointer shadow-sm"
-                            : "bg-[#F03D4E]/10 text-slate-400 dark:text-white/30 border-black/5 dark:border-white/5 cursor-not-allowed opacity-50"
+                            ? "bg-[color:var(--sk-brand)]/10 hover:bg-[color:var(--sk-brand)]/20 text-[color:var(--sk-brand)] border-[color:var(--sk-brand)]/30 cursor-pointer shadow-sm"
+                            : "bg-[color:var(--sk-brand)]/10 text-slate-400 dark:text-white/30 border-black/5 dark:border-white/5 cursor-not-allowed opacity-50"
                         }`}
                         style={{ fontFamily: FB }}
                       >
@@ -2114,22 +2104,22 @@ function EventsPage({
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search scanned attendees by name, USN, email, branch or team..."
-                  className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/30 focus:outline-none focus:border-[#F03D4E]/40 focus:ring-1 focus:ring-[#F03D4E]/40 transition-all shadow-sm dark:shadow-none"
+                  className="w-full bg-[color:var(--sk-surface)] dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/30 focus:outline-none focus:border-[color:var(--sk-brand)]/40 focus:ring-1 focus:ring-[color:var(--sk-brand)]/40 transition-all shadow-sm dark:shadow-none"
                   style={{ fontFamily: FB }}
                 />
               </div>
 
-              <div className="overflow-x-auto rounded-xl border border-black/5 dark:border-white/5 bg-white dark:bg-white/[0.005] shadow-sm dark:shadow-none">
+              <div className="overflow-x-auto rounded-xl border border-black/5 dark:border-white/5 bg-[color:var(--sk-surface)] dark:bg-white/[0.005] shadow-sm dark:shadow-none">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-black/5 dark:border-white/5" style={{ background: isDark ? "rgba(255,255,255,0.01)" : "#f8fafc" }}>
-                      <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Name</th>
-                      <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>USN</th>
-                      <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Branch / Sem</th>
-                      <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Contact</th>
-                      <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Type</th>
-                      <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Team Name</th>
-                      <th className="p-4 text-[11px] tracking-[0.2em] uppercase text-slate-700 dark:text-[#f3f4f6] text-right" style={{ fontFamily: FM }}>Attendance</th>
+                    <tr className="border-b border-black/5 dark:border-white/5" style={{ background: "var(--sk-surface)" }}>
+                      <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Name</th>
+                      <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>USN</th>
+                      <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Branch / Sem</th>
+                      <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Contact</th>
+                      <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Type</th>
+                      <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Team Name</th>
+                      <th className="p-4 text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] text-right" style={{ fontFamily: FM }}>Attendance</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-black/5 dark:divide-white/5">
@@ -2199,7 +2189,7 @@ function EventsPage({
                             )}
                           </td>
                           <td className="p-4 text-right">
-                            <span className="text-[11px] uppercase tracking-widest px-2.5 py-1 rounded font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" style={{ fontFamily: FM }}>
+                            <span className="text-[11px] tracking-normal px-2.5 py-1 rounded font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" style={{ fontFamily: FM }}>
                               CHECKED IN
                             </span>
                           </td>
@@ -2210,12 +2200,12 @@ function EventsPage({
                       <tr>
                         <td colSpan={7} className="p-12 text-center">
                           <div className="flex flex-col items-center justify-center gap-3">
-                            <div className="w-12 h-12 rounded-2xl bg-[#F03D4E]/10 border border-[#F03D4E]/20 flex items-center justify-center text-[#F03D4E]">
+                            <div className="w-12 h-12 rounded-xl bg-[color:var(--sk-brand)]/10 border border-[color:var(--sk-brand)]/20 flex items-center justify-center text-[color:var(--sk-brand)]">
                               <Camera size={24} />
                             </div>
                             <p className="text-sm font-semibold text-slate-900 dark:text-white" style={{ fontFamily: FB }}>No attendees scanned yet</p>
                             <p className="text-xs text-slate-500 dark:text-[#888] max-w-sm" style={{ fontFamily: FB }}>
-                              Click <span className="text-[#F03D4E] font-semibold">"Scan Ticket QR"</span> above to start scanning.
+                              Click <span className="text-[color:var(--sk-brand)] font-semibold">"Scan Ticket QR"</span> above to start scanning.
                             </p>
                           </div>
                         </td>
@@ -2269,15 +2259,15 @@ function EventsPage({
 
               return (
                 <>
-                  <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl mb-6" style={{ background: isDark ? "rgba(255,255,255,0.02)" : "#ffffff", border: isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.08)", boxShadow: isDark ? "none" : "0 2px 10px rgba(0,0,0,0.02)" }}>
+                  <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl mb-6" style={{ background: "var(--sk-surface)", border: "1px solid var(--sk-line)", boxShadow: isDark ? "none" : "0 2px 10px rgba(0,0,0,0.02)" }}>
                     {activeEvent.bannerUrl ? (
                       <div className="flex items-center gap-3.5 cursor-pointer group" onClick={() => setShowFullBannerModal(true)}>
                         <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 relative border border-black/10 dark:border-white/10 shadow-md">
                           <img src={activeEvent.bannerUrl} alt="Banner thumbnail" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                         </div>
                         <div>
-                          <span className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-[#F03D4E] transition-colors flex items-center gap-2" style={{ fontFamily: FB }}>
-                            <Eye size={15} className="text-[#F03D4E]" /> Click to view full banner
+                          <span className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-[color:var(--sk-brand)] transition-colors flex items-center gap-2" style={{ fontFamily: FB }}>
+                            <Eye size={15} className="text-[color:var(--sk-brand)]" /> Click to view full banner
                           </span>
                         </div>
                       </div>
@@ -2289,7 +2279,7 @@ function EventsPage({
 
                     <div className="flex items-center gap-3 ml-auto">
                       {bannerError && (
-                        <p className="text-[11px] text-[#F03D4E] font-medium truncate" style={{ fontFamily: FB }}>{bannerError}</p>
+                        <p className="text-[11px] text-[color:var(--sk-danger)] font-medium truncate" style={{ fontFamily: FB }}>{bannerError}</p>
                       )}
                       <input
                         type="file"
@@ -2302,7 +2292,7 @@ function EventsPage({
                       <label
                         htmlFor="banner-update-input"
                         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${getEventStatus(activeEvent) === "previous" ? "opacity-40 pointer-events-none" : "cursor-pointer text-slate-700 dark:text-white bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10"}`}
-                        style={{ border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)", fontFamily: FB }}
+                        style={{ border: "1px solid var(--sk-line)", fontFamily: FB }}
                       >
                         {bannerUploading ? (
                           <><div className="w-3.5 h-3.5 rounded-full border-2 border-slate-500 dark:border-white/60 border-t-transparent animate-spin" /> Uploading...</>
@@ -2360,7 +2350,7 @@ function EventsPage({
                           <X size={18} color="#ffffff" strokeWidth={2.2} style={{ stroke: "#ffffff", color: "#ffffff" }} />
                         </button>
                         <div 
-                          className="relative max-w-5xl max-h-[88vh] flex items-center justify-center p-2 rounded-2xl"
+                          className="relative max-w-5xl max-h-[88vh] flex items-center justify-center p-2 rounded-xl"
                           onClick={e => e.stopPropagation()}
                         >
                           <img 
@@ -2384,22 +2374,22 @@ function EventsPage({
                 {getEventStatus(activeEvent) === "live" ? (
                   <LiveTag size="large" />
                 ) : (
-                  <span className="text-[11px] tracking-[0.3em] uppercase px-3 py-1 rounded-full"
+                  <span className="text-[11px] tracking-normal px-3 py-1 rounded-full"
                     style={{
-                      background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-                      border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
-                      color: isDark ? "#aaa" : "#475569",
+                      background: "var(--sk-line)",
+                      border: "1px solid var(--sk-line)",
+                      color: "var(--sk-muted)",
                       fontFamily: FM
                     }}
                   >
                     {getEventStatus(activeEvent) === "previous" ? "Ended" : "Upcoming"}
                   </span>
                 )}
-                <span className="text-[11px] tracking-[0.2em] px-2 py-0.5 rounded-full"
+                <span className="text-[11px] tracking-normal px-2 py-0.5 rounded-full"
                   style={{
-                    background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-                    border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.08)",
-                    color: isDark ? "#aaa" : "#475569",
+                    background: "var(--sk-line)",
+                    border: "1px solid var(--sk-line)",
+                    color: "var(--sk-muted)",
                     fontFamily: FM
                   }}
                 >{activeEvent.club}</span>
@@ -2440,26 +2430,26 @@ function EventsPage({
                 { label: "Registered",     value: registrations.length },
                 { label: "Pending Approval", value: pending.length },
               ].map((stat, i) => (
-                 <div key={i} className="p-6 rounded-2xl" style={{
-                   background: isDark ? "rgba(255,255,255,0.015)" : "#ffffff",
-                   border: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)",
+                 <div key={i} className="p-6 rounded-xl" style={{
+                   background: "var(--sk-surface)",
+                   border: "1px solid var(--sk-line)",
                    boxShadow: isDark ? "none" : "0 2px 10px rgba(0,0,0,0.02)"
                  }}>
-                    <p className="text-[11px] tracking-[0.3em] uppercase mb-2 font-semibold" style={{ color: isDark ? "#94a3b8" : "#64748b", fontFamily: FM }}>{stat.label}</p>
+                    <p className="text-[11px] tracking-normal mb-2 font-semibold" style={{ color: "var(--sk-muted)", fontFamily: FM }}>{stat.label}</p>
                     <p className="text-3xl font-semibold text-slate-900 dark:text-white">{stat.value}</p>
                  </div>
               ))}
             </div>
 
-            <div className="mt-8 rounded-2xl p-5 md:p-6" style={{ background: isDark ? "rgba(255,255,255,0.015)" : "#ffffff", border: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)" }}>
+            <div className="mt-8 rounded-xl p-5 md:p-6" style={{ background: "var(--sk-surface)", border: "1px solid var(--sk-line)" }}>
               <button
                 onClick={() => setShowTasks(v => !v)}
                 aria-expanded={showTasks}
                 className="w-full flex items-center justify-between gap-3 text-left cursor-pointer"
-                style={{ fontFamily: FB, color: isDark ? "#ffffff" : "#1e1b26" }}
+                style={{ fontFamily: FB, color: "var(--sk-fg)" }}
               >
                 <span className="flex items-center gap-2 text-base font-semibold"><ClipboardList size={17} /> Volunteer Tasks</span>
-                <span className="text-xs" style={{ color: isDark ? "#94a3b8" : "#64748b" }}>
+                <span className="text-xs" style={{ color: "var(--sk-muted)" }}>
                   {((activeEvent as any).taskCount ?? null) !== null && (activeEvent as any).taskCount > 0 ? `${(activeEvent as any).taskDoneCount ?? 0}/${(activeEvent as any).taskCount} complete · ` : ""}
                   {showTasks ? "Hide" : "Open board"}
                 </span>
@@ -2474,11 +2464,11 @@ function EventsPage({
             <div className="flex items-center justify-between mt-8 mb-2">
                <div>
                  {activeEvent.registrationDeadline ? (
-                   <p className="text-xs" style={{ color: isDark ? "#888" : "#64748b", fontFamily: FB }}>
-                     Registration Deadline: <span className="font-semibold" style={{ color: isDark ? "#ffffff" : "#1e1b26" }}>{formatDateTime12H(activeEvent.registrationDeadline)}</span>
+                   <p className="text-xs" style={{ color: "var(--sk-muted)", fontFamily: FB }}>
+                     Registration Deadline: <span className="font-semibold" style={{ color: "var(--sk-fg)" }}>{formatDateTime12H(activeEvent.registrationDeadline)}</span>
                    </p>
                  ) : (
-                   <p className="text-xs" style={{ color: isDark ? "#888" : "#64748b", fontFamily: FB }}>
+                   <p className="text-xs" style={{ color: "var(--sk-muted)", fontFamily: FB }}>
                      No fixed deadline — registration stays open until the event starts or fills up.
                    </p>
                  )}
@@ -2526,10 +2516,10 @@ function EventsPage({
                    setEditErrors({});
                    setShowEditModal(true);
                  }}
-                 className={`flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#F03D4E] rounded-xl transition-all duration-300 ${getEventStatus(activeEvent) === "previous" ? "opacity-40 cursor-not-allowed" : ""}`}
+                 className={`flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[color:var(--sk-brand)] rounded-xl transition-all duration-300 ${getEventStatus(activeEvent) === "previous" ? "opacity-40 cursor-not-allowed" : ""}`}
                  onMouseEnter={e => {
                    if (getEventStatus(activeEvent) === "previous") return;
-                   e.currentTarget.style.boxShadow = "0 0 25px rgba(240,61,78,0.3)";
+                   e.currentTarget.style.boxShadow = "none";
                  }}
                  onMouseLeave={e => {
                    e.currentTarget.style.boxShadow = "none";
@@ -2548,18 +2538,18 @@ function EventsPage({
               onGone={() => setSelectedEventId(null)}
             />
 
-            <div className="mt-8 pt-8 flex flex-wrap gap-5" style={{ borderTop: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)" }}>
+            <div className="mt-8 pt-8 flex flex-wrap gap-5" style={{ borderTop: "1px solid var(--sk-line)" }}>
 
               <div 
                 onClick={() => {
                   if (!isEventFinished) setShowApprovals(true);
                 }}
-                className={`p-5 rounded-2xl flex items-center gap-5 transition-all duration-300 ${
+                className={`p-5 rounded-xl flex items-center gap-5 transition-all duration-300 ${
                   isEventFinished ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
                 }`}
                 style={{
-                  background: isDark ? "rgba(255,255,255,0.015)" : "#ffffff",
-                  border: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)",
+                  background: "var(--sk-surface)",
+                  border: "1px solid var(--sk-line)",
                   boxShadow: isDark ? "none" : "0 2px 10px rgba(0,0,0,0.02)",
                   width: "fit-content",
                   minWidth: "280px"
@@ -2567,35 +2557,35 @@ function EventsPage({
                 onMouseEnter={e => {
                   if (isEventFinished) return;
                   e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)";
-                  e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.12)";
+                  e.currentTarget.style.borderColor = "var(--sk-line)";
                   e.currentTarget.style.transform = "translateY(-2px)";
                 }}
                 onMouseLeave={e => {
                   if (isEventFinished) return;
-                  e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.015)" : "#ffffff";
-                  e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.08)";
+                  e.currentTarget.style.background = "var(--sk-surface)";
+                  e.currentTarget.style.borderColor = "var(--sk-line)";
                   e.currentTarget.style.transform = "none";
                 }}
               >
                 <div className="relative w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                   style={{
-                    background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.04)",
-                    border: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)"
+                    background: "var(--sk-line)",
+                    border: "1px solid var(--sk-line)"
                   }}
                 >
                   <CheckCircle size={20} className={isEventFinished ? (isDark ? "text-white/30" : "text-black/30") : (isDark ? "text-white/80" : "text-slate-700")} />
                   {!isEventFinished && pending.length > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1.5 rounded-full bg-[#F03D4E] text-white text-[10px] font-bold flex items-center justify-center" style={{ fontFamily: FM }}>{pending.length}</span>
+                    <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1.5 rounded-full bg-[color:var(--sk-brand)] text-white text-[10px] font-bold flex items-center justify-center" style={{ fontFamily: FM }}>{pending.length}</span>
                   )}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className={`font-medium text-lg leading-tight ${isEventFinished ? (isDark ? 'text-white/40' : 'text-slate-400') : (isDark ? 'text-white' : 'text-slate-900')}`} style={{ fontFamily: FC }}>Registration Approval</h3>
                     {isEventFinished && (
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20 font-bold uppercase tracking-wider" style={{ fontFamily: FM }}>Closed</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20 font-bold tracking-normal" style={{ fontFamily: FM }}>Closed</span>
                     )}
                   </div>
-                  <p className="text-xs mt-1" style={{ color: isEventFinished ? (isDark ? "#666" : "#94a3b8") : (isDark ? "#888" : "#64748b"), fontFamily: FB }}>
+                  <p className="text-xs mt-1" style={{ color: isEventFinished ? (isDark ? "#666" : "#94a3b8") : ("var(--sk-muted)"), fontFamily: FB }}>
                     {isEventFinished ? "Disabled (Event has ended)" : "Review & approve pending requests"}
                   </p>
                 </div>
@@ -2603,72 +2593,72 @@ function EventsPage({
 
               <div 
                 onClick={() => setShowParticipants(true)}
-                className="p-5 rounded-2xl flex items-center gap-5 cursor-pointer transition-all duration-300" 
+                className="p-5 rounded-xl flex items-center gap-5 cursor-pointer transition-all duration-300" 
                 style={{
-                  background: isDark ? "rgba(255,255,255,0.015)" : "#ffffff",
-                  border: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)",
+                  background: "var(--sk-surface)",
+                  border: "1px solid var(--sk-line)",
                   boxShadow: isDark ? "none" : "0 2px 10px rgba(0,0,0,0.02)",
                   width: "fit-content",
                   minWidth: "280px"
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)";
-                  e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.12)";
+                  e.currentTarget.style.borderColor = "var(--sk-line)";
                   e.currentTarget.style.transform = "translateY(-2px)";
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.015)" : "#ffffff";
-                  e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.08)";
+                  e.currentTarget.style.background = "var(--sk-surface)";
+                  e.currentTarget.style.borderColor = "var(--sk-line)";
                   e.currentTarget.style.transform = "none";
                 }}
               >
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                   style={{
-                    background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.04)",
-                    border: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)"
+                    background: "var(--sk-line)",
+                    border: "1px solid var(--sk-line)"
                   }}
                 >
                   <Users size={20} className={isDark ? "text-white/80" : "text-slate-700"} />
                 </div>
                 <div>
                   <h3 className={`font-medium text-lg leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`} style={{ fontFamily: FC }}>Manage Attendees</h3>
-                  <p className="text-xs mt-1" style={{ color: isDark ? "#888" : "#64748b", fontFamily: FB }}>View attendee list & attendance</p>
+                  <p className="text-xs mt-1" style={{ color: "var(--sk-muted)", fontFamily: FB }}>View attendee list & attendance</p>
                 </div>
               </div>
 
               {teamsList.length > 0 && (
                 <div 
                   onClick={() => setShowTeams(true)}
-                  className="p-5 rounded-2xl flex items-center gap-5 cursor-pointer transition-all duration-300" 
+                  className="p-5 rounded-xl flex items-center gap-5 cursor-pointer transition-all duration-300" 
                   style={{
-                    background: isDark ? "rgba(255,255,255,0.015)" : "#ffffff",
-                    border: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)",
+                    background: "var(--sk-surface)",
+                    border: "1px solid var(--sk-line)",
                     boxShadow: isDark ? "none" : "0 2px 10px rgba(0,0,0,0.02)",
                     width: "fit-content",
                     minWidth: "280px"
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.02)";
-                    e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.12)";
+                    e.currentTarget.style.borderColor = "var(--sk-line)";
                     e.currentTarget.style.transform = "translateY(-2px)";
                   }}
                   onMouseLeave={e => {
-                    e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.015)" : "#ffffff";
-                    e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.08)";
+                    e.currentTarget.style.background = "var(--sk-surface)";
+                    e.currentTarget.style.borderColor = "var(--sk-line)";
                     e.currentTarget.style.transform = "none";
                   }}
                 >
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                     style={{
-                      background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.04)",
-                      border: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)"
+                      background: "var(--sk-line)",
+                      border: "1px solid var(--sk-line)"
                     }}
                   >
                     <Users size={20} className={isDark ? "text-white/80" : "text-slate-700"} />
                   </div>
                   <div>
                     <h3 className={`font-medium text-lg leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`} style={{ fontFamily: FC }}>Manage Teams</h3>
-                    <p className="text-xs mt-1" style={{ color: isDark ? "#888" : "#64748b", fontFamily: FB }}>Oversee team slots per event</p>
+                    <p className="text-xs mt-1" style={{ color: "var(--sk-muted)", fontFamily: FB }}>Oversee team slots per event</p>
                   </div>
                 </div>
               )}
@@ -2678,63 +2668,63 @@ function EventsPage({
             <AnimatePresence>
               {showEditModal && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-start pt-16 justify-center p-6 overflow-y-auto" style={{ background: "rgba(0,0,0,0.88)", backdropFilter: "blur(12px)" }}>
-                  <div className="w-full max-w-lg p-8 rounded-3xl relative mb-24" style={{ background: isDark ? "#0c0c0c" : "#f0f2f6", border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.12)", boxShadow: isDark ? "0 25px 50px -12px rgba(0,0,0,0.7)" : "0 20px 45px -10px rgba(0,0,0,0.15)" }}>
+                  <div className="w-full max-w-lg p-8 rounded-xl relative mb-24" style={{ background: "var(--sk-surface)", border: "1px solid var(--sk-line)", boxShadow: isDark ? "0 25px 50px -12px rgba(0,0,0,0.7)" : "0 20px 45px -10px rgba(0,0,0,0.15)" }}>
                     <button onClick={() => setShowEditModal(false)} className="absolute top-6 right-6 text-slate-500 hover:text-slate-900 dark:text-white/40 dark:hover:text-white transition-colors cursor-pointer"><X size={20} /></button>
-                    <h2 className="text-2xl font-bold text-[#1e1b26] dark:text-white mb-6" style={{ fontFamily: FC }}>Update Event</h2>
+                    <h2 className="text-2xl font-bold text-[color:var(--sk-fg)] dark:text-white mb-6" style={{ fontFamily: FC }}>Update Event</h2>
 
                     <div className="space-y-5">
 
                       <div className="space-y-1.5">
-                        <label htmlFor="edit-event-name" className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Event Name</label>
-                        <input id="edit-event-name" type="text" maxLength={200} placeholder="Event name" className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all" style={{ background: isDark ? "rgba(255,255,255,0.02)" : "#e4e7ee", border: `1px solid ${editErrors.name ? "rgba(240,61,78,0.6)" : (isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.12)")}`, fontFamily: FB }} value={editForm.name} onChange={e => { setEditForm(p => ({...p, name: e.target.value})); setEditErrors(er => ({...er, name: ""})); }} onFocus={e => e.currentTarget.style.borderColor = editErrors.name ? "rgba(240,61,78,0.8)" : "#F03D4E"} onBlur={e => e.currentTarget.style.borderColor = editErrors.name ? "rgba(240,61,78,0.6)" : (isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.12)")} />
-                        {editErrors.name && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{editErrors.name}</p>}
+                        <label htmlFor="edit-event-name" className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Event Name</label>
+                        <input id="edit-event-name" type="text" maxLength={200} placeholder="Event name" className="w-full rounded-xl px-4 py-3 text-sm text-[color:var(--sk-fg)] dark:text-white outline-none transition-all" style={{ background: "var(--sk-raised)", border: `1px solid ${editErrors.name ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : ("var(--sk-line)")}`, fontFamily: FB }} value={editForm.name} onChange={e => { setEditForm(p => ({...p, name: e.target.value})); setEditErrors(er => ({...er, name: ""})); }} onFocus={e => e.currentTarget.style.borderColor = editErrors.name ? "color-mix(in srgb, var(--sk-danger) 80%, transparent)" : "var(--sk-danger)"} onBlur={e => e.currentTarget.style.borderColor = editErrors.name ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : ("var(--sk-line)")} />
+                        {editErrors.name && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{editErrors.name}</p>}
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Event Start Date &amp; Time</label>
+                        <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Event Start Date &amp; Time</label>
                         <GlassDatePicker value={editForm.date} onChange={v => {
                           setEditForm(p => ({...p, date: v}));
                           setEditErrors(e => ({...e, date: ""}));
                         }} />
-                        {editErrors.date && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{editErrors.date}</p>}
+                        {editErrors.date && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{editErrors.date}</p>}
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Event End Date &amp; Time</label>
+                        <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Event End Date &amp; Time</label>
                         <GlassDatePicker value={editForm.endDate} onChange={v => { setEditForm(p => ({...p, endDate: v})); setEditErrors(e => ({...e, endDate: ""})); }} defaultTime="23:59" />
-                        {editErrors.endDate && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{editErrors.endDate}</p>}
+                        {editErrors.endDate && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{editErrors.endDate}</p>}
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Registration Deadline <span className="normal-case tracking-normal opacity-60">(optional)</span></label>
+                        <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Registration Deadline <span className="normal-case tracking-normal opacity-60">(optional)</span></label>
                         <GlassDatePicker value={editForm.deadline} onChange={v => { setEditForm(p => ({...p, deadline: v})); setEditErrors(e => ({...e, deadline: ""})); }} defaultTime="23:59" />
                         {!editForm.deadline && !editErrors.deadline && <p className="text-[11px] mt-1 opacity-60" style={{ fontFamily: FB }}>No deadline: registration stays open until the event starts or fills up.</p>}
-                        {editErrors.deadline && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{editErrors.deadline}</p>}
+                        {editErrors.deadline && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{editErrors.deadline}</p>}
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Venue</label>
-                        <input type="text" placeholder="Main Auditorium" className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all" style={{ background: isDark ? "rgba(255,255,255,0.02)" : "#e4e7ee", border: `1px solid ${editErrors.venue ? "rgba(240,61,78,0.6)" : (isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.12)")}`, fontFamily: FB }} value={editForm.venue} onChange={e => { setEditForm(p => ({...p, venue: e.target.value})); setEditErrors(er => ({...er, venue: ""})); }} onFocus={e => e.currentTarget.style.borderColor = editErrors.venue ? "rgba(240,61,78,0.8)" : "#F03D4E"} onBlur={e => e.currentTarget.style.borderColor = editErrors.venue ? "rgba(240,61,78,0.6)" : (isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.12)")} />
-                        {editErrors.venue && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{editErrors.venue}</p>}
+                        <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Venue</label>
+                        <input type="text" placeholder="Main Auditorium" className="w-full rounded-xl px-4 py-3 text-sm text-[color:var(--sk-fg)] dark:text-white outline-none transition-all" style={{ background: "var(--sk-raised)", border: `1px solid ${editErrors.venue ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : ("var(--sk-line)")}`, fontFamily: FB }} value={editForm.venue} onChange={e => { setEditForm(p => ({...p, venue: e.target.value})); setEditErrors(er => ({...er, venue: ""})); }} onFocus={e => e.currentTarget.style.borderColor = editErrors.venue ? "color-mix(in srgb, var(--sk-danger) 80%, transparent)" : "var(--sk-danger)"} onBlur={e => e.currentTarget.style.borderColor = editErrors.venue ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : ("var(--sk-line)")} />
+                        {editErrors.venue && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{editErrors.venue}</p>}
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Venue Capacity</label>
-                        <input type="number" placeholder="e.g. 200" min={1} className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all" style={{ background: isDark ? "rgba(255,255,255,0.02)" : "#e4e7ee", border: `1px solid ${editErrors.capacity ? "rgba(240,61,78,0.6)" : (isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.12)")}`, fontFamily: FB }} value={editForm.capacity} onKeyDown={e => { if (["-", "e", "+", "."].includes(e.key)) e.preventDefault(); }} onChange={e => { const v = e.target.value; if (v === "" || parseInt(v) >= 1) { setEditForm(p => ({...p, capacity: v})); setEditErrors(er => ({...er, capacity: ""})); } }} onFocus={e => e.currentTarget.style.borderColor = editErrors.capacity ? "rgba(240,61,78,0.8)" : "#F03D4E"} onBlur={e => e.currentTarget.style.borderColor = editErrors.capacity ? "rgba(240,61,78,0.6)" : (isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.12)")} />
-                        {editErrors.capacity && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{editErrors.capacity}</p>}
+                        <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Venue Capacity</label>
+                        <input type="number" placeholder="e.g. 200" min={1} className="w-full rounded-xl px-4 py-3 text-sm text-[color:var(--sk-fg)] dark:text-white outline-none transition-all" style={{ background: "var(--sk-raised)", border: `1px solid ${editErrors.capacity ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : ("var(--sk-line)")}`, fontFamily: FB }} value={editForm.capacity} onKeyDown={e => { if (["-", "e", "+", "."].includes(e.key)) e.preventDefault(); }} onChange={e => { const v = e.target.value; if (v === "" || parseInt(v) >= 1) { setEditForm(p => ({...p, capacity: v})); setEditErrors(er => ({...er, capacity: ""})); } }} onFocus={e => e.currentTarget.style.borderColor = editErrors.capacity ? "color-mix(in srgb, var(--sk-danger) 80%, transparent)" : "var(--sk-danger)"} onBlur={e => e.currentTarget.style.borderColor = editErrors.capacity ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : ("var(--sk-line)")} />
+                        {editErrors.capacity && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{editErrors.capacity}</p>}
                       </div>
 
                       {activeEvent && (activeEvent.eventType === 'Team' || (activeEvent.teamSizeLimit && activeEvent.teamSizeLimit > 1) || activeEvent.type === 'Team') && (
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-1.5">
-                            <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Min Team Size</label>
+                            <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Min Team Size</label>
                             <input
                               type="number"
                               placeholder="1"
                               min={1}
                               max={editForm.teamSizeLimit ? parseInt(editForm.teamSizeLimit) : undefined}
-                              className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all"
-                              style={{ background: isDark ? "rgba(255,255,255,0.02)" : "#e4e7ee", border: `1px solid ${editErrors.minTeamSize ? "rgba(240,61,78,0.6)" : (isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.12)")}`, fontFamily: FB }}
+                              className="w-full rounded-xl px-4 py-3 text-sm text-[color:var(--sk-fg)] dark:text-white outline-none transition-all"
+                              style={{ background: "var(--sk-raised)", border: `1px solid ${editErrors.minTeamSize ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : ("var(--sk-line)")}`, fontFamily: FB }}
                               value={editForm.minTeamSize}
                               onKeyDown={e => { if (["-", "e", "+", "."].includes(e.key)) e.preventDefault(); }}
                               onChange={e => {
@@ -2742,20 +2732,20 @@ function EventsPage({
                                 setEditForm(p => ({ ...p, minTeamSize: v }));
                                 setEditErrors(er => ({ ...er, minTeamSize: "", teamSizeLimit: "" }));
                               }}
-                              onFocus={e => e.currentTarget.style.borderColor = editErrors.minTeamSize ? "rgba(240,61,78,0.8)" : "#F03D4E"}
-                              onBlur={e => e.currentTarget.style.borderColor = editErrors.minTeamSize ? "rgba(240,61,78,0.6)" : (isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.12)")}
+                              onFocus={e => e.currentTarget.style.borderColor = editErrors.minTeamSize ? "color-mix(in srgb, var(--sk-danger) 80%, transparent)" : "var(--sk-danger)"}
+                              onBlur={e => e.currentTarget.style.borderColor = editErrors.minTeamSize ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : ("var(--sk-line)")}
                             />
-                            {editErrors.minTeamSize && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{editErrors.minTeamSize}</p>}
+                            {editErrors.minTeamSize && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{editErrors.minTeamSize}</p>}
                           </div>
 
                           <div className="space-y-1.5">
-                            <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Max Team Size</label>
+                            <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Max Team Size</label>
                             <input
                               type="number"
                               placeholder="e.g. 4"
                               min={editForm.minTeamSize ? parseInt(editForm.minTeamSize) : 1}
-                              className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all"
-                              style={{ background: isDark ? "rgba(255,255,255,0.02)" : "#e4e7ee", border: `1px solid ${editErrors.teamSizeLimit ? "rgba(240,61,78,0.6)" : (isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.12)")}`, fontFamily: FB }}
+                              className="w-full rounded-xl px-4 py-3 text-sm text-[color:var(--sk-fg)] dark:text-white outline-none transition-all"
+                              style={{ background: "var(--sk-raised)", border: `1px solid ${editErrors.teamSizeLimit ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : ("var(--sk-line)")}`, fontFamily: FB }}
                               value={editForm.teamSizeLimit}
                               onKeyDown={e => { if (["-", "e", "+", "."].includes(e.key)) e.preventDefault(); }}
                               onChange={e => {
@@ -2763,16 +2753,16 @@ function EventsPage({
                                 setEditForm(p => ({ ...p, teamSizeLimit: v }));
                                 setEditErrors(er => ({ ...er, teamSizeLimit: "", minTeamSize: "", capacity: "" }));
                               }}
-                              onFocus={e => e.currentTarget.style.borderColor = editErrors.teamSizeLimit ? "rgba(240,61,78,0.8)" : "#F03D4E"}
-                              onBlur={e => e.currentTarget.style.borderColor = editErrors.teamSizeLimit ? "rgba(240,61,78,0.6)" : (isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.12)")}
+                              onFocus={e => e.currentTarget.style.borderColor = editErrors.teamSizeLimit ? "color-mix(in srgb, var(--sk-danger) 80%, transparent)" : "var(--sk-danger)"}
+                              onBlur={e => e.currentTarget.style.borderColor = editErrors.teamSizeLimit ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : ("var(--sk-line)")}
                             />
-                            {editErrors.teamSizeLimit && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{editErrors.teamSizeLimit}</p>}
+                            {editErrors.teamSizeLimit && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{editErrors.teamSizeLimit}</p>}
                           </div>
                         </div>
                       )}
                     </div>
 
-                    {editErrors.form && <p role="alert" className="text-xs text-[#F03D4E] font-medium mt-4 text-center" style={{ fontFamily: FB }}>{editErrors.form}</p>}
+                    {editErrors.form && <p role="alert" className="text-xs text-[color:var(--sk-danger)] font-medium mt-4 text-center" style={{ fontFamily: FB }}>{editErrors.form}</p>}
                     <button
                       onClick={async () => {
                         const now = new Date();
@@ -2848,7 +2838,7 @@ function EventsPage({
                         editForm.minTeamSize === editOriginal.minTeamSize &&
                         editForm.teamSizeLimit === editOriginal.teamSizeLimit
                       )}
-                      className="w-full mt-6 py-3.5 rounded-xl bg-[#F03D4E] hover:bg-[#d63545] text-white text-sm font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-lg"
+                      className="w-full mt-6 py-3.5 rounded-xl bg-[color:var(--sk-brand)] hover:bg-[color:var(--sk-brand-hover)] text-white text-sm font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-lg"
                       style={{ fontFamily: FB }}
                     >
                       Save Changes
@@ -2869,7 +2859,7 @@ function EventsPage({
     <div className="p-5 md:p-8 lg:p-10 space-y-8 max-w-7xl">
       <div className="flex items-end justify-between">
          <div>
-            <p className="text-[11px] tracking-[0.5em] uppercase mb-1.5" style={{ color: "#f3f4f6", fontFamily: FM }}>Directory</p>
+            <p className="text-[11px] tracking-normal mb-1.5" style={{ color: "#f3f4f6", fontFamily: FM }}>Directory</p>
             <h1 className="text-2xl md:text-3xl font-semibold text-white" style={{ fontFamily: FC }}>All Events</h1>
          </div>
       </div>
@@ -2894,13 +2884,13 @@ function EventsPage({
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                   whileHover={{ y: -5 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="p-6 rounded-2xl cursor-pointer group hover:bg-white/[0.03] hover:border-white/10 transition-colors duration-300"
+                  className="p-6 rounded-xl cursor-pointer group hover:bg-white/[0.03] hover:border-white/10 transition-colors duration-300"
                   style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      {ev.isPublished === false && <span className="text-[10px] px-2 py-1 rounded-full bg-slate-500/10 text-slate-400 border border-slate-500/20 font-bold uppercase tracking-wider" style={{ fontFamily: FM }}>Draft</span>}
-                      {ev.registrationClosedManually && <span className="text-[10px] px-2 py-1 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 font-bold uppercase tracking-wider" style={{ fontFamily: FM }}>Reg. closed</span>}
+                      {ev.isPublished === false && <span className="text-[10px] px-2 py-1 rounded-full bg-slate-500/10 text-slate-400 border border-slate-500/20 font-bold tracking-normal" style={{ fontFamily: FM }}>Draft</span>}
+                      {ev.registrationClosedManually && <span className="text-[10px] px-2 py-1 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 font-bold tracking-normal" style={{ fontFamily: FM }}>Reg. closed</span>}
                       <span className={`text-[11px] px-2.5 py-1 rounded-full border ${(ev.type ?? '').toLowerCase() === "team" ? "bg-slate-200 text-slate-700 border-slate-300 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20" : "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"}`} style={{ fontFamily: FM }}>{(ev.type ?? '').toLowerCase() === "team" ? "Team" : "Solo"}</span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -2913,13 +2903,13 @@ function EventsPage({
                       {statusVal === "live" ? (
                         <LiveTag />
                       ) : (
-                        <span className="text-[11px] px-2.5 py-1 rounded-full text-slate-700 dark:text-[#f9fafb] bg-slate-100 dark:bg-[#F03D4E]/5 border border-slate-200 dark:border-white/5" style={{
+                        <span className="text-[11px] px-2.5 py-1 rounded-full text-slate-700 dark:text-[#f9fafb] bg-slate-100 dark:bg-[color:var(--sk-brand)]/5 border border-slate-200 dark:border-white/5" style={{
                           fontFamily: FM,
                         }}>Upcoming</span>
                       )}
                     </div>
                   </div>
-                  <h3 className="text-[#1e1b26] dark:text-white font-semibold mb-2 leading-tight text-lg group-hover:text-[#F03D4E] transition-colors">{ev.title}</h3>
+                  <h3 className="text-[color:var(--sk-fg)] dark:text-white font-semibold mb-2 leading-tight text-lg group-hover:text-[color:var(--sk-brand)] transition-colors">{ev.title}</h3>
                   <div className="flex flex-col gap-1.5 mb-6 text-slate-600 dark:text-[#f3f4f6]">
                     <span className="flex items-center gap-1.5 text-xs"><Calendar size={12} />{formatEventHeaderDate(ev.eventDate || ev.date, ev.eventEndDate)}</span>
                     {ev.registrationDeadline && (
@@ -2936,7 +2926,7 @@ function EventsPage({
                     <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.04)" }}>
                       <motion.div
                         className="h-full rounded-full"
-                        style={{ background: "linear-gradient(90deg, rgba(240,61,78,0.4), rgba(240,61,78,1))" }}
+                        style={{ background: "linear-gradient(90deg, color-mix(in srgb, var(--sk-brand) 40%, transparent), color-mix(in srgb, var(--sk-brand) 100%, transparent))" }}
                         initial={{ width: 0 }} animate={{ width: `${fill}%` }}
                         transition={{ duration: 1, delay: i * 0.1 }}
                       />
@@ -2947,7 +2937,7 @@ function EventsPage({
             })}
 
             {EVENTS.filter(e => { const st = getEventStatus(e); return st === "upcoming" || st === "live"; }).length === 0 && (
-              <div className="col-span-3 p-10 rounded-2xl text-center text-sm text-slate-500 dark:text-[#94a3b8]" style={{ border: "1px dashed rgba(255,255,255,0.05)", fontFamily: FB }}>
+              <div className="col-span-3 p-10 rounded-xl text-center text-sm text-slate-500 dark:text-[#94a3b8]" style={{ border: "1px dashed rgba(255,255,255,0.05)", fontFamily: FB }}>
                 No upcoming events yet.
               </div>
             )}
@@ -2956,7 +2946,7 @@ function EventsPage({
 
         <div>
           <div className="flex items-center gap-3 mb-5">
-            <h2 className="text-base font-semibold text-[#1e1b26] dark:text-white/50" style={{ fontFamily: FB }}>Past Events</h2>
+            <h2 className="text-base font-semibold text-[color:var(--sk-fg)] dark:text-white/50" style={{ fontFamily: FB }}>Past Events</h2>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
             {EVENTS.filter(e => getEventStatus(e) === "previous").map((ev, i) => {
@@ -2967,7 +2957,7 @@ function EventsPage({
                   onClick={() => setSelectedEventId(ev.id)}
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: i * 0.05 }}
-                  className="p-6 rounded-2xl cursor-pointer group opacity-90 dark:opacity-60 hover:opacity-100"
+                  className="p-6 rounded-xl cursor-pointer group opacity-90 dark:opacity-60 hover:opacity-100"
                   style={{ background: "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)", transition: "all 0.3s ease" }}
                 >
                   <div className="flex items-start justify-between mb-4">
@@ -2976,7 +2966,7 @@ function EventsPage({
                     </div>
                     <span className="text-[11px] px-2.5 py-1 rounded-full text-slate-500 dark:text-[#94a3b8] bg-slate-100 dark:bg-transparent border border-slate-200 dark:border-white/5" style={{ fontFamily: FM }}>Ended</span>
                   </div>
-                  <h3 className="text-[#1e1b26] dark:text-[#cccccc] font-semibold mb-2 leading-tight text-lg transition-colors">{ev.title}</h3>
+                  <h3 className="text-[color:var(--sk-fg)] dark:text-[#cccccc] font-semibold mb-2 leading-tight text-lg transition-colors">{ev.title}</h3>
                   <div className="flex flex-col gap-1.5 mb-6 text-slate-600 dark:text-[#94a3b8]">
                     <span className="flex items-center gap-1.5 text-xs"><Calendar size={12} />{formatEventHeaderDate(ev.eventDate || ev.date, ev.eventEndDate)}</span>
                     {ev.registrationDeadline && (
@@ -3003,7 +2993,7 @@ function EventsPage({
               );
             })}
             {EVENTS.filter(e => getEventStatus(e) === "previous").length === 0 && (
-              <div className="col-span-3 p-6 rounded-2xl text-center text-xs text-[#444]" style={{ fontFamily: FB }}>No past events.</div>
+              <div className="col-span-3 p-6 rounded-xl text-center text-xs text-[#444]" style={{ fontFamily: FB }}>No past events.</div>
             )}
           </div>
         </div>
@@ -3075,12 +3065,12 @@ function GlassDatePicker({ value, onChange, defaultTime = "12:00" }: { value: st
         onClick={() => setOpen(!open)} 
         className="w-full rounded-xl px-4 py-3 text-sm cursor-pointer flex items-center justify-between transition-all" 
         style={{ 
-          background: isDark ? "rgba(255,255,255,0.02)" : "#e4e7ee", 
-          border: open ? (isDark ? "1px solid rgba(255,255,255,0.3)" : "1px solid #F03D4E") : (isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.12)"), 
+          background: "var(--sk-raised)", 
+          border: open ? (isDark ? "1px solid rgba(255,255,255,0.3)" : "1px solid var(--sk-brand)") : ("1px solid var(--sk-line)"), 
           fontFamily: FB 
         }}
       >
-        <span className={value ? (isDark ? "text-white" : "text-[#1e1b26] font-medium") : (isDark ? "text-[#888]" : "text-slate-500")}>
+        <span className={value ? (isDark ? "text-white" : "text-[color:var(--sk-fg)] font-medium") : (isDark ? "text-[#888]" : "text-slate-500")}>
           {value ? (() => { 
             const d = new Date(value); 
             const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; 
@@ -3099,10 +3089,10 @@ function GlassDatePicker({ value, onChange, defaultTime = "12:00" }: { value: st
             initial={{ opacity: 0, y: 10 }} 
             animate={{ opacity: 1, y: 0 }} 
             exit={{ opacity: 0, y: 10 }} 
-            className="absolute z-50 top-full mt-2 w-72 p-5 rounded-2xl shadow-2xl left-0" 
+            className="absolute z-50 top-full mt-2 w-72 p-5 rounded-xl shadow-2xl left-0" 
             style={{ 
-              background: isDark ? "rgba(15,15,15,0.98)" : "#f0f2f6", 
-              border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.12)", 
+              background: isDark ? "rgba(15,15,15,0.98)" : "var(--sk-canvas)", 
+              border: "1px solid var(--sk-line)", 
               backdropFilter: "blur(24px)",
               boxShadow: isDark ? "0 25px 50px -12px rgba(0,0,0,0.8)" : "0 15px 35px -5px rgba(0,0,0,0.15)"
             }}
@@ -3113,7 +3103,7 @@ function GlassDatePicker({ value, onChange, defaultTime = "12:00" }: { value: st
                 if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(y => y - 1); }
                 else { setCurrentMonth(m => m - 1); }
               }} className="p-1 hover:bg-black/5 dark:hover:bg-white/10 rounded-md transition-colors text-slate-700 dark:text-white cursor-pointer"><ChevronLeft size={16} /></button>
-              <div className="text-sm font-semibold text-[#1e1b26] dark:text-white" style={{ fontFamily: FB }}>
+              <div className="text-sm font-semibold text-[color:var(--sk-fg)] dark:text-white" style={{ fontFamily: FB }}>
                 {new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' })} {currentYear}
               </div>
               <button onClick={() => {
@@ -3131,7 +3121,7 @@ function GlassDatePicker({ value, onChange, defaultTime = "12:00" }: { value: st
                 const d = i + 1;
                 const isSelected = selectedDate?.getDate() === d && selectedDate?.getMonth() === currentMonth && selectedDate?.getFullYear() === currentYear;
                 return (
-                  <button key={d} onClick={() => handleSelectDate(d)} className={`w-8 h-8 mx-auto rounded-full text-xs flex items-center justify-center transition-all cursor-pointer ${isSelected ? 'bg-[#F03D4E] text-white font-bold shadow-md' : 'text-slate-700 hover:bg-black/5 dark:text-[#f3f4f6] dark:hover:bg-white/10 dark:hover:text-white'}`} style={{ fontFamily: FB }}>
+                  <button key={d} onClick={() => handleSelectDate(d)} className={`w-8 h-8 mx-auto rounded-full text-xs flex items-center justify-center transition-all cursor-pointer ${isSelected ? 'bg-[color:var(--sk-brand)] text-white font-bold shadow-md' : 'text-slate-700 hover:bg-black/5 dark:text-[#f3f4f6] dark:hover:bg-white/10 dark:hover:text-white'}`} style={{ fontFamily: FB }}>
                     {d}
                   </button>
                 );
@@ -3140,7 +3130,7 @@ function GlassDatePicker({ value, onChange, defaultTime = "12:00" }: { value: st
 
             <div className="mt-5 pt-4 border-t border-slate-200 dark:border-white/10 flex items-center justify-between">
               <span className="text-xs text-slate-600 dark:text-[#888] font-semibold" style={{ fontFamily: FM }}>Time</span>
-              <input type="time" className="bg-transparent border border-slate-300 dark:border-white/10 rounded-md px-2.5 py-1 text-xs text-[#1e1b26] dark:text-white outline-none focus:border-[#F03D4E] transition-all cursor-pointer" style={{ colorScheme: isDark ? "dark" : "light", fontFamily: FB, cursor: "pointer" }} value={timeStr} onChange={handleTimeChange} />
+              <input type="time" className="bg-transparent border border-slate-300 dark:border-white/10 rounded-md px-2.5 py-1 text-xs text-[color:var(--sk-fg)] dark:text-white outline-none focus:border-[color:var(--sk-brand)] transition-all cursor-pointer" style={{ colorScheme: isDark ? "dark" : "light", fontFamily: FB, cursor: "pointer" }} value={timeStr} onChange={handleTimeChange} />
             </div>
 
             <div className="mt-4 pt-4 border-t border-slate-200 dark:border-white/5 text-right">
@@ -3215,22 +3205,22 @@ function GlassSelect({
         }}
         className="glass-select-trigger w-full rounded-xl px-4 py-3 text-sm cursor-pointer flex items-center justify-between transition-all outline-none select-none"
         style={{
-          background: isDark ? "rgba(255,255,255,0.02)" : "#e4e7ee",
+          background: "var(--sk-raised)",
           border: error
-            ? "1px solid rgba(240,61,78,0.7)"
+            ? "1px solid color-mix(in srgb, var(--sk-brand) 70%, transparent)"
             : open
-              ? (isDark ? "1px solid rgba(255,255,255,0.3)" : "1px solid #F03D4E")
-              : (isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.12)"),
+              ? (isDark ? "1px solid rgba(255,255,255,0.3)" : "1px solid var(--sk-brand)")
+              : ("1px solid var(--sk-line)"),
           fontFamily: FB,
           boxShadow: open
-            ? (isDark ? "0 0 0 1px rgba(240,61,78,0.4)" : "0 0 0 1px rgba(240,61,78,0.3)")
+            ? (isDark ? "0 0 0 1px color-mix(in srgb, var(--sk-brand) 40%, transparent)" : "0 0 0 1px color-mix(in srgb, var(--sk-brand) 30%, transparent)")
             : "none",
         }}
       >
         <span
           className={
             selectedOption
-              ? (isDark ? "text-white font-medium" : "text-[#1e1b26] font-semibold")
+              ? (isDark ? "text-white font-medium" : "text-[color:var(--sk-fg)] font-semibold")
               : (isDark ? "text-[#888]" : "text-slate-500")
           }
         >
@@ -3243,7 +3233,7 @@ function GlassSelect({
         >
           <ChevronDown
             size={16}
-            className={open ? "text-[#F03D4E]" : (isDark ? "text-white/40" : "text-slate-500")}
+            className={open ? "text-[color:var(--sk-brand)]" : (isDark ? "text-white/40" : "text-slate-500")}
           />
         </motion.div>
       </div>
@@ -3257,8 +3247,8 @@ function GlassSelect({
             transition={{ duration: 0.15, ease: "easeOut" }}
             className="absolute z-50 left-0 right-0 top-full rounded-xl p-1.5 shadow-2xl backdrop-blur-xl overflow-hidden"
             style={{
-              background: isDark ? "rgba(18, 18, 20, 0.98)" : "#ffffff",
-              border: isDark ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(0,0,0,0.12)",
+              background: isDark ? "rgba(18, 18, 20, 0.98)" : "var(--sk-surface)",
+              border: "1px solid var(--sk-line)",
               boxShadow: isDark
                 ? "0 20px 40px -10px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.05)"
                 : "0 15px 35px -5px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.06)",
@@ -3277,11 +3267,11 @@ function GlassSelect({
                     className={`w-full px-3.5 py-2.5 rounded-lg text-left transition-all cursor-pointer flex items-center justify-between ${
                       isSelected
                         ? (isDark
-                            ? "bg-[#F03D4E]/15 text-white"
-                            : "bg-[#F03D4E]/10 text-[#F03D4E]")
+                            ? "bg-[color:var(--sk-brand)]/15 text-white"
+                            : "bg-[color:var(--sk-brand)]/10 text-[color:var(--sk-brand)]")
                         : (isDark
                             ? "hover:bg-white/5 text-[#d1d5db] hover:text-white"
-                            : "hover:bg-slate-100 text-[#1e1b26] hover:text-[#0f172a]")
+                            : "hover:bg-slate-100 text-[color:var(--sk-fg)] hover:text-[#0f172a]")
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -3295,12 +3285,12 @@ function GlassSelect({
                       </span>
                       {opt.badge && (
                         <span
-                          className="text-[10px] px-1.5 py-0.5 rounded-full uppercase tracking-wider"
+                          className="text-[10px] px-1.5 py-0.5 rounded-full tracking-normal"
                           style={{
                             background: isSelected
-                              ? (isDark ? "rgba(240,61,78,0.3)" : "rgba(240,61,78,0.2)")
-                              : (isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)"),
-                            color: isSelected ? "#F03D4E" : (isDark ? "#aaa" : "#666"),
+                              ? (isDark ? "color-mix(in srgb, var(--sk-brand) 30%, transparent)" : "color-mix(in srgb, var(--sk-brand) 20%, transparent)")
+                              : ("var(--sk-line)"),
+                            color: isSelected ? "var(--sk-brand)" : (isDark ? "#aaa" : "#666"),
                             fontFamily: FM,
                           }}
                         >
@@ -3311,7 +3301,7 @@ function GlassSelect({
                     {isSelected && (
                       <Check
                         size={16}
-                        className="text-[#F03D4E] flex-shrink-0 ml-2"
+                        className="text-[color:var(--sk-brand)] flex-shrink-0 ml-2"
                         strokeWidth={2.5}
                       />
                     )}
@@ -3502,10 +3492,10 @@ function CreateEventPage({ clubId, onCreated, getToken, clubQrUrl, clubUpiId, re
         <h1 className="text-2xl md:text-3xl font-semibold text-white" style={{ fontFamily: FC }}>Create New Event</h1>
       </div>
 
-      <div className="space-y-6 p-6 md:p-8 rounded-3xl" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
+      <div className="space-y-6 p-6 md:p-8 rounded-xl" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
 
         <div className="space-y-1.5">
-          <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Event Banner</label>
+          <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Event Banner</label>
           <input type="file" accept="image/*" className="hidden" id="banner-upload" onChange={e => {
             const file = e.target.files?.[0];
             if (file) {
@@ -3528,58 +3518,58 @@ function CreateEventPage({ clubId, onCreated, getToken, clubQrUrl, clubUpiId, re
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Event Name</label>
-          <input type="text" placeholder="e.g. CodeFest© 2026" className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all" style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.title ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }} value={formData.title} onChange={e => { setFormData(p => ({...p, title: e.target.value})); setFieldErrors(fe => ({...fe, title: ""})); }} onFocus={e => e.currentTarget.style.borderColor = fieldErrors.title ? "rgba(240,61,78,0.8)" : "rgba(255,255,255,0.3)"} onBlur={e => e.currentTarget.style.borderColor = fieldErrors.title ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"} />
-          {fieldErrors.title && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{fieldErrors.title}</p>}
+          <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Event Name</label>
+          <input type="text" placeholder="e.g. CodeFest© 2026" className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all" style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.title ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }} value={formData.title} onChange={e => { setFormData(p => ({...p, title: e.target.value})); setFieldErrors(fe => ({...fe, title: ""})); }} onFocus={e => e.currentTarget.style.borderColor = fieldErrors.title ? "color-mix(in srgb, var(--sk-danger) 80%, transparent)" : "rgba(255,255,255,0.3)"} onBlur={e => e.currentTarget.style.borderColor = fieldErrors.title ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"} />
+          {fieldErrors.title && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{fieldErrors.title}</p>}
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-1.5">
-            <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Start Date &amp; Time</label>
+            <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Start Date &amp; Time</label>
             <GlassDatePicker value={formData.date} onChange={v => {
               setFormData(p => ({...p, date: v}));
               setFieldErrors(fe => ({...fe, date: ""}));
             }} />
-            {fieldErrors.date && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{fieldErrors.date}</p>}
+            {fieldErrors.date && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{fieldErrors.date}</p>}
           </div>
           <div className="space-y-1.5">
-            <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>End Date &amp; Time</label>
+            <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>End Date &amp; Time</label>
             <GlassDatePicker value={formData.endDate} onChange={v => { setFormData(p => ({...p, endDate: v})); setFieldErrors(fe => ({...fe, endDate: ""})); }} defaultTime="23:59" />
-            {fieldErrors.endDate && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{fieldErrors.endDate}</p>}
+            {fieldErrors.endDate && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{fieldErrors.endDate}</p>}
           </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-1.5">
-            <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Registration Deadline <span className="normal-case tracking-normal opacity-60">(optional)</span></label>
+            <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Registration Deadline <span className="normal-case tracking-normal opacity-60">(optional)</span></label>
             <GlassDatePicker value={formData.deadline} onChange={v => { setFormData(p => ({...p, deadline: v})); setFieldErrors(fe => ({...fe, deadline: ""})); }} defaultTime="23:59" />
             {!formData.deadline && !fieldErrors.deadline && <p className="text-[11px] mt-1 opacity-60" style={{ fontFamily: FB }}>Leave empty: registration stays open until the event starts or fills up.</p>}
-            {fieldErrors.deadline && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{fieldErrors.deadline}</p>}
+            {fieldErrors.deadline && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{fieldErrors.deadline}</p>}
           </div>
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Description</label>
-          <textarea placeholder="Describe your event..." className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all min-h-[100px]" style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.desc ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }} value={formData.desc} onChange={e => { setFormData(p => ({...p, desc: e.target.value})); setFieldErrors(fe => ({...fe, desc: ""})); }} onFocus={e => e.currentTarget.style.borderColor = fieldErrors.desc ? "rgba(240,61,78,0.8)" : "rgba(255,255,255,0.3)"} onBlur={e => e.currentTarget.style.borderColor = fieldErrors.desc ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"} />
-          {fieldErrors.desc && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{fieldErrors.desc}</p>}
+          <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Description</label>
+          <textarea placeholder="Describe your event..." className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all min-h-[100px]" style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.desc ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }} value={formData.desc} onChange={e => { setFormData(p => ({...p, desc: e.target.value})); setFieldErrors(fe => ({...fe, desc: ""})); }} onFocus={e => e.currentTarget.style.borderColor = fieldErrors.desc ? "color-mix(in srgb, var(--sk-danger) 80%, transparent)" : "rgba(255,255,255,0.3)"} onBlur={e => e.currentTarget.style.borderColor = fieldErrors.desc ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"} />
+          {fieldErrors.desc && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{fieldErrors.desc}</p>}
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
           <div className="space-y-1.5">
-            <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Venue</label>
-            <input type="text" placeholder="Main Auditorium" className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all" style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.venue ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }} value={formData.venue} onChange={e => { setFormData(p => ({...p, venue: e.target.value})); setFieldErrors(fe => ({...fe, venue: ""})); }} onFocus={e => e.currentTarget.style.borderColor = fieldErrors.venue ? "rgba(240,61,78,0.8)" : "rgba(255,255,255,0.3)"} onBlur={e => e.currentTarget.style.borderColor = fieldErrors.venue ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"} />
-            {fieldErrors.venue && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{fieldErrors.venue}</p>}
+            <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Venue</label>
+            <input type="text" placeholder="Main Auditorium" className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all" style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.venue ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }} value={formData.venue} onChange={e => { setFormData(p => ({...p, venue: e.target.value})); setFieldErrors(fe => ({...fe, venue: ""})); }} onFocus={e => e.currentTarget.style.borderColor = fieldErrors.venue ? "color-mix(in srgb, var(--sk-danger) 80%, transparent)" : "rgba(255,255,255,0.3)"} onBlur={e => e.currentTarget.style.borderColor = fieldErrors.venue ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"} />
+            {fieldErrors.venue && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{fieldErrors.venue}</p>}
           </div>
           <div className="space-y-1.5">
-            <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Venue Capacity</label>
-            <input type="number" placeholder="e.g. 200" min={formData.eventType === "Team" && formData.teamSizeLimit ? parseInt(formData.teamSizeLimit) : 2} className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all" style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.capacity ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }} value={formData.capacity} onChange={e => { setFormData(p => ({...p, capacity: e.target.value})); setFieldErrors(fe => ({...fe, capacity: ""})); }} onFocus={e => e.currentTarget.style.borderColor = fieldErrors.capacity ? "rgba(240,61,78,0.8)" : "rgba(255,255,255,0.3)"} onBlur={e => e.currentTarget.style.borderColor = fieldErrors.capacity ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"} />
+            <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Venue Capacity</label>
+            <input type="number" placeholder="e.g. 200" min={formData.eventType === "Team" && formData.teamSizeLimit ? parseInt(formData.teamSizeLimit) : 2} className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all" style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.capacity ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }} value={formData.capacity} onChange={e => { setFormData(p => ({...p, capacity: e.target.value})); setFieldErrors(fe => ({...fe, capacity: ""})); }} onFocus={e => e.currentTarget.style.borderColor = fieldErrors.capacity ? "color-mix(in srgb, var(--sk-danger) 80%, transparent)" : "rgba(255,255,255,0.3)"} onBlur={e => e.currentTarget.style.borderColor = fieldErrors.capacity ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"} />
             {formData.eventType === "Team" && formData.teamSizeLimit && (
               <p className="text-[10px] text-[#a1a1aa] mt-0.5" style={{ fontFamily: FM }}>Minimum venue capacity is {formData.teamSizeLimit} (Max Team Size).</p>
             )}
-            {fieldErrors.capacity && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{fieldErrors.capacity}</p>}
+            {fieldErrors.capacity && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{fieldErrors.capacity}</p>}
           </div>
           <div className="space-y-1.5 relative">
-            <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Pricing</label>
+            <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Pricing</label>
             <GlassSelect
               value={formData.type}
               onChange={val => setFormData(p => ({...p, type: val, amount: "", memberAmount: "", qrCode: "", customUpiId: ""}))}
@@ -3598,7 +3588,7 @@ function CreateEventPage({ clubId, onCreated, getToken, clubQrUrl, clubUpiId, re
 
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-1.5 relative">
-            <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Participation Type</label>
+            <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Participation Type</label>
             <GlassSelect
               value={formData.eventType}
               onChange={val => setFormData(p => ({...p, eventType: val, minTeamSize: val === "Team" ? (p.minTeamSize || "1") : "", teamSizeLimit: ""}))}
@@ -3617,14 +3607,14 @@ function CreateEventPage({ clubId, onCreated, getToken, clubQrUrl, clubUpiId, re
                 className="grid grid-cols-2 gap-4"
               >
                 <div className="space-y-1.5">
-                  <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Min Team Size</label>
+                  <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Min Team Size</label>
                   <input
                     type="number"
                     placeholder="Min (e.g. 1)"
                     min={1}
                     max={formData.teamSizeLimit ? parseInt(formData.teamSizeLimit) : undefined}
                     className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all"
-                    style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.minTeamSize ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }}
+                    style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.minTeamSize ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }}
                     value={formData.minTeamSize}
                     onKeyDown={e => { if (["-", "e", "+", "."].includes(e.key)) e.preventDefault(); }}
                     onChange={e => {
@@ -3632,19 +3622,19 @@ function CreateEventPage({ clubId, onCreated, getToken, clubQrUrl, clubUpiId, re
                       setFormData(p => ({ ...p, minTeamSize: v }));
                       setFieldErrors(fe => ({ ...fe, minTeamSize: "" }));
                     }}
-                    onFocus={e => e.currentTarget.style.borderColor = fieldErrors.minTeamSize ? "rgba(240,61,78,0.8)" : "rgba(255,255,255,0.3)"}
-                    onBlur={e => e.currentTarget.style.borderColor = fieldErrors.minTeamSize ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"}
+                    onFocus={e => e.currentTarget.style.borderColor = fieldErrors.minTeamSize ? "color-mix(in srgb, var(--sk-danger) 80%, transparent)" : "rgba(255,255,255,0.3)"}
+                    onBlur={e => e.currentTarget.style.borderColor = fieldErrors.minTeamSize ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"}
                   />
-                  {fieldErrors.minTeamSize && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{fieldErrors.minTeamSize}</p>}
+                  {fieldErrors.minTeamSize && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{fieldErrors.minTeamSize}</p>}
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Max Team Size</label>
+                  <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Max Team Size</label>
                   <input
                     type="number"
                     placeholder="Max (e.g. 4)"
                     min={parseInt(formData.minTeamSize || '1')}
                     className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all"
-                    style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.teamSizeLimit ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }}
+                    style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.teamSizeLimit ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }}
                     value={formData.teamSizeLimit}
                     onKeyDown={e => { if (["-", "e", "+", "."].includes(e.key)) e.preventDefault(); }}
                     onChange={e => {
@@ -3652,10 +3642,10 @@ function CreateEventPage({ clubId, onCreated, getToken, clubQrUrl, clubUpiId, re
                       setFormData(p => ({ ...p, teamSizeLimit: v }));
                       setFieldErrors(fe => ({ ...fe, teamSizeLimit: "" }));
                     }}
-                    onFocus={e => e.currentTarget.style.borderColor = fieldErrors.teamSizeLimit ? "rgba(240,61,78,0.8)" : "rgba(255,255,255,0.3)"}
-                    onBlur={e => e.currentTarget.style.borderColor = fieldErrors.teamSizeLimit ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"}
+                    onFocus={e => e.currentTarget.style.borderColor = fieldErrors.teamSizeLimit ? "color-mix(in srgb, var(--sk-danger) 80%, transparent)" : "rgba(255,255,255,0.3)"}
+                    onBlur={e => e.currentTarget.style.borderColor = fieldErrors.teamSizeLimit ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"}
                   />
-                  {fieldErrors.teamSizeLimit && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{fieldErrors.teamSizeLimit}</p>}
+                  {fieldErrors.teamSizeLimit && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{fieldErrors.teamSizeLimit}</p>}
                 </div>
               </motion.div>
             )}
@@ -3670,22 +3660,22 @@ function CreateEventPage({ clubId, onCreated, getToken, clubQrUrl, clubUpiId, re
               exit={{ height: 0, opacity: 0, marginTop: 0 }}
               className="overflow-hidden"
             >
-              <div className="p-6 rounded-2xl grid md:grid-cols-2 gap-6" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
+              <div className="p-6 rounded-xl grid md:grid-cols-2 gap-6" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
                 <div className="space-y-1.5">
-                  <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Amount (INR)</label>
-                  <input type="number" placeholder="e.g. 500" className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all" style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.amount ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }} value={formData.amount} onChange={e => { setFormData(p => ({...p, amount: e.target.value})); setFieldErrors(fe => ({...fe, amount: ""})); }} onFocus={e => e.currentTarget.style.borderColor = fieldErrors.amount ? "rgba(240,61,78,0.8)" : "rgba(255,255,255,0.3)"} onBlur={e => e.currentTarget.style.borderColor = fieldErrors.amount ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"} />
-                  {fieldErrors.amount && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{fieldErrors.amount}</p>}
+                  <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Amount (INR)</label>
+                  <input type="number" placeholder="e.g. 500" className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all" style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.amount ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }} value={formData.amount} onChange={e => { setFormData(p => ({...p, amount: e.target.value})); setFieldErrors(fe => ({...fe, amount: ""})); }} onFocus={e => e.currentTarget.style.borderColor = fieldErrors.amount ? "color-mix(in srgb, var(--sk-danger) 80%, transparent)" : "rgba(255,255,255,0.3)"} onBlur={e => e.currentTarget.style.borderColor = fieldErrors.amount ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"} />
+                  {fieldErrors.amount && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{fieldErrors.amount}</p>}
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Member price (₹, optional)</label>
-                  <input type="number" min={0} placeholder="Leave empty for no member discount" aria-label="Member price" className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all" style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.memberAmount ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }} value={formData.memberAmount} onChange={e => { setFormData(p => ({...p, memberAmount: e.target.value})); setFieldErrors(fe => ({...fe, memberAmount: ""})); }} />
-                  {fieldErrors.memberAmount && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{fieldErrors.memberAmount}</p>}
+                  <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Member price (₹, optional)</label>
+                  <input type="number" min={0} placeholder="Leave empty for no member discount" aria-label="Member price" className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all" style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.memberAmount ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }} value={formData.memberAmount} onChange={e => { setFormData(p => ({...p, memberAmount: e.target.value})); setFieldErrors(fe => ({...fe, memberAmount: ""})); }} />
+                  {fieldErrors.memberAmount && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{fieldErrors.memberAmount}</p>}
                   <p className="text-[11px] text-[#9ca3af]" style={{ fontFamily: FB }}>Active club members pay this instead of the amount above.</p>
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block" style={{ fontFamily: FM }}>Payment Setup</label>
+                  <label className="text-[11px] tracking-normal text-[#f3f4f6] block" style={{ fontFamily: FM }}>Payment Setup</label>
                   <div className="flex gap-2 p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}>
                     <button onClick={() => setFormData(p => ({...p, useDefaultQr: true, customUpiId: ""}))} className={`flex-1 py-2 text-xs rounded-lg transition-all ${formData.useDefaultQr ? "bg-white/10 text-white" : "text-[#888] hover:text-[#ccc]"}`} style={{ fontFamily: FB }}>Default QR &amp; UPI</button>
                     <button onClick={() => setFormData(p => ({...p, useDefaultQr: false}))} className={`flex-1 py-2 text-xs rounded-lg transition-all ${!formData.useDefaultQr ? "bg-white/10 text-white" : "text-[#888] hover:text-[#ccc]"}`} style={{ fontFamily: FB }}>Custom QR &amp; UPI</button>
@@ -3694,7 +3684,7 @@ function CreateEventPage({ clubId, onCreated, getToken, clubQrUrl, clubUpiId, re
                   {!formData.useDefaultQr && (
                     <div className="space-y-3 pt-1">
                       <div>
-                        <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block mb-1" style={{ fontFamily: FM }}>Upload Custom QR Image</label>
+                        <label className="text-[11px] tracking-normal text-[#f3f4f6] block mb-1" style={{ fontFamily: FM }}>Upload Custom QR Image</label>
                         <input type="file" accept="image/*" className="hidden" id="qr-upload" onChange={e => {
                           const file = e.target.files?.[0];
                           if (file) {
@@ -3702,26 +3692,26 @@ function CreateEventPage({ clubId, onCreated, getToken, clubQrUrl, clubUpiId, re
                             setFieldErrors(fe => ({...fe, qrCode: ""}));
                           }
                         }} />
-                        <label htmlFor="qr-upload" className="w-full rounded-xl px-4 py-3 text-sm text-[#cccccc] flex items-center justify-between cursor-pointer transition-all hover:bg-white/[0.04]" style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.qrCode ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }}>
+                        <label htmlFor="qr-upload" className="w-full rounded-xl px-4 py-3 text-sm text-[#cccccc] flex items-center justify-between cursor-pointer transition-all hover:bg-white/[0.04]" style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.qrCode ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }}>
                           <span>{formData.qrFile ? formData.qrFile.name : "Upload Custom QR Image..."}</span>
                           <Upload size={14} className={formData.qrFile ? "text-green-400" : ""} />
                         </label>
-                        {fieldErrors.qrCode && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{fieldErrors.qrCode}</p>}
+                        {fieldErrors.qrCode && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{fieldErrors.qrCode}</p>}
                       </div>
 
                       <div>
-                        <label className="text-[11px] uppercase tracking-widest text-[#f3f4f6] block mb-1" style={{ fontFamily: FM }}>Custom UPI ID (for this event)</label>
+                        <label className="text-[11px] tracking-normal text-[#f3f4f6] block mb-1" style={{ fontFamily: FM }}>Custom UPI ID (for this event)</label>
                         <input
                           type="text"
                           placeholder="e.g. event@upi"
                           className="w-full rounded-xl px-4 py-3 text-sm text-white outline-none transition-all"
-                          style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.customUpiId ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }}
+                          style={{ background: "rgba(255,255,255,0.02)", border: `1px solid ${fieldErrors.customUpiId ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"}`, fontFamily: FB }}
                           value={formData.customUpiId}
                           onChange={e => { setFormData(p => ({...p, customUpiId: e.target.value})); setFieldErrors(fe => ({...fe, customUpiId: ""})); }}
-                          onFocus={e => e.currentTarget.style.borderColor = fieldErrors.customUpiId ? "rgba(240,61,78,0.8)" : "rgba(255,255,255,0.3)"}
-                          onBlur={e => e.currentTarget.style.borderColor = fieldErrors.customUpiId ? "rgba(240,61,78,0.6)" : "rgba(255,255,255,0.1)"}
+                          onFocus={e => e.currentTarget.style.borderColor = fieldErrors.customUpiId ? "color-mix(in srgb, var(--sk-danger) 80%, transparent)" : "rgba(255,255,255,0.3)"}
+                          onBlur={e => e.currentTarget.style.borderColor = fieldErrors.customUpiId ? "color-mix(in srgb, var(--sk-danger) 60%, transparent)" : "rgba(255,255,255,0.1)"}
                         />
-                        {fieldErrors.customUpiId && <p className="text-[11px] text-[#F03D4E] mt-1" style={{ fontFamily: FB }}>{fieldErrors.customUpiId}</p>}
+                        {fieldErrors.customUpiId && <p className="text-[11px] text-[color:var(--sk-danger)] mt-1" style={{ fontFamily: FB }}>{fieldErrors.customUpiId}</p>}
                       </div>
                     </div>
                   )}
@@ -3733,14 +3723,14 @@ function CreateEventPage({ clubId, onCreated, getToken, clubQrUrl, clubUpiId, re
                           <CheckCircle size={13} /> Default UPI ID: {clubUpiId}
                         </div>
                       ) : (
-                        <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-xs space-y-1.5" style={{ fontFamily: FB }}>
+                        <div className="p-3.5 rounded-xl bg-[color:var(--sk-danger-soft)] border border-[color:var(--sk-danger)]/30 text-xs space-y-1.5" style={{ fontFamily: FB }}>
                           {!clubQrUrl && (
-                            <p className="text-[#F03D4E] font-medium flex items-center gap-1.5">
+                            <p className="text-[color:var(--sk-brand)] font-medium flex items-center gap-1.5">
                               ⚠️ Default Payment QR Code is not uploaded in Settings.
                             </p>
                           )}
                           {!clubUpiId && (
-                            <p className="text-[#F03D4E] font-medium flex items-center gap-1.5">
+                            <p className="text-[color:var(--sk-brand)] font-medium flex items-center gap-1.5">
                               ⚠️ Default Payment UPI ID is not added in Settings.
                             </p>
                           )}
@@ -3758,7 +3748,7 @@ function CreateEventPage({ clubId, onCreated, getToken, clubQrUrl, clubUpiId, re
         </AnimatePresence>
 
         {error && (
-          <p className="text-xs text-[#F03D4E] px-1" style={{ fontFamily: FM }}>{error}</p>
+          <p className="text-xs text-[color:var(--sk-danger)] px-1" style={{ fontFamily: FM }}>{error}</p>
         )}
         <div className="pt-4 mt-8">
           <motion.button 
@@ -3766,9 +3756,9 @@ function CreateEventPage({ clubId, onCreated, getToken, clubQrUrl, clubUpiId, re
             whileTap={submitting ? undefined : { scale: 0.98 }} 
             onClick={handleSubmit} 
             disabled={submitting} 
-            className={`px-8 py-3.5 bg-[#F03D4E] text-white text-sm font-semibold rounded-xl transition-all ${submitting ? "opacity-50 cursor-not-allowed pointer-events-none" : "cursor-pointer"}`} 
+            className={`px-8 py-3.5 bg-[color:var(--sk-brand)] text-white text-sm font-semibold rounded-xl transition-all ${submitting ? "opacity-50 cursor-not-allowed pointer-events-none" : "cursor-pointer"}`} 
             style={{ fontFamily: FB }} 
-            onMouseEnter={e => !submitting && (e.currentTarget.style.boxShadow = "0 0 35px rgba(240,61,78,0.35)")} 
+            onMouseEnter={e => !submitting && (e.currentTarget.style.boxShadow = "none")} 
             onMouseLeave={e => !submitting && (e.currentTarget.style.boxShadow = "none")}
           >
             {submitting ? (
@@ -3786,8 +3776,23 @@ function CreateEventPage({ clubId, onCreated, getToken, clubQrUrl, clubUpiId, re
   );
 }
 
-function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: any; profile: any; getToken: () => Promise<string | null>; onUpdate: () => void; onLogout: () => void }) {
+function SettingsPage({ club: listedClub, profile, getToken, onUpdate, onLogout }: { club: any; profile: any; getToken: () => Promise<string | null>; onUpdate: () => void; onLogout: () => void }) {
   const user = profile;
+  // The public club list has no email, so load the club's own profile for this page.
+  const [ownClub, setOwnClub] = useState<any>(null);
+  const clubId = listedClub?.id ?? profile?.clubId;
+  useEffect(() => {
+    if (!clubId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await fetchClubProfile(clubId, (await getToken()) ?? undefined);
+        if (!cancelled) setOwnClub(data.club);
+      } catch { /* the form still works with the listed data */ }
+    })();
+    return () => { cancelled = true; };
+  }, [clubId, getToken]);
+  const club = ownClub ?? listedClub;
   const isSocialLogin = false; 
 
   const [formData, setFormData] = useState({
@@ -3822,6 +3827,7 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
 
   const isDirty =
     formData.name !== (club?.name || "") ||
+    formData.email.trim().toLowerCase() !== (club?.email || "").toLowerCase() ||
     formData.upiId !== (club?.upiId || "") ||
     !!logoFile ||
     !!qrFile;
@@ -3952,8 +3958,14 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
         logoUrl: finalLogoUrl,
       }, token || undefined);
 
-      setSuccessMsg("Settings saved successfully!");
+      setSuccessMsg("Settings saved.");
       setTimeout(() => setSuccessMsg(null), 4000);
+      setLogoFile(null);
+      setQrFile(null);
+      try {
+        const fresh = await fetchClubProfile(club.id, (await getToken()) ?? undefined);
+        setOwnClub(fresh.club);
+      } catch { /* list refresh below still runs */ }
       onUpdate();
     } catch (e: any) {
       setError(sanitizeErrorMessage(e, "Failed to update settings. Please try again."));
@@ -3965,74 +3977,77 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
   return (
     <div className="p-5 md:p-8 lg:p-10 space-y-8 max-w-4xl relative">
       <div>
-        <h1 className="text-2xl md:text-3xl font-semibold text-[#1e1b26] dark:text-white" style={{ fontFamily: FC }}>Settings</h1>
+        <h1 className="text-2xl md:text-3xl font-semibold text-[color:var(--sk-fg)] dark:text-white" style={{ fontFamily: FC }}>Settings</h1>
       </div>
 
       <div className="space-y-6">
         
-        <div className="p-6 md:p-8 rounded-3xl" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
-          <h2 className="text-lg font-medium text-[#1e1b26] dark:text-white mb-6" style={{ fontFamily: FB }}>Profile Settings</h2>
+        <div className="p-6 md:p-8 rounded-xl" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
+          <h2 className="text-lg font-medium text-[color:var(--sk-fg)] dark:text-white mb-6" style={{ fontFamily: FB }}>Profile Settings</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-1.5">
-              <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Club Name</label>
-              <input type="text" placeholder="e.g. Demo Club" value={formData.name} onChange={e => setFormData(p => ({ ...p, name: e.target.value }))} className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }} onFocus={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)"} onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"} />
+              <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Club Name</label>
+              <input type="text" placeholder="e.g. Demo Club" value={formData.name} onChange={e => setFormData(p => ({ ...p, name: e.target.value }))} className="w-full rounded-xl px-4 py-3 text-sm text-[color:var(--sk-fg)] dark:text-white outline-none transition-all" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }} onFocus={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)"} onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Contact Email</label>
-              <input type="email" value={formData.email} disabled readOnly className="w-full rounded-xl px-4 py-3 text-sm text-slate-500 dark:text-white/50 bg-slate-100 dark:bg-white/[0.01] border border-slate-200 dark:border-white/5 cursor-not-allowed outline-none select-none" style={{ fontFamily: FB }} />
+              <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Contact Email</label>
+              <input type="email" value={formData.email} onChange={e => setFormData(f => ({ ...f, email: e.target.value }))} aria-label="Club email" className="w-full h-10 rounded-lg px-3 text-sm outline-none border border-[color:var(--sk-line-strong)] bg-[color:var(--sk-surface)] text-[color:var(--sk-fg)] focus:border-[color:var(--sk-fg)]" style={{ fontFamily: FB }} />
             </div>
             <div className="space-y-1.5 md:col-span-2">
-              <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Club Logo</label>
+              <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Club Logo</label>
               <input type="file" accept="image/*" className="hidden" id="logo-upload-settings" onChange={e => {
                 const file = e.target.files?.[0];
                 if (file) setLogoFile(file);
               }} />
-              <label htmlFor="logo-upload-settings" className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-[#cccccc] flex items-center justify-between cursor-pointer transition-all hover:bg-slate-100 dark:hover:bg-white/[0.04]" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }}>
+              <label htmlFor="logo-upload-settings" className="w-full rounded-xl px-4 py-3 text-sm text-[color:var(--sk-fg)] dark:text-[#cccccc] flex items-center justify-between cursor-pointer transition-all hover:bg-slate-100 dark:hover:bg-white/[0.04]" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }}>
                 <span>{logoFile ? logoFile.name : (isLogoUploaded ? "Logo Uploaded (Click to change)" : "Upload Logo Image...")}</span>
                 <Upload size={14} className={logoFile || isLogoUploaded ? "text-green-500" : ""} />
               </label>
               {!isLogoUploaded && !logoFile && (
-                <p className="text-[11px] text-[#F03D4E] mt-1.5 font-medium" style={{ fontFamily: FM }}>Logo not uploaded yet</p>
+                <p className="text-[11px] text-[color:var(--sk-brand)] mt-1.5 font-medium" style={{ fontFamily: FM }}>Logo not uploaded yet</p>
               )}
             </div>
           </div>
         </div>
 
-        <div id="payment-settings" className="p-6 md:p-8 rounded-3xl" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
-          <h2 className="text-lg font-medium text-[#1e1b26] dark:text-white mb-6" style={{ fontFamily: FB }}>Payment Settings</h2>
+        <div id="payment-settings" className="p-6 md:p-8 rounded-xl" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
+          <h2 className="text-lg font-medium text-[color:var(--sk-fg)] dark:text-white mb-6" style={{ fontFamily: FB }}>Payment Settings</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-1.5">
-              <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Default UPI ID</label>
-              <input type="text" placeholder="club@upi" value={formData.upiId} onChange={e => setFormData(p => ({ ...p, upiId: e.target.value }))} className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }} onFocus={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)"} onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"} />
+              <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Default UPI ID</label>
+              <input type="text" placeholder="club@upi" value={formData.upiId} onChange={e => setFormData(p => ({ ...p, upiId: e.target.value }))} className="w-full rounded-xl px-4 py-3 text-sm text-[color:var(--sk-fg)] dark:text-white outline-none transition-all" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }} onFocus={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)"} onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"} />
               {!formData.upiId && (
-                <p className="text-[11px] text-[#F03D4E] mt-1.5 font-medium" style={{ fontFamily: FM }}>UPI ID not added yet</p>
+                <p className="text-[11px] text-[color:var(--sk-brand)] mt-1.5 font-medium" style={{ fontFamily: FM }}>UPI ID not added yet</p>
               )}
             </div>
             <div className="space-y-1.5">
-              <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Default QR Code</label>
+              <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Default QR Code</label>
               <input type="file" accept="image/*" className="hidden" id="qr-upload-settings" onChange={e => {
                 const file = e.target.files?.[0];
                 if (file) setQrFile(file);
               }} />
-              <label htmlFor="qr-upload-settings" className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-[#cccccc] flex items-center justify-between cursor-pointer transition-all hover:bg-slate-100 dark:hover:bg-white/[0.04]" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }}>
+              <label htmlFor="qr-upload-settings" className="w-full rounded-xl px-4 py-3 text-sm text-[color:var(--sk-fg)] dark:text-[#cccccc] flex items-center justify-between cursor-pointer transition-all hover:bg-slate-100 dark:hover:bg-white/[0.04]" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }}>
                 <span>{qrFile ? qrFile.name : (formData.qrUrl ? "QR Uploaded (Click to change)" : "Upload QR Image...")}</span>
                 <Upload size={14} className={qrFile || formData.qrUrl ? "text-green-500" : ""} />
               </label>
               {!formData.qrUrl && !qrFile && (
-                <p className="text-[11px] text-[#F03D4E] mt-1.5 font-medium" style={{ fontFamily: FM }}>QR Code not uploaded yet</p>
+                <p className="text-[11px] text-[color:var(--sk-brand)] mt-1.5 font-medium" style={{ fontFamily: FM }}>QR Code not uploaded yet</p>
               )}
             </div>
           </div>
         </div>
 
-        <div className="p-6 md:p-8 rounded-3xl space-y-3" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
+        <div className="p-6 md:p-8 rounded-xl space-y-3" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-[#1e1b26] dark:text-white font-medium" style={{ fontFamily: FB }}>Save All Settings</p>
+              <p className="text-sm text-[color:var(--sk-fg)] dark:text-white font-medium" style={{ fontFamily: FB }}>Save All Settings</p>
               <p className="text-[11px] text-slate-600 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Apply updates to profile and payment settings.</p>
             </div>
-            <button onClick={handleSaveInit} disabled={!isDirty || isSaving} className="px-6 py-2.5 bg-[#F03D4E] hover:bg-[#F03D4E]/80 text-white text-xs font-bold rounded-lg transition-all shadow-[0_0_20px_rgba(240,61,78,0.3)] hover:shadow-[0_0_30px_rgba(240,61,78,0.5)] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none" style={{ fontFamily: FB }}>Apply Changes</button>
+            <button onClick={handleSaveInit} disabled={!isDirty || isSaving} className="px-6 py-2.5 bg-[color:var(--sk-brand)] hover:bg-[color:var(--sk-brand)]/80 text-white text-xs font-bold rounded-lg transition-all shadow-[0_0_20px_color-mix(in srgb, var(--sk-brand) 30%, transparent)] hover:shadow-[0_0_30px_color-mix(in srgb, var(--sk-brand) 50%, transparent)] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none" style={{ fontFamily: FB }}>Apply Changes</button>
           </div>
+          {error && (
+            <p role="alert" className="pt-2 text-sm font-medium text-[color:var(--sk-danger)]">{error}</p>
+          )}
           <AnimatePresence>
             {successMsg && (
               <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="text-green-600 dark:text-green-400 text-sm font-medium pt-2 flex items-center justify-end gap-1.5" style={{ fontFamily: FB }}>
@@ -4042,14 +4057,14 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
           </AnimatePresence>
         </div>
 
-        <div className="p-6 md:p-8 rounded-3xl" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
+        <div className="p-6 md:p-8 rounded-xl" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.07]">
                 <Mail size={18} className="text-slate-600 dark:text-white/60" />
               </div>
               <div>
-                <p className="text-sm text-[#1e1b26] dark:text-white font-medium" style={{ fontFamily: FB }}>Contact Us</p>
+                <p className="text-sm text-[color:var(--sk-fg)] dark:text-white font-medium" style={{ fontFamily: FB }}>Contact Us</p>
                 <p className="text-[11px] text-slate-600 dark:text-[#888] mt-0.5" style={{ fontFamily: FM }}>Reach out for support or queries</p>
               </div>
             </div>
@@ -4068,22 +4083,22 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
         <AnimatePresence>
           {showPasswordUpdateModal && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-6">
-              <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-sm rounded-3xl p-8 bg-white dark:bg-[#0a0a0a] border border-slate-200 dark:border-white/10 shadow-2xl">
-                <h3 className="text-lg font-semibold text-[#1e1b26] dark:text-white mb-2" style={{ fontFamily: FC }}>Change Password</h3>
+              <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-sm rounded-xl p-8 bg-[color:var(--sk-surface)] dark:bg-[#0a0a0a] border border-slate-200 dark:border-white/10 shadow-2xl">
+                <h3 className="text-lg font-semibold text-[color:var(--sk-fg)] dark:text-white mb-2" style={{ fontFamily: FC }}>Change Password</h3>
                 <p className="text-xs text-slate-600 dark:text-[#999] mb-6" style={{ fontFamily: FB }}>Update your login credentials securely by entering your current and new password.</p>
 
-                {passwordError && <p className="text-xs text-[#F03D4E] font-medium mb-4 text-center" style={{ fontFamily: FB }}>{passwordError}</p>}
+                {passwordError && <p className="text-xs text-[color:var(--sk-danger)] font-medium mb-4 text-center" style={{ fontFamily: FB }}>{passwordError}</p>}
 
                 <div className="space-y-4 mb-6">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] uppercase tracking-widest text-slate-700 dark:text-[#bbbbbb] font-semibold block" style={{ fontFamily: FM }}>Old Password</label>
+                    <label className="text-[10px] tracking-normal text-slate-700 dark:text-[#bbbbbb] font-semibold block" style={{ fontFamily: FM }}>Old Password</label>
                     <div className="relative">
                       <input 
                         type={showOldPassword ? "text" : "password"} 
                         placeholder="Enter current password" 
                         value={oldPassword} 
                         onChange={e => setOldPassword(e.target.value)} 
-                        className="w-full rounded-xl pl-4 pr-12 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all" 
+                        className="w-full rounded-xl pl-4 pr-12 py-3 text-sm text-[color:var(--sk-fg)] dark:text-white outline-none transition-all" 
                         style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }} 
                         onFocus={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)"} 
                         onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"} 
@@ -4100,14 +4115,14 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] uppercase tracking-widest text-slate-700 dark:text-[#bbbbbb] font-semibold block" style={{ fontFamily: FM }}>New Password</label>
+                    <label className="text-[10px] tracking-normal text-slate-700 dark:text-[#bbbbbb] font-semibold block" style={{ fontFamily: FM }}>New Password</label>
                     <div className="relative">
                       <input 
                         type={showNewPassword ? "text" : "password"} 
                         placeholder="Enter new password" 
                         value={newPassword} 
                         onChange={e => setNewPassword(e.target.value)} 
-                        className="w-full rounded-xl pl-4 pr-12 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all" 
+                        className="w-full rounded-xl pl-4 pr-12 py-3 text-sm text-[color:var(--sk-fg)] dark:text-white outline-none transition-all" 
                         style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }} 
                         onFocus={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)"} 
                         onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"} 
@@ -4124,14 +4139,14 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] uppercase tracking-widest text-slate-700 dark:text-[#bbbbbb] font-semibold block" style={{ fontFamily: FM }}>Confirm New Password</label>
+                    <label className="text-[10px] tracking-normal text-slate-700 dark:text-[#bbbbbb] font-semibold block" style={{ fontFamily: FM }}>Confirm New Password</label>
                     <div className="relative">
                       <input 
                         type={showConfirmNewPassword ? "text" : "password"} 
                         placeholder="Confirm new password" 
                         value={confirmNewPassword} 
                         onChange={e => setConfirmNewPassword(e.target.value)} 
-                        className="w-full rounded-xl pl-4 pr-12 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all" 
+                        className="w-full rounded-xl pl-4 pr-12 py-3 text-sm text-[color:var(--sk-fg)] dark:text-white outline-none transition-all" 
                         style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.1)", fontFamily: FB }} 
                         onFocus={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)"} 
                         onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"} 
@@ -4154,7 +4169,7 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
                   <button 
                     onClick={handleUpdatePassword} 
                     disabled={isUpdatingPassword || !!passwordSuccess} 
-                    className={`px-5 py-2.5 text-xs text-white rounded-xl transition-all font-semibold flex items-center gap-2 disabled:opacity-50 ${passwordSuccess ? 'bg-emerald-500 hover:bg-emerald-500' : 'bg-[#F03D4E] hover:bg-[#F03D4E]/80'}`} 
+                    className={`px-5 py-2.5 text-xs text-white rounded-xl transition-all font-semibold flex items-center gap-2 disabled:opacity-50 ${passwordSuccess ? 'bg-emerald-500 hover:bg-emerald-500' : 'bg-[color:var(--sk-brand)] hover:bg-[color:var(--sk-brand)]/80'}`} 
                     style={{ fontFamily: FB }}
                   >
                     {isUpdatingPassword ? (
@@ -4177,10 +4192,10 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
         <AnimatePresence>
           {showPrivacyModal && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-6">
-              <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-2xl rounded-3xl p-8 max-h-[85vh] overflow-y-auto flex flex-col bg-white dark:bg-[#0a0a0a] border border-slate-200 dark:border-white/10 shadow-2xl">
+              <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-2xl rounded-xl p-8 max-h-[85vh] overflow-y-auto flex flex-col bg-[color:var(--sk-surface)] dark:bg-[#0a0a0a] border border-slate-200 dark:border-white/10 shadow-2xl">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-lg font-semibold text-[#1e1b26] dark:text-white" style={{ fontFamily: FC }}>Dashboard Privacy Policy</h3>
+                    <h3 className="text-lg font-semibold text-[color:var(--sk-fg)] dark:text-white" style={{ fontFamily: FC }}>Dashboard Privacy Policy</h3>
                     <p className="text-xs text-slate-500 dark:text-[#999] mt-1" style={{ fontFamily: FB }}>Last Updated: 10th October 2026</p>
                   </div>
                   <button onClick={() => setShowPrivacyModal(false)} className="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white transition-colors">
@@ -4190,37 +4205,37 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
 
                 <div className="flex-1 overflow-y-auto pr-2 space-y-6 text-sm text-slate-700 dark:text-[#ccc] leading-relaxed border-t border-b border-slate-200 dark:border-white/5 py-6" style={{ fontFamily: FB }}>
                   <div>
-                    <h4 className="text-[#1e1b26] dark:text-white font-medium text-sm mb-2">About the SkylineOS Club Dashboard</h4>
+                    <h4 className="text-[color:var(--sk-fg)] dark:text-white font-medium text-sm mb-2">About the SkylineOS Club Dashboard</h4>
                     <p className="text-xs text-slate-600 dark:text-[#bbbbbb]">The SkylineOS Club Dashboard allows authorized clubs to create, publish, and manage events. Once published, these events are visible to users of the SkylineOS mobile application. Clubs can review, manage, approve, or deny participant registrations, including verifying payment proofs.</p>
                   </div>
 
                   <div>
-                    <h4 className="text-[#1e1b26] dark:text-white font-medium text-sm mb-2">Information We Collect From Clubs</h4>
+                    <h4 className="text-[color:var(--sk-fg)] dark:text-white font-medium text-sm mb-2">Information We Collect From Clubs</h4>
                     <p className="text-xs text-slate-600 dark:text-[#bbbbbb]">We collect and store your Club Name, Email Address, UPI ID, UPI QR Code graphics, custom club logos, and event details (title, description, venue, price, capacity limits, banner graphics). New accounts are verified via single-use registration keys.</p>
                   </div>
 
                   <div>
-                    <h4 className="text-[#1e1b26] dark:text-white font-medium text-sm mb-2">Club Authentication (Clerk)</h4>
+                    <h4 className="text-[color:var(--sk-fg)] dark:text-white font-medium text-sm mb-2">Club Authentication (Clerk)</h4>
                     <p className="text-xs text-slate-600 dark:text-[#bbbbbb]">We integrate with Clerk to provide administrator sign-in, session verification, and secure access. Access is restricted using secure JSON Web Tokens. Clubs must maintain credential confidentiality.</p>
                   </div>
 
                   <div>
-                    <h4 className="text-[#1e1b26] dark:text-white font-medium text-sm mb-2">Participant Information Available to Clubs</h4>
+                    <h4 className="text-[color:var(--sk-fg)] dark:text-white font-medium text-sm mb-2">Participant Information Available to Clubs</h4>
                     <p className="text-xs text-slate-600 dark:text-[#bbbbbb]">When users register for your events, we share their Name, USN/Roll Number, Email, Phone, Year, Semester, Branch, UPI Transaction ID (UTR), and payment proof screenshot URL with you to facilitate moderation.</p>
                   </div>
 
                   <div>
-                    <h4 className="text-[#1e1b26] dark:text-white font-medium text-sm mb-2">Handling Participant Information</h4>
+                    <h4 className="text-[color:var(--sk-fg)] dark:text-white font-medium text-sm mb-2">Handling Participant Information</h4>
                     <p className="text-xs text-slate-600 dark:text-[#bbbbbb]">Clubs must process participant data strictly to organize and conduct the event. You must not sell or share participant data with third parties, use it for unrelated spam/marketing, or store downloaded lists insecurely.</p>
                   </div>
 
                   <div>
-                    <h4 className="text-[#1e1b26] dark:text-white font-medium text-sm mb-2">Third-Party Services</h4>
+                    <h4 className="text-[color:var(--sk-fg)] dark:text-white font-medium text-sm mb-2">Third-Party Services</h4>
                     <p className="text-xs text-slate-600 dark:text-[#bbbbbb]">We rely on Clerk (authentication), Supabase Storage (storing logos, posters, and user payment proof screenshots), and PostgreSQL databases to run the infrastructure.</p>
                   </div>
 
                   <div>
-                    <h4 className="text-[#1e1b26] dark:text-white font-medium text-sm mb-2">Contact Us</h4>
+                    <h4 className="text-[color:var(--sk-fg)] dark:text-white font-medium text-sm mb-2">Contact Us</h4>
                     <p className="text-xs text-slate-600 dark:text-[#bbbbbb]">If you have concerns, deactivation requests, or reports of unauthorized dashboard activity, email support at <strong>abhishshetty05@gmail.com</strong>.</p>
                   </div>
                 </div>
@@ -4233,12 +4248,12 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
           )}
         </AnimatePresence>
 
-         <div className="p-8 rounded-3xl" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
-            <h2 className="text-lg font-medium text-[#1e1b26] dark:text-white mb-6" style={{ fontFamily: FB }}>Privacy & Security</h2>
+         <div className="p-8 rounded-xl" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
+            <h2 className="text-lg font-medium text-[color:var(--sk-fg)] dark:text-white mb-6" style={{ fontFamily: FB }}>Privacy & Security</h2>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-[#1e1b26] dark:text-white font-medium" style={{ fontFamily: FB }}>Change Password</p>
+                  <p className="text-sm text-[color:var(--sk-fg)] dark:text-white font-medium" style={{ fontFamily: FB }}>Change Password</p>
                   <p className="text-[11px] text-slate-600 dark:text-[#bbbbbb]" style={{ fontFamily: FM }}>
                     {isSocialLogin 
                       ? "Password managed by your social provider (Google)." 
@@ -4246,7 +4261,7 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
                   </p>
                 </div>
                 {isSocialLogin ? (
-                  <span className="px-3.5 py-1.5 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-[#999] text-[10px] uppercase tracking-wider font-semibold rounded-lg border border-slate-200 dark:border-white/5" style={{ fontFamily: FB }}>
+                  <span className="px-3.5 py-1.5 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-[#999] text-[10px] tracking-normal font-semibold rounded-lg border border-slate-200 dark:border-white/5" style={{ fontFamily: FB }}>
                     Social Login
                   </span>
                 ) : (
@@ -4256,18 +4271,18 @@ function SettingsPage({ club, profile, getToken, onUpdate, onLogout }: { club: a
             </div>
           </div>
 
-         <div className="p-8 rounded-3xl flex items-center justify-between" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
+         <div className="p-8 rounded-xl flex items-center justify-between" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.05)" }}>
            <div>
-             <p className="text-sm font-medium text-[#1e1b26] dark:text-white" style={{ fontFamily: FB }}>Privacy Policy</p>
+             <p className="text-sm font-medium text-[color:var(--sk-fg)] dark:text-white" style={{ fontFamily: FB }}>Privacy Policy</p>
            </div>
            <button onClick={() => setShowPrivacyModal(true)} className="px-6 py-2.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-800 dark:text-white text-xs font-semibold rounded-lg transition-all border border-slate-200 dark:border-white/10" style={{ fontFamily: FB }}>View Policy</button>
          </div>
 
-        <div className="p-8 rounded-3xl flex items-center justify-between" style={{ background: "rgba(240,61,78,0.05)", border: "1px solid rgba(240,61,78,0.1)" }}>
+        <div className="p-8 rounded-xl flex items-center justify-between" style={{ background: "color-mix(in srgb, var(--sk-brand) 5%, transparent)", border: "1px solid color-mix(in srgb, var(--sk-brand) 10%, transparent)" }}>
           <div>
-            <p className="text-sm font-medium text-[#F03D4E]" style={{ fontFamily: FB }}>Sign Out</p>
+            <p className="text-sm font-medium text-[color:var(--sk-brand)]" style={{ fontFamily: FB }}>Sign Out</p>
           </div>
-          <button onClick={onLogout} className="px-6 py-2.5 bg-[#F03D4E]/10 hover:bg-[#F03D4E]/20 text-[#F03D4E] text-xs font-semibold rounded-lg transition-all" style={{ border: "1px solid rgba(240,61,78,0.2)", fontFamily: FB }}>Sign Out</button>
+          <button onClick={onLogout} className="px-6 py-2.5 bg-[color:var(--sk-brand)]/10 hover:bg-[color:var(--sk-brand)]/20 text-[color:var(--sk-brand)] text-xs font-semibold rounded-lg transition-all" style={{ border: "1px solid color-mix(in srgb, var(--sk-brand) 20%, transparent)", fontFamily: FB }}>Sign Out</button>
         </div>
       </div>
     </div>
@@ -4278,10 +4293,10 @@ function TeamsPage() {
   return (
     <div className="p-8 lg:p-10 space-y-8 max-w-4xl">
       <div>
-        <p className="text-[11px] tracking-[0.5em] uppercase mb-1.5 text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Management</p>
-        <h1 className="text-2xl md:text-3xl font-semibold text-[#1e1b26] dark:text-white" style={{ fontFamily: FC }}>Teams</h1>
+        <p className="text-[11px] tracking-normal mb-1.5 text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Management</p>
+        <h1 className="text-2xl md:text-3xl font-semibold text-[color:var(--sk-fg)] dark:text-white" style={{ fontFamily: FC }}>Teams</h1>
       </div>
-      <div className="p-10 rounded-2xl text-center" style={{ border: "1px dashed rgba(255,255,255,0.07)" }}>
+      <div className="p-10 rounded-xl text-center" style={{ border: "1px dashed rgba(255,255,255,0.07)" }}>
         <p className="text-sm text-slate-500 dark:text-[#94a3b8]" style={{ fontFamily: FB }}>Team management coming soon.</p>
       </div>
     </div>
@@ -4337,35 +4352,35 @@ function ClubOnboardingPage({ onSuccess }: ClubOnboardingPageProps) {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-6 md:p-12 relative overflow-hidden" style={{ background: isDark ? "rgba(5,5,5,0.98)" : "#f0f2f6" }}>
-      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 50%, rgba(240,61,78,0.08) 0%, transparent 60%)" }} />
+    <div className="min-h-screen w-full flex items-center justify-center p-6 md:p-12 relative overflow-hidden" style={{ background: "var(--sk-canvas)" }}>
+      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--sk-brand) 8%, transparent) 0%, transparent 60%)" }} />
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }} 
         animate={{ opacity: 1, y: 0 }} 
-        className="w-full max-w-lg p-8 md:p-10 rounded-3xl relative z-10"
+        className="w-full max-w-lg p-8 md:p-10 rounded-xl relative z-10"
         style={{ 
-          background: isDark ? "rgba(255,255,255,0.015)" : "#f0f2f6", 
-          border: isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.12)", 
+          background: "var(--sk-surface)", 
+          border: "1px solid var(--sk-line)", 
           backdropFilter: "blur(24px)",
           boxShadow: isDark ? "none" : "0 20px 45px -10px rgba(0,0,0,0.12)"
         }}
       >
         <div className="text-center mb-8">
-          <p className="text-[11px] tracking-[0.5em] uppercase mb-2 text-slate-700 dark:text-[#f3f4f6] font-semibold" style={{ fontFamily: FM }}>Step 1 · Onboarding</p>
-          <h2 className="text-2xl md:text-3xl font-semibold text-[#1e1b26] dark:text-white mb-2" style={{ fontFamily: FC }}>Set Up Your Club</h2>
+          <p className="text-[11px] tracking-normal mb-2 text-slate-700 dark:text-[#f3f4f6] font-semibold" style={{ fontFamily: FM }}>Step 1 · Onboarding</p>
+          <h2 className="text-2xl md:text-3xl font-semibold text-[color:var(--sk-fg)] dark:text-white mb-2" style={{ fontFamily: FC }}>Set Up Your Club</h2>
           <p className="text-xs text-slate-600 dark:text-[#d1d5db]" style={{ fontFamily: FB }}>Welcome to SkylineOS! Provide your club details and authorization key to activate the dashboard.</p>
         </div>
 
         <form noValidate onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-1.5">
-            <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Authorization Key</label>
+            <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Authorization Key</label>
             <input 
               type="text" 
               placeholder="SKYLINE-XXXX-XXXX" 
               required
-              className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all uppercase tracking-wider font-mono placeholder:normal-case placeholder:font-sans" 
-              style={{ background: isDark ? "rgba(255,255,255,0.02)" : "#e4e7ee", border: "1px solid rgba(240,61,78,0.4)" }} 
+              className="w-full rounded-xl px-4 py-3 text-sm text-[color:var(--sk-fg)] dark:text-white outline-none transition-all tracking-normal font-mono placeholder:normal-case placeholder:font-sans" 
+              style={{ background: "var(--sk-raised)", border: "1px solid color-mix(in srgb, var(--sk-brand) 40%, transparent)" }} 
               value={formData.registrationKey} 
               onChange={e => setFormData(p => ({ ...p, registrationKey: e.target.value.toUpperCase() }))}
             />
@@ -4383,58 +4398,58 @@ function ClubOnboardingPage({ onSuccess }: ClubOnboardingPageProps) {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Club Name</label>
+            <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Club Name</label>
             <input 
               type="text" 
               placeholder="e.g. Turing Club" 
               required
-              className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all" 
-              style={{ background: isDark ? "rgba(255,255,255,0.02)" : "#e4e7ee", border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.12)", fontFamily: FB }} 
+              className="w-full rounded-xl px-4 py-3 text-sm text-[color:var(--sk-fg)] dark:text-white outline-none transition-all" 
+              style={{ background: "var(--sk-raised)", border: "1px solid var(--sk-line)", fontFamily: FB }} 
               value={formData.name} 
               onChange={e => setFormData(p => ({ ...p, name: e.target.value }))}
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Contact Email</label>
+            <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Contact Email</label>
             <input 
               type="email" 
               placeholder="club@yourcollege.edu" 
               required
-              className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all" 
-              style={{ background: isDark ? "rgba(255,255,255,0.02)" : "#e4e7ee", border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.12)", fontFamily: FB }} 
+              className="w-full rounded-xl px-4 py-3 text-sm text-[color:var(--sk-fg)] dark:text-white outline-none transition-all" 
+              style={{ background: "var(--sk-raised)", border: "1px solid var(--sk-line)", fontFamily: FB }} 
               value={formData.email} 
               onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Club Logo URL (Optional)</label>
+            <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Club Logo URL (Optional)</label>
             <input 
               type="url" 
               placeholder="https://example.com/logo.png" 
-              className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all" 
-              style={{ background: isDark ? "rgba(255,255,255,0.02)" : "#e4e7ee", border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.12)", fontFamily: FB }} 
+              className="w-full rounded-xl px-4 py-3 text-sm text-[color:var(--sk-fg)] dark:text-white outline-none transition-all" 
+              style={{ background: "var(--sk-raised)", border: "1px solid var(--sk-line)", fontFamily: FB }} 
               value={formData.logoUrl} 
               onChange={e => setFormData(p => ({ ...p, logoUrl: e.target.value }))}
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[11px] uppercase tracking-widest text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Mobile App Login Password</label>
+            <label className="text-[11px] tracking-normal text-slate-700 dark:text-[#f3f4f6] font-semibold block" style={{ fontFamily: FM }}>Mobile App Login Password</label>
             <input 
               type="password" 
               placeholder="Create login password for mobile app" 
               required
-              className="w-full rounded-xl px-4 py-3 text-sm text-[#1e1b26] dark:text-white outline-none transition-all" 
-              style={{ background: isDark ? "rgba(255,255,255,0.02)" : "#e4e7ee", border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.12)", fontFamily: FB }} 
+              className="w-full rounded-xl px-4 py-3 text-sm text-[color:var(--sk-fg)] dark:text-white outline-none transition-all" 
+              style={{ background: "var(--sk-raised)", border: "1px solid var(--sk-line)", fontFamily: FB }} 
               value={formData.password} 
               onChange={e => setFormData(p => ({ ...p, password: e.target.value }))}
             />
           </div>
 
           {error && (
-            <p className="text-xs text-[#F03D4E] text-center font-medium" style={{ fontFamily: FM }}>{error}</p>
+            <p className="text-xs text-[color:var(--sk-danger)] text-center font-medium" style={{ fontFamily: FM }}>{error}</p>
           )}
 
           <motion.button 
@@ -4442,7 +4457,7 @@ function ClubOnboardingPage({ onSuccess }: ClubOnboardingPageProps) {
             whileHover={{ scale: 1.02 }} 
             whileTap={{ scale: 0.98 }} 
             disabled={submitting} 
-            className="w-full py-3.5 bg-[#F03D4E] hover:bg-[#d63545] text-white text-sm font-semibold rounded-xl transition-all disabled:opacity-50 mt-8 shadow-md cursor-pointer" 
+            className="w-full py-3.5 bg-[color:var(--sk-brand)] hover:bg-[color:var(--sk-brand-hover)] text-white text-sm font-semibold rounded-xl transition-all disabled:opacity-50 mt-8 shadow-md cursor-pointer" 
             style={{ fontFamily: FB }}
           >
             {submitting ? "Activating Dashboard..." : "Activate Dashboard"}
@@ -4506,7 +4521,7 @@ export function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onS
   );
 
   const renderProfileSection = () => (
-    <div className="p-4 pb-6 mt-auto flex-shrink-0" style={{ borderTop: isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.08)" }}>
+    <div className="p-4 pb-6 mt-auto flex-shrink-0" style={{ borderTop: "1px solid var(--sk-line)" }}>
       <div className="flex items-center justify-between mb-3 px-1">
         <div className="flex items-center gap-2.5 overflow-hidden">
           {currentClub?.logoUrl && currentClub.logoUrl !== "https://images.unsplash.com/photo-1516321318423-f06f85e504b3" ? (
@@ -4522,41 +4537,25 @@ export function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onS
             />
           ) : null}
           {(!currentClub?.logoUrl || currentClub.logoUrl === "https://images.unsplash.com/photo-1516321318423-f06f85e504b3") && (
-            <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white bg-[#F03D4E]">
+            <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white bg-[color:var(--sk-brand)]">
               {name.charAt(0).toUpperCase()}
             </div>
           )}
           {currentClub?.logoUrl && currentClub.logoUrl !== "https://images.unsplash.com/photo-1516321318423-f06f85e504b3" && (
-            <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white bg-[#F03D4E]" style={{ display: 'none' }}>
+            <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white bg-[color:var(--sk-brand)]" style={{ display: 'none' }}>
               {name.charAt(0).toUpperCase()}
             </div>
           )}
           <div className="overflow-hidden">
-            <p className="text-xs truncate font-semibold" style={{ color: isDark ? "rgba(255,255,255,0.85)" : "#1e1b26", fontFamily: FB }}>{name}</p>
-            <p className="text-[11px]" style={{ color: isDark ? "#f3f4f6" : "#64748b", fontFamily: FM }}>Admin</p>
+            <p className="text-xs truncate font-semibold" style={{ color: "var(--sk-fg)", fontFamily: FB }}>{name}</p>
+            <p className="text-xs" style={{ color: "var(--sk-muted)" }}>Club head</p>
           </div>
         </div>
         <ThemeToggle />
       </div>
-      <button onClick={onSignOut}
-        className="w-full py-2.5 text-xs rounded-xl transition-all duration-300 font-semibold cursor-pointer active:scale-98"
-        style={{
-          color: isDark ? "#ffffff" : "#F03D4E",
-          background: isDark ? "rgba(255,255,255,0.05)" : "rgba(240,61,78,0.06)",
-          border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(240,61,78,0.18)",
-          fontFamily: FB
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.color = "#ffffff";
-          e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.1)" : "#F03D4E";
-          e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.15)" : "#F03D4E";
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.color = isDark ? "#ffffff" : "#F03D4E";
-          e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.05)" : "rgba(240,61,78,0.06)";
-          e.currentTarget.style.borderColor = isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(240,61,78,0.18)";
-        }}
-      >Sign Out</button>
+      <button onClick={onSignOut} className="club-nav-item">
+        <LogOut size={16} strokeWidth={1.9} /> Sign out
+      </button>
     </div>
   );
 
@@ -4678,10 +4677,10 @@ export function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onS
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center" style={{ background: isDark ? "rgba(5,5,5,0.98)" : "#ffffff" }}>
+      <div className="flex h-screen items-center justify-center" style={{ background: "var(--sk-canvas)" }}>
         <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 rounded-full border-2 border-[#F03D4E] border-t-transparent animate-spin" />
-          <p className="text-xs tracking-[0.4em] uppercase" style={{ color: isDark ? "#94a3b8" : "#1e1b26", fontFamily: FM }}>Loading Dashboard</p>
+          <div className="w-8 h-8 rounded-full border-2 border-[color:var(--sk-brand)] border-t-transparent animate-spin" />
+          <p className="text-xs tracking-normal" style={{ color: isDark ? "#94a3b8" : "var(--sk-fg)", fontFamily: FM }}>Loading Dashboard</p>
         </div>
       </div>
     );
@@ -4691,18 +4690,14 @@ export function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onS
     <div className="flex h-screen overflow-hidden" style={{ position: "relative", zIndex: 10 }}>
       
       <aside className="hidden xl:flex w-56 flex-shrink-0 flex-col h-screen"
-        style={{
-          background: isDark ? "rgba(5,5,5,0.97)" : "#f0f2f6",
-          borderRight: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)",
-          backdropFilter: "blur(24px)"
-        }}
+        style={{ background: "var(--sk-surface)", borderRight: "1px solid var(--sk-line)" }}
       >
-        <div className="px-6 pt-6 pb-5 flex-shrink-0 flex items-center gap-2.5">
+        <div className="px-5 pt-5 pb-4 flex-shrink-0 flex items-center gap-2.5">
           {currentClub?.logoUrl && currentClub.logoUrl !== "https://images.unsplash.com/photo-1516321318423-f06f85e504b3" ? (
             <img
               src={currentClub.logoUrl}
               alt={name}
-              className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+              className="w-7 h-7 rounded-md object-cover flex-shrink-0"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
                 const sibling = e.currentTarget.nextSibling as HTMLElement;
@@ -4711,54 +4706,32 @@ export function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onS
             />
           ) : null}
           {(!currentClub?.logoUrl || currentClub.logoUrl === "https://images.unsplash.com/photo-1516321318423-f06f85e504b3") && (
-            <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white bg-[#F03D4E]">
+            <div className="w-7 h-7 rounded-md flex-shrink-0 flex items-center justify-center text-xs font-semibold text-white bg-[color:var(--sk-brand)]">
               {(name || 'S').charAt(0).toUpperCase()}
             </div>
           )}
           {currentClub?.logoUrl && currentClub.logoUrl !== "https://images.unsplash.com/photo-1516321318423-f06f85e504b3" && (
-            <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white bg-[#F03D4E]" style={{ display: 'none' }}>
+            <div className="w-7 h-7 rounded-md flex-shrink-0 flex items-center justify-center text-xs font-semibold text-white bg-[color:var(--sk-brand)]" style={{ display: 'none' }}>
               {(name || 'S').charAt(0).toUpperCase()}
             </div>
           )}
-          <span className="text-[13px] tracking-[0.16em] font-bold truncate max-w-[150px]" title={name} style={{ fontFamily: FB, color: isDark ? "rgba(255,255,255,0.9)" : "#1e1b26" }}>
+          <span className="text-sm font-semibold truncate max-w-[150px]" title={name} style={{ fontFamily: FB, color: "var(--sk-fg)" }}>
             {name || 'SkylineOS'}
           </span>
         </div>
-        <div className="px-4 mb-5 flex-shrink-0">
-          <motion.button
-            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+        <div className="px-3 mb-4 flex-shrink-0">
+          <button
             onClick={() => setActiveTab("create")}
-            className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-white bg-[#F03D4E] rounded-xl transition-all duration-300"
-            onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 0 25px rgba(240,61,78,0.35)")}
-            onMouseLeave={e => (e.currentTarget.style.boxShadow = "none")}
-            style={{ fontFamily: FB }}
-          ><Plus size={14} /> Create Event</motion.button>
+            className="w-full h-9 flex items-center justify-center gap-1.5 text-sm font-medium text-white bg-[color:var(--sk-brand)] hover:bg-[color:var(--sk-brand-hover)] rounded-lg transition-colors"
+          ><Plus size={15} /> Create event</button>
         </div>
         <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto">
           {DASH_NAV.map(({ id, icon: Icon, label }) => {
             const active = id === activeTab;
             return (
-              <button key={id} onClick={() => setActiveTab(id)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-300"
-                style={{
-                  background: active ? (isDark ? "rgba(255,255,255,0.065)" : "rgba(0,0,0,0.07)") : "transparent",
-                  color:      active ? (isDark ? "#fff" : "#1e1b26") : (isDark ? "#999999" : "#64748b"),
-                  border:     active ? (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.1)") : "1px solid transparent",
-                  fontFamily: FB,
-                }}
-                onMouseEnter={e => {
-                  if (!active) {
-                    e.currentTarget.style.color = isDark ? "#dddddd" : "#1e1b26";
-                    e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.04)";
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (!active) {
-                    e.currentTarget.style.color = isDark ? "#999999" : "#64748b";
-                    e.currentTarget.style.background = "transparent";
-                  }
-                }}
-              ><Icon size={14} />{label}</button>
+              <button key={id} onClick={() => setActiveTab(id)} className="club-nav-item" aria-current={active ? "page" : undefined}>
+                <Icon size={16} strokeWidth={1.9} />{label}
+              </button>
             );
           })}
         </nav>
@@ -4769,12 +4742,12 @@ export function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onS
         
         <header className="xl:hidden flex items-center justify-between px-4 sm:px-6 py-3.5 flex-shrink-0"
           style={{
-            background: isDark ? "rgba(5,5,5,0.97)" : "#f0f2f6",
-            borderBottom: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)",
+            background: "var(--sk-canvas)",
+            borderBottom: "1px solid var(--sk-line)",
             backdropFilter: "blur(16px)"
           }}
         >
-          <button onClick={() => setIsMobileMenuOpen(true)} className={`p-1.5 rounded-lg active:bg-black/5 ${isDark ? "text-white hover:text-[#F03D4E]" : "text-slate-800 hover:text-[#F03D4E]"}`}>
+          <button onClick={() => setIsMobileMenuOpen(true)} className={`p-1.5 rounded-lg active:bg-black/5 ${isDark ? "text-white hover:text-[color:var(--sk-brand)]" : "text-slate-800 hover:text-[color:var(--sk-brand)]"}`}>
             <Menu size={22} />
           </button>
           <div className="flex items-center gap-2">
@@ -4791,16 +4764,16 @@ export function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onS
               />
             ) : null}
             {(!currentClub?.logoUrl || currentClub.logoUrl === "https://images.unsplash.com/photo-1516321318423-f06f85e504b3") && (
-              <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white bg-[#F03D4E]">
+              <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white bg-[color:var(--sk-brand)]">
                 {(name || 'S').charAt(0).toUpperCase()}
               </div>
             )}
             {currentClub?.logoUrl && currentClub.logoUrl !== "https://images.unsplash.com/photo-1516321318423-f06f85e504b3" && (
-              <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white bg-[#F03D4E]" style={{ display: 'none' }}>
+              <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white bg-[color:var(--sk-brand)]" style={{ display: 'none' }}>
                 {(name || 'S').charAt(0).toUpperCase()}
               </div>
             )}
-            <span className="text-xs sm:text-[13px] tracking-[0.14em] font-bold truncate max-w-[180px]" title={name} style={{ fontFamily: FB, color: isDark ? "rgba(255,255,255,0.9)" : "#1e1b26" }}>
+            <span className="text-xs sm:text-[13px] tracking-normal font-bold truncate max-w-[180px]" title={name} style={{ fontFamily: FB, color: "var(--sk-fg)" }}>
               {name || 'SkylineOS'}
             </span>
           </div>
@@ -4817,15 +4790,15 @@ export function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onS
               className="mx-6 mt-4 overflow-hidden flex-shrink-0"
             >
               <div
-                className="p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                 style={{
-                  background: "rgba(240,61,78,0.04)",
-                  border: "1px solid rgba(240,61,78,0.12)",
+                  background: "color-mix(in srgb, var(--sk-brand) 4%, transparent)",
+                  border: "1px solid color-mix(in srgb, var(--sk-brand) 12%, transparent)",
                   backdropFilter: "blur(20px)"
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-[#F03D4E]/10 rounded-xl text-[#F03D4E] flex-shrink-0">
+                  <div className="p-2 bg-[color:var(--sk-brand)]/10 rounded-xl text-[color:var(--sk-brand)] flex-shrink-0">
                     <AlertTriangle size={18} />
                   </div>
                   <div>
@@ -4852,7 +4825,7 @@ export function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onS
                       sessionStorage.setItem("spotlight_reminder_dismissed", "true");
                       setActiveTab("settings");
                     }}
-                    className="px-4 py-2 bg-[#F03D4E] hover:bg-[#d83544] text-white text-xs font-semibold rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(240,61,78,0.2)]"
+                    className="px-4 py-2 bg-[color:var(--sk-brand)] hover:bg-[#d83544] text-white text-xs font-semibold rounded-xl transition-all duration-300 shadow-[0_0_15px_color-mix(in srgb, var(--sk-brand) 20%, transparent)]"
                     style={{ fontFamily: FB }}
                   >
                     Complete Now
@@ -4957,8 +4930,8 @@ export function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onS
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="fixed inset-y-0 left-0 z-50 w-64 flex flex-col h-[100dvh] max-h-[100dvh] xl:hidden"
               style={{
-                background: isDark ? "rgba(5,5,5,0.98)" : "#f0f2f6",
-                borderRight: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)",
+                background: "var(--sk-canvas)",
+                borderRight: "1px solid var(--sk-line)",
                 backdropFilter: "blur(24px)"
               }}
             >
@@ -4977,16 +4950,16 @@ export function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onS
                     />
                   ) : null}
                   {(!currentClub?.logoUrl || currentClub.logoUrl === "https://images.unsplash.com/photo-1516321318423-f06f85e504b3") && (
-                    <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white bg-[#F03D4E]">
+                    <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white bg-[color:var(--sk-brand)]">
                       {(name || 'S').charAt(0).toUpperCase()}
                     </div>
                   )}
                   {currentClub?.logoUrl && currentClub.logoUrl !== "https://images.unsplash.com/photo-1516321318423-f06f85e504b3" && (
-                    <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white bg-[#F03D4E]" style={{ display: 'none' }}>
+                    <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white bg-[color:var(--sk-brand)]" style={{ display: 'none' }}>
                       {(name || 'S').charAt(0).toUpperCase()}
                     </div>
                   )}
-                  <span className="text-xs tracking-[0.14em] font-bold truncate max-w-[150px]" title={name} style={{ fontFamily: FB, color: isDark ? "rgba(255,255,255,0.9)" : "#1e1b26" }}>
+                  <span className="text-xs tracking-normal font-bold truncate max-w-[150px]" title={name} style={{ fontFamily: FB, color: "var(--sk-fg)" }}>
                     {name || 'SkylineOS'}
                   </span>
                 </div>
@@ -4998,7 +4971,7 @@ export function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onS
                 <motion.button
                   whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
                   onClick={() => { setActiveTab("create"); setIsMobileMenuOpen(false); }}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-white bg-[#F03D4E] rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(240,61,78,0.25)]"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-white bg-[color:var(--sk-brand)] rounded-xl transition-all duration-300 shadow-[0_0_15px_color-mix(in srgb, var(--sk-brand) 25%, transparent)]"
                   style={{ fontFamily: FB }}
                 ><Plus size={14} /> Create Event</motion.button>
               </div>
@@ -5007,26 +4980,9 @@ export function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onS
                   const active = id === activeTab;
                   return (
                     <button key={id} onClick={() => { setActiveTab(id); setIsMobileMenuOpen(false); }}
-                      className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-300"
-                      style={{
-                        background: active ? (isDark ? "rgba(255,255,255,0.065)" : "rgba(0,0,0,0.07)") : "transparent",
-                        color:      active ? (isDark ? "#fff" : "#1e1b26") : (isDark ? "#999999" : "#64748b"),
-                        border:     active ? (isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.1)") : "1px solid transparent",
-                        fontFamily: FB,
-                      }}
-                      onMouseEnter={e => {
-                        if (!active) {
-                          e.currentTarget.style.color = isDark ? "#dddddd" : "#1e1b26";
-                          e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.04)";
-                        }
-                      }}
-                      onMouseLeave={e => {
-                        if (!active) {
-                          e.currentTarget.style.color = isDark ? "#999999" : "#64748b";
-                          e.currentTarget.style.background = "transparent";
-                        }
-                      }}
-                    ><Icon size={16} />{label}</button>
+                      className="club-nav-item" aria-current={active ? "page" : undefined}>
+                      <Icon size={16} strokeWidth={1.9} />{label}
+                    </button>
                   );
                 })}
               </nav>
@@ -5042,32 +4998,32 @@ export function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onS
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="w-full max-w-md p-8 rounded-3xl relative border border-slate-200 dark:border-white/10 shadow-2xl"
-            style={{ background: isDark ? "rgba(15,15,15,0.98)" : "#f0f2f6" }}
+            className="w-full max-w-md p-6 rounded-xl relative border border-[color:var(--sk-line)]"
+            style={{ background: "var(--sk-surface)", boxShadow: "var(--sk-shadow-lg)" }}
           >
-            <h2 className="text-xl font-bold text-[#1e1b26] dark:text-white mb-2" style={{ fontFamily: FC }}>Welcome to SkylineOS! 🚀</h2>
+            <h2 className="text-xl font-bold text-[color:var(--sk-fg)] dark:text-white mb-2" style={{ fontFamily: FC }}>Finish setting up your club</h2>
             <p className="text-xs text-slate-600 dark:text-[#d1d5db] mb-6 leading-relaxed" style={{ fontFamily: FB }}>
               Your club has been successfully created, but a few settings are yet to be completed. Please configure the pending fields below:
             </p>
             <div className="space-y-3 mb-8">
 
               {(!currentClub?.logoUrl || currentClub.logoUrl === "https://images.unsplash.com/photo-1516321318423-f06f85e504b3") && (
-                <div className="flex items-center gap-3 p-3.5 rounded-xl" style={{ background: "rgba(240,61,78,0.03)", border: "1px dashed rgba(240,61,78,0.2)" }}>
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#F03D4E]" />
+                <div className="flex items-center gap-3 p-3.5 rounded-xl" style={{ background: "color-mix(in srgb, var(--sk-brand) 3%, transparent)", border: "1px dashed color-mix(in srgb, var(--sk-brand) 20%, transparent)" }}>
+                  <div className="w-1.5 h-1.5 rounded-full bg-[color:var(--sk-brand)]" />
                   <span className="text-xs text-slate-800 dark:text-white/90" style={{ fontFamily: FB }}>Club Logo is not uploaded</span>
                 </div>
               )}
 
               {!currentClub?.upiId && (
-                <div className="flex items-center gap-3 p-3.5 rounded-xl" style={{ background: "rgba(240,61,78,0.03)", border: "1px dashed rgba(240,61,78,0.2)" }}>
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#F03D4E]" />
+                <div className="flex items-center gap-3 p-3.5 rounded-xl" style={{ background: "color-mix(in srgb, var(--sk-brand) 3%, transparent)", border: "1px dashed color-mix(in srgb, var(--sk-brand) 20%, transparent)" }}>
+                  <div className="w-1.5 h-1.5 rounded-full bg-[color:var(--sk-brand)]" />
                   <span className="text-xs text-slate-800 dark:text-white/90" style={{ fontFamily: FB }}>Default UPI ID is not configured</span>
                 </div>
               )}
 
               {!currentClub?.qrUrl && (
-                <div className="flex items-center gap-3 p-3.5 rounded-xl" style={{ background: "rgba(240,61,78,0.03)", border: "1px dashed rgba(240,61,78,0.2)" }}>
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#F03D4E]" />
+                <div className="flex items-center gap-3 p-3.5 rounded-xl" style={{ background: "color-mix(in srgb, var(--sk-brand) 3%, transparent)", border: "1px dashed color-mix(in srgb, var(--sk-brand) 20%, transparent)" }}>
+                  <div className="w-1.5 h-1.5 rounded-full bg-[color:var(--sk-brand)]" />
                   <span className="text-xs text-slate-800 dark:text-white/90" style={{ fontFamily: FB }}>Default QR Code is not uploaded</span>
                 </div>
               )}
@@ -5079,7 +5035,7 @@ export function DashboardPage({ userEmail, onSignOut }: { userEmail: string; onS
                   setShowOnboardingNotice(false);
                   setActiveTab("settings");
                 }}
-                className="flex-1 py-3 text-xs font-semibold text-white bg-[#F03D4E] hover:bg-[#d93041] rounded-xl transition-all cursor-pointer text-center"
+                className="flex-1 py-3 text-xs font-semibold text-white bg-[color:var(--sk-brand)] hover:bg-[#d93041] rounded-xl transition-all cursor-pointer text-center"
                 style={{ fontFamily: FB }}
               >
                 Configure Settings
@@ -5120,199 +5076,118 @@ function OverviewPage({
   recentActivity: Registration[];
   clubEvents: ClubEvent[];
 }) {
-
   function timeAgo(dateStr: string) {
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
-    if (mins < 1)  return 'just now';
+    if (mins < 1) return 'just now';
     if (mins < 60) return `${mins}m ago`;
     const hrs = Math.floor(mins / 60);
-    if (hrs < 24)  return `${hrs}h ago`;
+    if (hrs < 24) return `${hrs}h ago`;
     return `${Math.floor(hrs / 24)}d ago`;
   }
 
+  const active = clubEvents.filter(e => { const st = getEventStatus(e); return st === 'upcoming' || st === 'live'; });
+  const card = "rounded-xl border border-[color:var(--sk-line)] bg-[color:var(--sk-surface)]";
+  const kpis = [
+    { label: "Events", value: totalEvents, sub: `${active.length} upcoming or live` },
+    { label: "Registrations", value: totalRegistrations, sub: "Across all events" },
+    { label: "Awaiting review", value: pendingCount, sub: pendingCount > 0 ? "Payments to verify" : "You're all caught up", attention: pendingCount > 0 },
+  ];
+
   return (
-    <div className="p-4 sm:p-6 md:p-8 lg:p-10 space-y-6 sm:space-y-8 md:space-y-10 max-w-7xl pb-28 md:pb-12">
-      
-      <motion.div
-        initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-        className="relative p-5 sm:p-7 md:p-8 rounded-2xl overflow-hidden"
-        style={{ background: "rgba(255,255,255,0.018)", border: "1px solid rgba(255,255,255,0.06)" }}
-      >
-        <div className="absolute inset-0 pointer-events-none hidden dark:block" style={{ background: "radial-gradient(ellipse at 0% 50%, rgba(255,255,255,0.03) 0%, transparent 60%)" }} />
-        <div className="absolute inset-x-0 bottom-0 h-px" style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.06), transparent 55%)" }} />
-        <p className="text-[10px] sm:text-[11px] tracking-[0.4em] sm:tracking-[0.5em] uppercase mb-2 sm:mb-3 text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Dashboard</p>
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold text-[#1e1b26] dark:text-white" style={{ fontFamily: FC }}>
-          Welcome Back, {name}
-        </h1>
-        <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-[#94a3b8]" style={{ fontFamily: FB }}>Manage your club's events, registrations, and track performance in real-time.</p>
-      </motion.div>
+    <div className="px-4 py-6 sm:px-6 md:px-8 md:py-8 space-y-8 max-w-6xl pb-28 md:pb-12">
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-semibold tracking-tight text-[color:var(--sk-fg)]">Overview</h1>
+          <p className="mt-1 text-sm text-[color:var(--sk-muted)] truncate">{name}</p>
+        </div>
+      </header>
 
-      {/* KPI Cards — live data */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {[
-          { label: "Total Events",          value: totalEvents,        suffix: "",  sub: `${clubEvents.filter(e => { const st = getEventStatus(e); return st === 'upcoming' || st === 'live'; }).length} active`,  delay: 0    },
-          { label: "Total Registrations",   value: totalRegistrations, suffix: "",  sub: "Across all events",                                                   delay: 0.08 },
-          { label: "Pending Approvals",     value: pendingCount,       suffix: "",  sub: "Awaiting your review",                                                delay: 0.16 },
-        ].map(k => (
-          <motion.div key={k.label}
-            initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: k.delay, ease: [0.16, 1, 0.3, 1] }}
-            className="relative p-7 rounded-2xl overflow-hidden cursor-default"
-            style={{ background: "rgba(255,255,255,0.022)", border: "1px solid rgba(255,255,255,0.06)", transition: "all 0.45s ease" }}
-            onMouseEnter={e => {
-              const el = e.currentTarget as HTMLDivElement;
-              el.style.background   = "rgba(255,255,255,0.044)";
-              el.style.borderColor  = "rgba(255,255,255,0.13)";
-              el.style.boxShadow    = "0 24px 70px rgba(0,0,0,0.45)";
-              el.style.transform    = "translateY(-4px)";
-            }}
-            onMouseLeave={e => {
-              const el = e.currentTarget as HTMLDivElement;
-              el.style.background  = "rgba(255,255,255,0.022)";
-              el.style.borderColor = "rgba(255,255,255,0.06)";
-              el.style.boxShadow   = "none";
-              el.style.transform   = "none";
-            }}
-          >
-            <div className="absolute top-0 right-0 w-36 h-36 pointer-events-none hidden dark:block" style={{ background: "radial-gradient(circle at 85% 15%, rgba(255,255,255,0.05), transparent 65%)" }} />
-            <p className="text-[11px] tracking-[0.42em] uppercase mb-6 text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>{k.label}</p>
-            <p className="text-3xl font-semibold text-[#1e1b26] dark:text-white mb-3" style={{ fontFamily: FB }}>
-              <AnimatedCounter target={k.value} suffix={k.suffix} />
-            </p>
-            <p className="text-sm mt-2 text-slate-600 dark:text-[#d1d5db]" style={{ fontFamily: FB }}>{k.sub}</p>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Upcoming & Live Events strip — live */}
-      <div>
-        <div className="flex items-end justify-between mb-5">
-          <div>
-            <p className="text-[11px] tracking-[0.5em] uppercase mb-1 text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Upcoming & Live</p>
-            <h2 className="text-xl font-semibold text-[#1e1b26] dark:text-white" style={{ fontFamily: FC }}>Events</h2>
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4" aria-label="Key numbers">
+        {kpis.map(k => (
+          <div key={k.label} className={`${card} p-5`} style={{ boxShadow: "var(--sk-shadow)" }}>
+            <p className="text-sm text-[color:var(--sk-muted)]">{k.label}</p>
+            <p className="mt-2 text-3xl font-semibold tracking-tight tabular-nums text-[color:var(--sk-fg)]">{k.value}</p>
+            <p className={`mt-1 text-sm ${k.attention ? "text-[color:var(--sk-warn)]" : "text-[color:var(--sk-faint)]"}`}>{k.sub}</p>
           </div>
-          <button className="group flex items-center gap-1.5 text-sm font-medium transition-all duration-300 text-slate-600 dark:text-white/70 hover:text-black dark:hover:text-white cursor-pointer" style={{ fontFamily: FB }}
-            onClick={() => onNavigate("events")}
-          >
-            <span>View all</span>
-            <ChevronRight size={16} className="group-hover:translate-x-0.5 transition-transform duration-200" />
+        ))}
+      </section>
+
+      <section aria-labelledby="ov-events">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 id="ov-events" className="text-base font-semibold text-[color:var(--sk-fg)]">Upcoming events</h2>
+          <button onClick={() => onNavigate("events")} className="inline-flex items-center gap-1 text-sm font-medium text-[color:var(--sk-muted)] hover:text-[color:var(--sk-fg)] transition-colors">
+            All events <ChevronRight size={15} />
           </button>
         </div>
-
-        {clubEvents.filter(e => { const st = getEventStatus(e); return st === 'upcoming' || st === 'live'; }).length === 0 ? (
-          <div className="p-8 rounded-2xl text-center text-sm text-[#94a3b8]" style={{ border: "1px dashed rgba(255,255,255,0.05)", fontFamily: FB }}>
-            No upcoming events yet. <button onClick={() => onNavigate("create")} className="text-[#F03D4E] hover:underline">Create one →</button>
+        {active.length === 0 ? (
+          <div className={`${card} border-dashed p-8 text-center`}>
+            <p className="text-sm text-[color:var(--sk-muted)]">No upcoming events yet.</p>
+            <button onClick={() => onNavigate("create")} className="mt-3 text-sm font-medium text-[color:var(--sk-brand)] hover:underline">Create your first event</button>
           </div>
         ) : (
-          <div className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory -mx-5 px-5 md:-mx-8 md:px-8 lg:-mx-10 lg:px-10" style={{ scrollbarWidth: "none" }}>
-            {clubEvents.filter(e => { const st = getEventStatus(e); return st === 'upcoming' || st === 'live'; }).map((ev, i) => (
-              <motion.div key={ev.id}
-                initial={{ opacity: 0, x: 35 }} animate={{ opacity: 1, x: 0 }}
-                whileHover={{ y: -6 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-                className="flex-shrink-0 w-[340px] p-6 rounded-3xl cursor-pointer snap-start hover:bg-white/[0.04] hover:border-white/15 hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-colors duration-300"
-                style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
-                onClick={() => onNavigate("events", ev.id)}
-              >
-                <div className="flex items-start justify-between mb-5">
-                  <div className="flex items-center gap-2">
-                    <span className={`text-[11px] px-2.5 py-1 rounded-full border ${(ev.type ?? '').toLowerCase() === "team" ? "bg-slate-200 text-slate-700 border-slate-300 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20" : "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"}`} style={{ fontFamily: FM }}>{(ev.type ?? '').toLowerCase() === "team" ? "Team" : "Solo"}</span>
+          <div className={`${card} divide-y divide-[color:var(--sk-line)] overflow-hidden`} style={{ boxShadow: "var(--sk-shadow)" }}>
+            {active.map(ev => {
+              const live = getEventStatus(ev) === 'live';
+              return (
+                <button key={ev.id} onClick={() => onNavigate("events", ev.id)} className="w-full flex flex-wrap items-center gap-x-6 gap-y-1 px-4 py-3.5 text-left hover:bg-[color:var(--sk-raised)] transition-colors">
+                  <div className="min-w-0 flex-1 basis-60">
+                    <p className="truncate text-sm font-medium text-[color:var(--sk-fg)]">{ev.title}</p>
+                    <p className="mt-0.5 flex items-center gap-3 text-xs text-[color:var(--sk-muted)]">
+                      <span className="inline-flex items-center gap-1"><Calendar size={12} />{formatEventHeaderDate(ev.eventDate || ev.date, ev.eventEndDate)}</span>
+                      {ev.venue && <span className="hidden sm:inline-flex items-center gap-1 truncate"><MapPin size={12} />{ev.venue}</span>}
+                    </p>
                   </div>
-                  {getEventStatus(ev) === 'live' ? (
-                    <LiveTag />
-                  ) : (
-                    <span className="text-[11px] px-2.5 py-1 rounded-full text-slate-500 dark:text-[#aaaaaa]" style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.06)", fontFamily: FM }}>Upcoming</span>
-                  )}
-                </div>
-                <h3 className="text-[#1e1b26] dark:text-white font-semibold mb-1 leading-tight text-sm">{ev.title}</h3>
-                <div className="flex items-center gap-3 mb-3 text-slate-600 dark:text-[#d1d5db]">
-                  <span className="flex items-center gap-1 text-[11px]"><Calendar size={9} />{formatEventHeaderDate(ev.eventDate || ev.date, ev.eventEndDate)}</span>
-                  <span className="flex items-center gap-1 text-[11px]"><MapPin size={9} />{ev.venue}</span>
-                </div>
-                {ev.registrationDeadline && (
-                  <div className="flex items-center gap-1 mb-4" style={{ color: "#f59e0b" }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    <span className="text-[11px]" style={{ fontFamily: 'inherit' }}>Deadline: {formatDateTime12H(ev.registrationDeadline)}</span>
-                  </div>
-                )}
-                <div>
-                  <div className="flex justify-between text-[11px] mb-1.5 text-slate-600 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>
-                    <span>{ev.capacity > 0 ? `${ev.capacity} cap` : 'Open'}</span>
-                    <span>{ev.type}</span>
-                  </div>
-                  <div className="h-1 rounded-full" style={{ background: "rgba(255,255,255,0.04)" }} />
-                </div>
-              </motion.div>
-            ))}
+                  <span className="text-xs text-[color:var(--sk-muted)]">{(ev.type ?? '').toLowerCase() === "team" ? "Team" : "Solo"} · {ev.capacity > 0 ? `${ev.capacity} seats` : "Open"}</span>
+                  {ev.registrationDeadline && <span className="text-xs text-[color:var(--sk-faint)]">Closes {formatDateTime12H(ev.registrationDeadline)}</span>}
+                  <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${live ? "bg-[color:var(--sk-ok-soft)] text-[color:var(--sk-ok)]" : "bg-[color:var(--sk-raised)] text-[color:var(--sk-muted)]"}`}>
+                    {live && <span className="h-1.5 w-1.5 rounded-full bg-current" />}{live ? "Live" : "Upcoming"}
+                  </span>
+                  <ChevronRight size={16} className="text-[color:var(--sk-faint)]" />
+                </button>
+              );
+            })}
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Quick Actions + Live Activity Feed */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-12">
-        <div className="lg:col-span-2">
-          <p className="text-[10px] sm:text-[11px] tracking-[0.4em] sm:tracking-[0.5em] uppercase mb-3 sm:mb-5 text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Quick Actions</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {QUICK_ACTIONS.map((qa, i) => (
-              <motion.button key={qa.label} onClick={() => onNavigate(qa.id)}
-                initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                className="p-5 rounded-xl text-left group"
-                style={{ background: "rgba(255,255,255,0.018)", border: "1px solid rgba(255,255,255,0.05)", transition: "all 0.4s ease" }}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLButtonElement;
-                  el.style.background  = "rgba(255,255,255,0.038)";
-                  el.style.borderColor = "rgba(255,255,255,0.12)";
-                  el.style.transform   = "scale(1.02)";
-                  el.style.boxShadow   = "0 16px 50px rgba(0,0,0,0.4)";
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLButtonElement;
-                  el.style.background  = "rgba(255,255,255,0.018)";
-                  el.style.borderColor = "rgba(255,255,255,0.05)";
-                  el.style.transform   = "none";
-                  el.style.boxShadow   = "none";
-                }}
-              >
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-3" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
-                  <qa.icon size={14} className="text-muted-foreground group-hover:text-white/65 transition-colors duration-300" />
-                </div>
-                <p className="text-[#1e1b26] dark:text-white text-sm font-medium mb-0.5" style={{ fontFamily: FB }}>{qa.label}</p>
-                <p className="text-xs text-slate-600 dark:text-[#d1d5db]" style={{ fontFamily: FB }}>{qa.desc}</p>
-              </motion.button>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <section className="lg:col-span-2" aria-labelledby="ov-actions">
+          <h2 id="ov-actions" className="mb-3 text-base font-semibold text-[color:var(--sk-fg)]">Quick actions</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {QUICK_ACTIONS.map(qa => (
+              <button key={qa.label} onClick={() => onNavigate(qa.id)} className={`${card} group p-4 text-left hover:border-[color:var(--sk-line-strong)] transition-colors`}>
+                <span className="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[color:var(--sk-raised)] text-[color:var(--sk-fg)]">
+                  <qa.icon size={15} />
+                </span>
+                <p className="text-sm font-medium text-[color:var(--sk-fg)]">{qa.label}</p>
+                <p className="mt-0.5 text-xs text-[color:var(--sk-muted)]">{qa.desc}</p>
+              </button>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* Live Activity Feed */}
-        <div className="activity-feed-container">
-          <p className="text-[11px] tracking-[0.5em] uppercase mb-4 text-slate-700 dark:text-[#f3f4f6]" style={{ fontFamily: FM }}>Recent Activity</p>
-          <div className="space-y-1">
+        <section aria-labelledby="ov-activity">
+          <h2 id="ov-activity" className="mb-3 text-base font-semibold text-[color:var(--sk-fg)]">Recent activity</h2>
+          <div className={`${card} p-1`}>
             {recentActivity.length === 0 ? (
-              <p className="text-xs text-slate-500 dark:text-[#94a3b8]" style={{ fontFamily: FB }}>No activity yet.</p>
+              <p className="px-3 py-6 text-center text-sm text-[color:var(--sk-muted)]">No sign-ups yet.</p>
             ) : (
-              recentActivity.map((a, i) => (
-                <motion.div key={a.id}
-                  initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4, delay: i * 0.06 }}
-                  className="flex items-start gap-2.5 py-2.5 px-0.5 border-b border-slate-100 dark:border-white/[0.04] last:border-b-0"
-                >
-                  <div className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 bg-slate-400 dark:bg-white/40" />
-                  <div>
-                    <p className="text-xs leading-snug text-[#1e1b26] dark:text-[#f9fafb]" style={{ fontFamily: FB }}>
-                      <span className="text-slate-800 dark:text-white/80 font-medium">{a.user?.name ?? a.team?.name ?? 'Someone'}</span>
-                      {" signed up for "}
-                      <span className="text-slate-800 dark:text-white/80 font-medium">{a.eventTitle}</span>
+              <ul className="divide-y divide-[color:var(--sk-line)]">
+                {recentActivity.map(a => (
+                  <li key={a.id} className="px-3 py-2.5">
+                    <p className="text-sm leading-snug text-[color:var(--sk-fg)]">
+                      <span className="font-medium">{a.user?.name ?? a.team?.name ?? 'Someone'}</span>
+                      <span className="text-[color:var(--sk-muted)]"> registered for </span>
+                      <span className="font-medium">{a.eventTitle}</span>
                     </p>
-                    <p className="text-[11px] mt-0.5 text-slate-400 dark:text-[#94a3b8]" style={{ fontFamily: FM }}>{timeAgo(a.created_at)}</p>
-                  </div>
-                </motion.div>
-              ))
+                    <p className="mt-0.5 text-xs text-[color:var(--sk-faint)]">{timeAgo(a.created_at)}</p>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );
